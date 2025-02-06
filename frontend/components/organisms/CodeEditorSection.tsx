@@ -225,8 +225,8 @@ robot.apagar();`);
 
   return (
     <div className="h-[80vh] p-4 flex flex-col bg-slate-900">
-      {/* Game View */}
-      <div className="flex md:hidden h-[35vh] mb-4">
+      {/* Game View - Show only on mobile */}
+      <div className="block md:hidden h-[35vh] mb-4">
         <GameView />
       </div>
 

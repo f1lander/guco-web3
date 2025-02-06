@@ -15,17 +15,15 @@ const GameSection = () => {
         </SectionTitle>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Game Visualization Area */}
-
           {/* Code Editor Area */}
           <Card className="bg-slate-800/50 backdrop-blur-sm">
             <CodeEditorSection />
           </Card>
 
-          <Card className="aspect-square bg-slate-800/50 backdrop-blur-sm">
+          {/* Game Visualization Area - Hidden on mobile */}
+          <Card className="hidden md:block aspect-square bg-slate-800/50 backdrop-blur-sm">
             <GameView />
           </Card>
-
         </div>
 
         {/* Controls and Status */}

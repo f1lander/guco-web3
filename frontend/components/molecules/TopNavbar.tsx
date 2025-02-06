@@ -28,7 +28,7 @@ export function TopNavbar() {
       `}
     >
       <div className={`transition-opacity duration-300 ${scrolled ? 'opacity-100' : 'opacity-90'}`}>
-        <Image src="/gUCO.svg" alt="Logo" width={150} height={100} />
+        <span className="text-xl font-bold text-guco-100">gUCO</span>
       </div>
 
       <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
@@ -43,7 +43,6 @@ export function TopNavbar() {
         </div>
 
         <div className={`transition-transform duration-100 ${scrolled ? 'scale-95' : 'scale-100'}`}>
-
           <ConnectButton chainStatus={'none'} />
           {/* {
             isConnected && (
@@ -54,9 +53,6 @@ export function TopNavbar() {
               </div>
             )
           } */}
-
-
-
         </div>
       </div>
     </header>
