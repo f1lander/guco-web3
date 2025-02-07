@@ -11,8 +11,44 @@ import { DotBackground } from '@/components/backgrounds/patterns';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Create Web3 App',
-  description: 'A template for creating web3 apps with Next.js, viem, and Tailwind CSS',
+  title: 'GÜCO | Aprende Programación con Robots',
+  description: 'Aprende programación de forma divertida controlando robots en un mundo virtual. Una plataforma educativa basada en blockchain.',
+  keywords: ['programación', 'educación', 'blockchain', 'robots', 'coding', 'learn to code', 'güco', 'guco'],
+  authors: [{ name: 'GÜCO Team' }],
+  openGraph: {
+    title: 'GÜCO | Aprende Programación con Robots',
+    description: 'Aprende programación de forma divertida controlando robots en un mundo virtual',
+    url: 'https://guco.dev',
+    siteName: 'GÜCO',
+    images: [
+      {
+        url: '/og-image.png', // You'll need to add this image to your public folder
+        width: 1200,
+        height: 630,
+        alt: 'GÜCO - Plataforma de Aprendizaje',
+      },
+    ],
+    locale: 'es_ES',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GÜCO | Aprende Programación con Robots',
+    description: 'Aprende programación de forma divertida controlando robots en un mundo virtual',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  themeColor: '#000000'
 };
 
 export default function RootLayout({
@@ -38,8 +74,8 @@ export default function RootLayout({
                     {children}
                     <Toaster />
                   </main>
-                  <div className="flex flex-col items-center justify-center gap-4">
-                    <p className="text-lg text-foreground ">© 2025 GUCO Network. All rights reserved. </p>                   
+                  <div className="flex flex-col items-center justify-center gap-4 px-4 text-center">
+                    <p className="text-lg text-gray-800 dark:text-gray-400">© 2025 GUCO Network. All rights reserved.</p>                   
                   </div>
                 </div>
               </DotBackground>

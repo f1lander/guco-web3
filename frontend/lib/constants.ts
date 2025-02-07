@@ -82,3 +82,21 @@ export const featureFlags = {} as const;
 
 export const GOOGLE_ANALYTICS_TOKEN =
   process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || '';
+
+
+  // Example levels definition
+export const LANDING_PAGE_LEVELS = [
+  [
+    [0, 1, 0, 1, 0, 0, 1, 2],
+    [0, 0, 1, 0, 1, 0, 1, 1],
+    [0, 1, 0, 1, 0, 1, 1, 1],
+    [3, 1, 0, 1, 0, 1, 0, 1],
+  ],
+  [
+    [3, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 0, 1, 1],
+    [1, 0, 1, 0, 1, 0, 1, 0],
+    [1, 0, 0, 0, 0, 1, 2, 1],
+  ],
+  // Add more levels as needed
+];

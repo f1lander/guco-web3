@@ -1,37 +1,50 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import CodeEditorSection from './CodeEditorSection';
 import SectionTitle from '../atoms/SectionTitle';
-import GameView from '../molecules/GameView';
+import { LANDING_PAGE_LEVELS } from '@/lib/constants';
 
 const GameSection = () => {
+  const [currentLevel, setCurrentLevel] = useState(0);
+  const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
+
+  // Find initial robot position from level data
+  useEffect(() => {
+    const level = LANDING_PAGE_LEVELS[currentLevel];
+    for (let y = 0; y < level.length; y++) {
+      for (let x = 0; x < level[y].length; x++) {
+        if (level[y][x] === 3) { // ROBOT
+          setRobotPosition({ x, y });
+          break;
+        }
+      }
+    }
+  }, [currentLevel]);
+
   return (
-    <section className="py-20">
+    <section id="playground" className="py-12 md:py-20">
       <div className="container mx-auto px-4">
-        <SectionTitle className="text-center mb-20">
+        <SectionTitle className="text-center mb-8 md:mb-20">
           Playground de Programación
         </SectionTitle>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Code Editor Area */}
-          <Card className="bg-slate-800/50 backdrop-blur-sm">
-            <CodeEditorSection />
-          </Card>
+        {/* Code Editor Area */}
+        <Card className="bg-slate-800/50 backdrop-blur-sm h-[85vh] lg:h-[70vh] mb-4">
+          <CodeEditorSection
+            currentLevel={currentLevel}
+            robotPosition={robotPosition}
+            onRobotMove={setRobotPosition}
+          />
+        </Card>
 
-          {/* Game Visualization Area - Hidden on mobile */}
-          <Card className="hidden md:block aspect-square bg-slate-800/50 backdrop-blur-sm">
-            <GameView />
-          </Card>
-        </div>
-
-        {/* Controls and Status */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Controls and Status - Mobile only */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:hidden">
           <Card className="bg-slate-800/50 backdrop-blur-sm p-4">
             <h3 className="text-lg font-semibold mb-2">Estado del Robot</h3>
             <div className="space-y-2 text-sm text-slate-400">
-              <p>Posición: (0, 0)</p>
+              <p>Posición: ({robotPosition.x}, {robotPosition.y})</p>
               <p>Energía: 100%</p>
               <p>Items Recolectados: 0</p>
             </div>
@@ -40,7 +53,7 @@ const GameSection = () => {
           <Card className="bg-slate-800/50 backdrop-blur-sm p-4">
             <h3 className="text-lg font-semibold mb-2">Nivel Actual</h3>
             <div className="space-y-2 text-sm text-slate-400">
-              <p>Nivel: 1</p>
+              <p>Nivel: {currentLevel + 1}</p>
               <p>Objetivo: Mover el robot hasta la meta</p>
               <p>Progreso: 0/3 objetivos completados</p>
             </div>

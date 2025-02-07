@@ -3,35 +3,50 @@
 import React, { useState, useEffect } from 'react';
 import { GridIcon, Play } from 'lucide-react';
 
+// Define tile types
+export enum TileType {
+  EMPTY = 0,
+  OBSTACLE = 1,
+  GOAL = 2,
+  ROBOT = 3,
+  COLLECTIBLE = 4,
+}
+
+// Define default values outside the component
+const DEFAULT_LEVEL = [
+  [0, 0, 0, 0, 0, 0, 0, 2],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [3, 0, 0, 0, 0, 0, 0, 0],
+];
+
+const DEFAULT_ROBOT_POSITION = { x: 0, y: 3 }; // Matches DEFAULT_LEVEL robot position
+const DEFAULT_COMMANDS: string[] = [];
+const DEFAULT_CURRENT_COMMAND = -1;
+
 interface GameViewProps {
   showControls?: boolean;
-  gridSize?: number;
+  level?: number[][];
   robotPosition?: { x: number, y: number };
-  obstacles?: Array<{ type: string; position: { x: number, y: number } }>;
   onMove?: (position: { x: number, y: number }) => void;
   commands?: string[];
   currentCommand?: number;
-  customRobotRender?: () => React.ReactNode;
 }
 
 const GameView: React.FC<GameViewProps> = ({ 
   showControls = true,
-  gridSize = 8,
-  robotPosition: initialPosition = { x: 0, y: 0 },
-  obstacles = [],
-  onMove,
-  commands = [],
-  currentCommand = -1,
-  customRobotRender,
+  level = DEFAULT_LEVEL,
+  robotPosition = DEFAULT_ROBOT_POSITION,
+  onMove = () => {},
+  commands = DEFAULT_COMMANDS,
+  currentCommand = DEFAULT_CURRENT_COMMAND,
 }) => {
-  const [robotPosition, setRobotPosition] = useState(initialPosition);
-
-  const getEmoji = (type: string) => {
-    switch(type) {
-      case 'wall': return '🧱';
-      case 'goal': return '🎯';
-      case 'item': return '⭐';
-      case 'light': return '💡';
+  const getEmoji = (tileType: TileType) => {
+    switch(tileType) {
+      case TileType.OBSTACLE: return '🧱';
+      case TileType.GOAL: return '🎯';
+      case TileType.COLLECTIBLE: return '⭐';
+      case TileType.ROBOT: return '🤖';
       default: return '';
     }
   };
@@ -42,43 +57,45 @@ const GameView: React.FC<GameViewProps> = ({
     }
   }, [robotPosition, onMove]);
 
+  const gridSize = level[0].length; // Assuming square grid
+
   return (
-    <div className="relative w-full h-full bg-slate-800 rounded-xl overflow-hidden">
+    <div className="relative w-full h-full bg-slate-800 rounded-xl md:rounded-none overflow-hidden flex flex-col">
       {showControls && (
-        <div className="absolute top-2 left-2 flex items-center gap-2 text-slate-400">
+        <div className="p-2 flex items-center gap-2 text-slate-400">
           <GridIcon className="w-4 h-4" />
           <span className="text-sm font-semibold">Vista del Juego</span>
         </div>
       )}
       
-      <div className={`grid grid-cols-${gridSize} gap-1 p-4 aspect-square`}>
-        {Array(gridSize * gridSize).fill(0).map((_, i) => {
-          const x = i % gridSize;
-          const y = Math.floor(i / gridSize);
-          const isRobotHere = x === robotPosition.x && y === robotPosition.y;
-          const obstacle = obstacles.find(o => o.position.x === x && o.position.y === y);
-          
-          return (
-            <div 
-              key={i} 
-              className={`relative bg-slate-700/50 rounded-sm aspect-square border border-slate-600/30
-                ${isRobotHere ? 'bg-blue-500/20' : ''}`}
-            >
-              {isRobotHere && (
-                customRobotRender ? customRobotRender() : (
+      <div className="flex-1 p-2">
+        <div 
+          className="w-full h-full grid gap-0.5" 
+          style={{ 
+            gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+            gridTemplateRows: `repeat(${level.length}, 1fr)`
+          }}
+        >
+          {level.map((row, y) => 
+            row.map((tile, x) => {
+              const isRobotHere = x === robotPosition.x && y === robotPosition.y;
+              
+              return (
+                <div 
+                  key={`${x}-${y}`} 
+                  className={`relative bg-slate-700/50 border border-slate-600/30
+                    ${isRobotHere ? 'bg-blue-500/20' : ''}`}
+                >
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-2xl">🤖</span>
+                    <span className="text-xl">
+                      {isRobotHere ? '🤖' : getEmoji(tile as TileType)}
+                    </span>
                   </div>
-                )
-              )}
-              {obstacle && !isRobotHere && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl">{getEmoji(obstacle.type)}</span>
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })
+          )}
+        </div>
       </div>
 
       {commands.length > 0 && (
@@ -96,16 +113,17 @@ const GameView: React.FC<GameViewProps> = ({
         </div>
       )}
 
-      {showControls && (
-        <div className="absolute bottom-2 right-2">
-          <button className="game-button flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-blue-500 rounded-lg">
-            <Play className="w-4 h-4" />
-            Ejecutar Código
-          </button>
-        </div>
-      )}
+      {/* {showControls && (
+        // <div className="absolute bottom-2 right-2">
+        //   <button className="game-button flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-blue-500 rounded-lg">
+        //     <Play className="w-4 h-4" />
+        //     Ejecutar Código
+        //   </button>
+        // </div>
+      )} */}
     </div>
   );
 };
+
 
 export default GameView;

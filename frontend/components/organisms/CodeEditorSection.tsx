@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Terminal, Play, GridIcon, ChevronRight, HelpCircle, X } from 'lucide-react';
 import GameView from '../molecules/GameView';
 import { CodeEditor } from '@/components/molecules/CodeEditor';
+import { LANDING_PAGE_LEVELS } from '@/lib/constants';
+import Button from '@/components/atoms/Button';
 
 interface HighlightedCodeProps {
   code: string;
@@ -149,38 +151,17 @@ const CommandSection: React.FC<CommandSectionProps> = ({ onSelectCommand }) => {
 
   return (
     <div className="bg-slate-800/50 border-t-2 border-slate-700">
-      <style jsx>{`
-        .game-button {
-          box-shadow: hsl(210deg 87% 36%) 0px 7px 0px 0px;
-          transition: 31ms cubic-bezier(.5, .7, .4, 1);
-        }
-        
-        .game-button:active {
-          box-shadow: none !important;
-          transform: translateY(7px);
-          transition: 35ms cubic-bezier(.5, .7, .4, 1);
-        }
-
-        .command-scroll::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-
       {/* Categories */}
       <div className="flex gap-2 p-2 overflow-x-auto command-scroll">
         {Object.entries(commandCategories).map(([key, category]) => (
-          <button
+          <Button
             key={key}
+            variant="command"
+            color={selectedCategory === key ? category.color : 'slate'}
             onClick={() => setSelectedCategory(key)}
-            className={`
-              game-button flex-shrink-0 px-4 py-2 rounded-lg font-bold text-sm
-              ${selectedCategory === key
-                ? `bg-${category.color}-500 text-white`
-                : 'bg-slate-700 text-slate-300'}
-            `}
           >
             {category.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -188,18 +169,15 @@ const CommandSection: React.FC<CommandSectionProps> = ({ onSelectCommand }) => {
       <div className="overflow-x-auto command-scroll p-2">
         <div className="flex gap-2">
           {commandCategories[selectedCategory].commands.map((cmd, index) => (
-            <button
+            <Button
               key={index}
+              variant="command"
+              color={commandCategories[selectedCategory].color}
+              icon={ChevronRight}
               onClick={() => onSelectCommand(cmd.command)}
-              className={`
-                game-button flex-shrink-0 flex items-center gap-2 px-4 py-2 
-                bg-${commandCategories[selectedCategory].color}-500 
-                rounded-xl text-white font-mono text-sm
-              `}
             >
-              <ChevronRight className="w-4 h-4" />
-              <span>{cmd.command}</span>
-            </button>
+              {cmd.command}
+            </Button>
           ))}
         </div>
       </div>
@@ -207,8 +185,17 @@ const CommandSection: React.FC<CommandSectionProps> = ({ onSelectCommand }) => {
   );
 };
 
-// Main Interface
-const MobileGameInterface: React.FC = () => {
+interface CodeEditorSectionProps {
+  currentLevel: number;
+  robotPosition: { x: number; y: number };
+  onRobotMove: (position: { x: number; y: number }) => void;
+}
+
+const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
+  currentLevel,
+  robotPosition,
+  onRobotMove
+}) => {
   const [code, setCode] = useState(`var robot = nuevo Robot();
 robot.encender();
 robot.moverDerecha();
@@ -223,13 +210,13 @@ robot.apagar();`);
     }
   };
 
-  return (
-    <div className="h-[80vh] p-4 flex flex-col bg-slate-900">
-      {/* Game View - Show only on mobile */}
-      <div className="block md:hidden h-[35vh] mb-4">
-        <GameView />
-      </div>
+  const handleExecuteCode = () => {
+    // TODO: Implement code execution
+    console.log('Executing code...');
+  };
 
+  return (
+    <div className="h-full p-4 flex flex-col bg-slate-900">
       {/* Editor Container */}
       <div className="flex-1 flex flex-col bg-slate-900 rounded-xl border-2 border-slate-700 overflow-hidden">
         {/* Editor Header */}
@@ -238,25 +225,49 @@ robot.apagar();`);
             <Terminal className="w-4 h-4 text-slate-400" />
             <span className="text-sm font-semibold text-slate-400">Panel de Control del Robot</span>
           </div>
-          <button
-            onClick={() => setShowHelp(true)}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleExecuteCode}
+              className="px-3 py-1.5"
+              icon={Play}
+            >
+              Ejecutar
+            </Button>
+            <button
+              onClick={() => setShowHelp(true)}
+              className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        {/* Editor */}
-        <div className="flex-1 ">
-          <CodeEditor
-            ref={editorRef}
-            value={code}
-            onChange={setCode}
-          />
-        </div>
+        {/* Main Content Area */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Left Column - Editor & Commands */}
+          <div className="flex flex-col">
+            {/* Editor */}
+            <div className="flex-1 overflow-hidden">
+              <CodeEditor
+                ref={editorRef}
+                value={code}
+                onChange={setCode}
+              />
+            </div>
 
-        {/* Commands */}
-        <CommandSection onSelectCommand={(cmd) => handleCommandClick(cmd)} />
+            {/* Commands */}
+            <CommandSection onSelectCommand={(cmd) => handleCommandClick(cmd)} />
+          </div>
+
+          {/* Right Column - Game View */}
+          <div className="h-full">
+            <GameView 
+              level={LANDING_PAGE_LEVELS[currentLevel]}
+              robotPosition={robotPosition}
+              onMove={onRobotMove}
+            />
+          </div>
+        </div>
       </div>
 
       <HelpDialog isOpen={showHelp} onClose={() => setShowHelp(false)} />
@@ -339,4 +350,4 @@ const HelpDialog: React.FC<HelpDialogProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default MobileGameInterface;
+export default CodeEditorSection;

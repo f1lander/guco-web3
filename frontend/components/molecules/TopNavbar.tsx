@@ -28,7 +28,7 @@ export function TopNavbar() {
       `}
     >
       <div className={`transition-opacity duration-300 ${scrolled ? 'opacity-100' : 'opacity-90'}`}>
-        <span className="text-xl font-bold text-guco-100">gUCO</span>
+        <span className="text-xl font-bold text-guco-100">GÜCO</span>
       </div>
 
       <div className="flex w-full items-center justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">

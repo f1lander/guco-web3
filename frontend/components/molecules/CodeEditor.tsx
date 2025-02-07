@@ -130,17 +130,18 @@ export const CodeEditor = React.forwardRef<CodeEditor2Ref, CodeEditorProps>(({
   };
 
   return (
-    <textarea
-      ref={editorRef}
-      value={value}
-      onChange={handleTextChange}
-      readOnly={readOnly}
-      className={`w-full p-4 bg-transparent text-white outline-none resize-none font-mono ${className}`}
-      style={{ 
-        minHeight: '300px',
-        lineHeight: '1.5em'
-      }}
-    />
+    <div className="h-full relative">
+      <textarea
+        ref={editorRef}
+        value={value}
+        onChange={handleTextChange}
+        readOnly={readOnly}
+        className={`w-full h-full p-4 bg-transparent text-white outline-none resize-none font-mono overflow-y-auto ${className}`}
+        style={{ 
+          lineHeight: '1.5em'
+        }}
+      />
+    </div>
   );
 });
 

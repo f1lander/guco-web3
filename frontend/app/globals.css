@@ -211,3 +211,36 @@
     top: 190px;
   }
 }
+
+@layer components {
+  .game-button {
+    position: relative;
+    transition: all 150ms cubic-bezier(.5, .7, .4, 1);
+  }
+
+  .game-button:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    transition: all 150ms cubic-bezier(.5, .7, .4, 1);
+  }
+
+  .game-button:hover:before {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+  }
+
+  .game-button:active {
+    transform: translateY(2px);
+  }
+
+  .game-button:active:before {
+    box-shadow: none;
+  }
+}
+
+@layer utilities {
+  .command-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
