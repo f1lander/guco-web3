@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 import {IGucoGame} from "./interfaces/IGucoGame.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+
 contract GucoGame is IGucoGame, Ownable {
     uint256 private _nextLevelId;
 
@@ -14,7 +15,7 @@ contract GucoGame is IGucoGame, Ownable {
     constructor() Ownable(msg.sender) {}
 
     function createLevel(
-        uint8[] calldata levelData
+        bytes32 levelData
     ) external returns (uint256) {
         uint256 levelId = _nextLevelId++;
         levels[levelId] = Level({
@@ -30,7 +31,7 @@ contract GucoGame is IGucoGame, Ownable {
         return levelId;
     }
 
-    function getLevelData(uint256 levelId) external view returns (uint8[] memory) {
+    function getLevelData(uint256 levelId) external view returns (bytes32) {
         return levels[levelId].levelData;
     }
 
@@ -44,11 +45,15 @@ contract GucoGame is IGucoGame, Ownable {
 
     function updatePlayer(
         address player,
+        uint256 levelId,
         Level calldata levelCompleted
     ) external {
         Player storage _player = players[player];
         _player.levelsCompleted += 1;
         _player.completedLevels.push(levelCompleted);
+        
+        // Mark the level as completed for this player
+        playerCompletedLevels[player][levelId] = true;
     }
 
     function getPlayerLevels(address player) external view returns (uint) {
