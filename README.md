@@ -37,27 +37,20 @@ avanzar(2);
 graph TB
     F[Frontend]
     B[Backend]
-    DB[Base de Datos]
-    C[Cache]
+    BC[Blockchain]
     
     F --> |React.js| FT[Tecnologías Frontend]
     FT --> F1[Canvas/WebGL]
     FT --> F2[TailwindCSS]
-    FT --> F3[Socket.io Client]
     
-    B --> |Node.js + Express| BT[Servicios Backend]
+    B --> |Node.js| BT[Servicios Backend]
     BT --> B1[Auth Service]
     BT --> B2[Game Logic]
-    BT --> B3[Websockets]
     
-    DB --> |MongoDB| DBS[Almacenamiento]
-    DBS --> DB1[Users]
-    DBS --> DB2[Progress]
-    DBS --> DB3[Leaderboard]
-    
-    C --> |Redis| CS[Cache System]
-    CS --> C1[Session]
-    CS --> C2[Game State]
+    BC --> |Testnet| BCT[Smart Contracts]
+    BCT --> BC1[Player Progress]
+    BCT --> BC2[Game State]
+    BCT --> BC3[Achievements]
 ```
 
 #### Frontend
@@ -72,8 +65,7 @@ graph TB
 #### Backend
 - **Tecnologías:**
   - Node.js + Express
-  - MongoDB
-  - WebSocket para actualizaciones en tiempo real
+  - Smart Contracts (Testnet)
   - JWT para autenticación
 
 #### Características de Seguridad
@@ -106,43 +98,6 @@ graph TB
 - Insignias especiales por creatividad
 - Rankings semanales y mensuales
 
-## Modelo de Negocio
-
-### Plan Gratuito
-- Acceso a niveles básicos
-- Funcionalidades limitadas
-- Publicidad no intrusiva
-- Tabla de clasificación básica
-
-### Plan Premium ($5.99/mes)
-- Acceso completo a niveles
-- Sin publicidad
-- Robots personalizables
-- Desafíos semanales especiales
-- Herramientas avanzadas de debugging
-- Soporte prioritario
-
-### Plan Educativo ($49.99/mes)
-- Licencias para instituciones
-- Panel de control para profesores
-- Seguimiento de estudiantes
-- Material didáctico
-- Soporte técnico dedicado
-- Personalización de contenido
-
-## Proyección Financiera
-
-### Estructura de Ingresos
-- Suscripciones Premium: 60%
-- Planes Educativos: 30%
-- Publicidad: 10%
-
-### Costos Operativos
-- Desarrollo y mantenimiento: 40%
-- Marketing y adquisición: 25%
-- Infraestructura: 20%
-- Soporte al cliente: 15%
-
 ## Plan de Implementación
 
 ### Fase 1 - MVP (3 meses)
@@ -150,18 +105,19 @@ graph TB
 - 10 niveles iniciales
 - Editor de código básico
 - Sistema de puntuación simple
+- Integración básica con blockchain
 
 ### Fase 2 - Expansión (3 meses)
-- Sistema de suscripciones
+- Sistema de logros en blockchain
 - Niveles adicionales
 - Mejoras en la interfaz
 - Sistema de logros
 
-### Fase 3 - Monetización (2 meses)
-- Implementación de planes premium
-- Sistema de pagos
+### Fase 3 - Optimización (2 meses)
+- Optimización de contratos inteligentes
 - Marketing y promoción
 - Optimización de retención
+- Mejoras en UX/UI
 
 ## Requerimientos Técnicos
 
@@ -169,13 +125,13 @@ graph TB
 - Visual Studio Code o similar
 - Git para control de versiones
 - Node.js y npm
-- MongoDB
+- Foundry para desarrollo de smart contracts
 
 ### Infraestructura
 - AWS o similar para hosting
 - CDN para contenido estático
 - SSL/TLS para seguridad
-- Sistema de backups
+- Nodo blockchain para testnet
 
 ### Testing
 - Jest para pruebas unitarias
