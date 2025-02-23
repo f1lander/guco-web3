@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { config } from 'dotenv-flow';
-const APP_ENV = process.env.APP_ENV || 'holesky';
+const APP_ENV = process.env.APP_ENV || 'devnet';
 
 config({
   node_env: APP_ENV,

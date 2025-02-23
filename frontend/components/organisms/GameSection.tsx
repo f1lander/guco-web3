@@ -4,24 +4,23 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import CodeEditorSection from './CodeEditorSection';
 import SectionTitle from '../atoms/SectionTitle';
-import { LANDING_PAGE_LEVELS } from '@/lib/constants';
+import { DEFAULT_LEVEL, GRID_WIDTH } from '@/lib/constants';
+
 
 const GameSection = () => {
-  const [currentLevel, setCurrentLevel] = useState(0);
+  const [level, setLevel] = useState(DEFAULT_LEVEL);
   const [robotPosition, setRobotPosition] = useState({ x: 0, y: 0 });
 
   // Find initial robot position from level data
   useEffect(() => {
-    const level = LANDING_PAGE_LEVELS[currentLevel];
-    for (let y = 0; y < level.length; y++) {
-      for (let x = 0; x < level[y].length; x++) {
-        if (level[y][x] === 3) { // ROBOT
-          setRobotPosition({ x, y });
-          break;
-        }
-      }
+    const robotIndex = level.findIndex(tile => tile === 3); // ROBOT
+    if (robotIndex !== -1) {
+      setRobotPosition({
+        x: robotIndex % GRID_WIDTH,
+        y: Math.floor(robotIndex / GRID_WIDTH)
+      });
     }
-  }, [currentLevel]);
+  }, [level]);
 
   return (
     <section id="playground" className="py-12 md:py-20">
@@ -33,8 +32,7 @@ const GameSection = () => {
         {/* Code Editor Area */}
         <Card className="bg-slate-800/50 backdrop-blur-sm h-[85vh] lg:h-[70vh] mb-4">
           <CodeEditorSection
-            currentLevel={currentLevel}
-            robotPosition={robotPosition}
+            levelData={level}
             onRobotMove={setRobotPosition}
           />
         </Card>
@@ -53,7 +51,7 @@ const GameSection = () => {
           <Card className="bg-slate-800/50 backdrop-blur-sm p-4">
             <h3 className="text-lg font-semibold mb-2">Nivel Actual</h3>
             <div className="space-y-2 text-sm text-slate-400">
-              <p>Nivel: {currentLevel + 1}</p>
+              <p>Nivel: 1</p>
               <p>Objetivo: Mover el robot hasta la meta</p>
               <p>Progreso: 0/3 objetivos completados</p>
             </div>

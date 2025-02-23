@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 import {IGucoGame} from "./interfaces/IGucoGame.sol";
+
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract GucoGame is IGucoGame, Ownable {
@@ -14,16 +15,15 @@ contract GucoGame is IGucoGame, Ownable {
 
     constructor() Ownable(msg.sender) {}
 
-    function createLevel(
-        bytes32 levelData
-    ) external returns (uint256) {
+    function createLevel(bytes32 levelData) external returns (uint256) {
         uint256 levelId = _nextLevelId++;
         levels[levelId] = Level({
             levelData: levelData,
             creator: msg.sender,
             playCount: 0,
             completions: 0,
-            verified: false
+            verified: false,
+            createdAt: block.timestamp
         });
 
         playerLevelCount[msg.sender]++;
@@ -39,6 +39,29 @@ contract GucoGame is IGucoGame, Ownable {
         return levels[levelId];
     }
 
+    function getLevelCount() external view returns (uint256) {
+        return _nextLevelId;
+    }
+
+    function getLevels(
+        uint256 offset,
+        uint256 limit
+    ) external view returns (Level[] memory) {
+        uint256 totalLevels = _nextLevelId;
+        uint256 end = offset + limit;
+
+        if (end > totalLevels) {
+            end = totalLevels;
+        }
+
+        Level[] memory result = new Level[](end - offset);
+        for (uint256 i = offset; i < end; i++) {
+            result[i - offset] = levels[i];
+        }
+
+        return result;
+    }
+
     function getPlayer(address player) external view returns (Player memory) {
         return players[player];
     }
@@ -51,7 +74,7 @@ contract GucoGame is IGucoGame, Ownable {
         Player storage _player = players[player];
         _player.levelsCompleted += 1;
         _player.completedLevels.push(levelCompleted);
-        
+
         // Mark the level as completed for this player
         playerCompletedLevels[player][levelId] = true;
     }

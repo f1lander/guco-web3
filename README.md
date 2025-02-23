@@ -31,6 +31,27 @@ girar(90);
 avanzar(2);
 ```
 
+### Sistema de Niveles
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Contract
+    participant Subsquid
+    participant Database
+
+    User->>Frontend: Creates Level
+    Frontend->>Contract: deployLevel()
+    Contract-->>Frontend: levelAddress
+    User->>Frontend: Enters custom name
+    Frontend->>Subsquid: mutation UpdateLevelName
+    Note over Subsquid: GraphQL Mutation
+    Subsquid->>Database: Store levelAddress + name
+    Database-->>Subsquid: Confirm storage
+    Subsquid-->>Frontend: Success response
+    Frontend-->>User: Display confirmation
+```
+
 ### Arquitectura del Sistema
 
 ```mermaid

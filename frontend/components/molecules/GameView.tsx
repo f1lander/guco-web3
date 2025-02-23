@@ -1,129 +1,91 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { GridIcon, Play } from 'lucide-react';
-
-// Define tile types
-export enum TileType {
-  EMPTY = 0,
-  OBSTACLE = 1,
-  GOAL = 2,
-  ROBOT = 3,
-  COLLECTIBLE = 4,
-}
-
-// Define default values outside the component
-const DEFAULT_LEVEL = [
-  [0, 0, 0, 0, 0, 0, 0, 2],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [3, 0, 0, 0, 0, 0, 0, 0],
-];
-
-const DEFAULT_ROBOT_POSITION = { x: 0, y: 3 }; // Matches DEFAULT_LEVEL robot position
-const DEFAULT_COMMANDS: string[] = [];
-const DEFAULT_CURRENT_COMMAND = -1;
+import React, { useEffect, useMemo, useState } from 'react';
+import { DEFAULT_LEVEL, GRID_WIDTH, GRID_HEIGHT } from '@/lib/constants';
+import { TileType } from '@/lib/utils';
+import { GameTile } from '../atoms/GameTile';
 
 interface GameViewProps {
   showControls?: boolean;
-  level?: number[][];
-  robotPosition?: { x: number, y: number };
+  level?: number[];
   onMove?: (position: { x: number, y: number }) => void;
-  commands?: string[];
-  currentCommand?: number;
+  robotState?: { collected: number, state: 'off' | 'on' | 'error' };
+  editable?: boolean;
+  onLevelChange?: (newLevel: number[]) => void;
 }
 
-const GameView: React.FC<GameViewProps> = ({ 
-  showControls = true,
+const GameView: React.FC<GameViewProps> = ({
+  robotState = { collected: 0, state: 'off' },
   level = DEFAULT_LEVEL,
-  robotPosition = DEFAULT_ROBOT_POSITION,
-  onMove = () => {},
-  commands = DEFAULT_COMMANDS,
-  currentCommand = DEFAULT_CURRENT_COMMAND,
+  onMove = () => { },
+  editable = false,
+  onLevelChange = () => { },
 }) => {
-  const getEmoji = (tileType: TileType) => {
-    switch(tileType) {
-      case TileType.OBSTACLE: return '🧱';
-      case TileType.GOAL: return '🎯';
-      case TileType.COLLECTIBLE: return '⭐';
-      case TileType.ROBOT: return '🤖';
-      default: return '';
-    }
-  };
+  const [isRotated, setIsRotated] = useState(false);
+  // Memoize robot position to prevent recalculation on every render
+  const robotPosition = useMemo(() => {
+    const robotIndex = level.findIndex(tile => tile === TileType.ROBOT);
+    return {
+      x: robotIndex % GRID_WIDTH,
+      y: Math.floor(robotIndex / GRID_WIDTH)
+    };
+  }, [level]);
 
+  // Move callback with proper dependency array
   useEffect(() => {
-    if (onMove) {
-      onMove(robotPosition);
-    }
+    onMove(robotPosition);
   }, [robotPosition, onMove]);
 
-  const gridSize = level[0].length; // Assuming square grid
+  // Simple handler, no need for memoization
+  const handleTileChange = (index: number, value: TileType) => {
+    const newLevel = [...level];
+
+    // If placing a robot or goal, remove the existing one first
+    if (value === TileType.ROBOT || value === TileType.GOAL) {
+      const existingIndex = level.findIndex(tile => tile === value);
+      if (existingIndex !== -1) {
+        newLevel[existingIndex] = TileType.EMPTY;
+      }
+    }
+
+    newLevel[index] = value;
+    onLevelChange(newLevel);
+    console.log("newLevel", newLevel);
+  };
+
+  // Create 2D grid from flat array
+  const grid = Array.from({ length: GRID_HEIGHT }, (_, rowIndex) =>
+    Array.from({ length: GRID_WIDTH }, (_, colIndex) =>
+      level[rowIndex * GRID_WIDTH + colIndex]
+    )
+  );
 
   return (
     <div className="relative w-full h-full bg-slate-800 rounded-xl md:rounded-none overflow-hidden flex flex-col">
-      {showControls && (
-        <div className="p-2 flex items-center gap-2 text-slate-400">
-          <GridIcon className="w-4 h-4" />
-          <span className="text-sm font-semibold">Vista del Juego</span>
-        </div>
-      )}
-      
-      <div className="flex-1 p-2">
-        <div 
-          className="w-full h-full grid gap-0.5" 
-          style={{ 
-            gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-            gridTemplateRows: `repeat(${level.length}, 1fr)`
-          }}
-        >
-          {level.map((row, y) => 
-            row.map((tile, x) => {
-              const isRobotHere = x === robotPosition.x && y === robotPosition.y;
-              
-              return (
-                <div 
-                  key={`${x}-${y}`} 
-                  className={`relative bg-slate-700/50 border border-slate-600/30
-                    ${isRobotHere ? 'bg-blue-500/20' : ''}`}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xl">
-                      {isRobotHere ? '🤖' : getEmoji(tile as TileType)}
-                    </span>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-
-      {commands.length > 0 && (
-        <div className="absolute left-2 bottom-2 flex flex-col gap-1 bg-slate-900/50 p-2 rounded-lg">
-          {commands.map((cmd, idx) => (
-            <div
-              key={idx}
-              className={`text-sm font-mono ${
-                idx === currentCommand ? 'text-blue-400' : 'text-slate-400'
-              }`}
-            >
-              {cmd}
+      <div className={`flex-1 p-2 transition-transform duration-300 ${isRotated ? 'rotate-90 scale-[0.65]' : ''}`}>
+        <div className="w-full min-w-full mx-auto">
+          {grid.map((row, rowIndex) => (
+            <div key={`row-${rowIndex}`} className="flex flex-row w-full">
+              {row.map((tile, colIndex) => (
+                <GameTile
+                  key={`${rowIndex}-${colIndex}`}
+                  type={tile as TileType}
+                  onClick={(value) => handleTileChange(rowIndex * GRID_WIDTH + colIndex, value)}
+                  editable={editable}
+                  className="flex-1 aspect-square"
+                  robotState={robotState}
+                />
+              ))}
             </div>
           ))}
         </div>
-      )}
+      </div>
 
-      {/* {showControls && (
-        // <div className="absolute bottom-2 right-2">
-        //   <button className="game-button flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-white bg-blue-500 rounded-lg">
-        //     <Play className="w-4 h-4" />
-        //     Ejecutar Código
-        //   </button>
-        // </div>
-      )} */}
+
     </div>
   );
 };
 
+GameView.displayName = 'GameView';
 
 export default GameView;

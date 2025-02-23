@@ -16,4 +16,5 @@ const client = createPublicClient({
   transport: http(RPC_URL),
 });
 
+
 export default client;

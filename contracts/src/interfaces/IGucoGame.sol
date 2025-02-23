@@ -8,6 +8,7 @@ interface IGucoGame {
         uint256 playCount;
         uint256 completions;
         bool verified;
+        uint256 createdAt;
     }
 
     struct Achievement {
