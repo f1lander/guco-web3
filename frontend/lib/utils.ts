@@ -419,4 +419,20 @@ const calculateNextPosition = (
 };
 
 
-
+export const compileUserCode = (code: string): string[] => {
+  // Extract only the user code section
+  const userCodeSection = code.split('-- Area de codigo para programar el robot')[1]?.split('-- class definition')[0];
+  
+  if (!userCodeSection) return [];
+  
+  // Get lines that contain robot commands
+  return userCodeSection
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('--')) // Remove comments and empty lines
+    .filter(line => {
+      // Keep lines that are robot commands or robot initialization
+      return line.includes('robot:') || line.includes('robot =') || line.includes('Robot.new');
+    })
+    .map(line => line.replace(/;$/, '')); // Remove trailing semicolons
+};

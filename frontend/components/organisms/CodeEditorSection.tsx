@@ -1,14 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, Play, GridIcon, ChevronRight, HelpCircle, X } from 'lucide-react';
+import { Terminal, Play, GridIcon, ChevronRight, HelpCircle, X, Trophy, Check } from 'lucide-react';
 import GameView from '../molecules/GameView';
 import { CodeEditor } from '@/components/molecules/CodeEditor';
 import Button from '@/components/atoms/Button';
 import TerminalComponent from '@/components/atoms/Terminal';
 import { colorVariants } from '@/components/atoms/Button';
 import { COMMAND_CATEGORIES, COMMANDS, GRID_WIDTH, INITIAL_CODE } from '@/lib/constants';
-
+import { useGucoLevels } from '@/hooks/useGucoLevels';
 import { useTranslation } from '@/providers/language-provider';
-import { compileCode, RobotState, TileType, commandsToMovementSequence } from '@/lib/utils';
+import { compileCode, RobotState, TileType, commandsToMovementSequence, compileUserCode } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/dialog';
 
 interface CommandSectionProps {
   onSelectCommand: (command: string) => void;
@@ -74,18 +82,76 @@ const CommandSection: React.FC<CommandSectionProps> = ({ onSelectCommand }) => {
   );
 };
 
+interface SuccessDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  isPending: boolean;
+}
+
+const SuccessDialog: React.FC<SuccessDialogProps> = ({ isOpen, onClose, onConfirm, isPending }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-slate-900 border-slate-700">
+        <DialogHeader>
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-yellow-400" />
+            <DialogTitle className="text-lg font-bold text-white">¡Nivel Completado!</DialogTitle>
+          </div>
+        </DialogHeader>
+
+        <div className="py-4 space-y-4">
+          <div className="flex items-center justify-center p-6 bg-slate-800/50 rounded-lg">
+            <div className="text-6xl">🎉</div>
+          </div>
+          <DialogDescription className="text-slate-300 text-center">
+            ¡Felicidades! Has completado este nivel con éxito.
+          </DialogDescription>
+          <p className="text-slate-400 text-sm text-center">
+            Firma la transacción para guardar tu progreso en la blockchain.
+          </p>
+        </div>
+
+        <DialogFooter className="bg-slate-800/50 p-4 -mx-6 -mb-6 mt-2 rounded-b-lg">
+          <Button
+            onClick={onConfirm}
+            className="w-full"
+            color="green"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                Firmando...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Check className="w-4 h-4" />
+                Confirmar Progreso
+              </span>
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 interface CodeEditorSectionProps {
   levelData: number[];
   setLevelData: (levelData: number[]) => void;
+  levelId?: number;
 }
 
 const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   levelData,
   setLevelData,
+  levelId = 0,
 }) => {
   const [code, setCode] = useState(INITIAL_CODE);
   const [robotState, setRobotState] = useState<RobotState>({ collected: 0, state: 'off' });
-
   const [showHelp, setShowHelp] = useState(false);
   const [commands, setCommands] = useState<string[]>([]);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -94,30 +160,34 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   const [movementSequence, setMovementSequence] = useState<number[]>([]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const [initialLevelData, setInitialLevelData] = useState<number[]>([...levelData]);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [levelCompleted, setLevelCompleted] = useState(false);
 
+  const { updatePlayer, isPendingUpdate, getLevel } = useGucoLevels();
+
+  // Handle command click
   const handleCommandClick = (command: string) => {
     setCode(prevCode => prevCode + `\n${command};`);
   };
 
-  // Modify the handleExecuteCode function to handle the error index
+  // Handle execute code
   const handleExecuteCode = async () => {
     try {
       // Reset the level data to the initial state
       setLevelData([...initialLevelData]);
-      
+
       // Reset other state
       setCommands([]);
       setError(null);
       setMovementSequence([]);
       setCurrentMoveIndex(0);
       setRobotState({ collected: 0, state: 'off' });
+      setLevelCompleted(false);
 
-      const newCommands = code
-        .split('-- Area de codigo para programar el robot')[1]
-        .split('\n')
-        .filter(line => !line.startsWith('--'))
-        .filter(line => line.trim()); // Filter out empty lines
-
+      // Use the new utility function to extract commands
+      const newCommands = compileUserCode(code);
+      console.log("newCommands", newCommands);
+      debugger;
       setIsCompiling(true);
       const compiledCommands = compileCode(newCommands, 'lua');
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -125,15 +195,14 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       setIsCompiling(false);
 
       // Convert commands to movement sequence
-      // We need to use initialLevelData here to calculate the sequence from the original state
       const { sequence, errorIndex } = commandsToMovementSequence(compiledCommands, initialLevelData);
 
       setMovementSequence(sequence);
-      
+
       if (errorIndex !== null) {
         setError(`Error en el comando: ${compiledCommands[errorIndex]}`);
       }
-      
+
       setIsExecuting(true);
     } catch (error) {
       console.error('Error executing code:', error);
@@ -142,43 +211,102 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     }
   };
 
+  // Handle confirm level completion
+  const handleConfirmLevelCompletion = async () => {
+    try {
+      if (levelId) {
+        // Get the level data from the blockchain
+        const level = await getLevel(levelId);
+
+        // Update player progress on the blockchain
+        await updatePlayer(levelId, level);
+
+        // Close the dialog after successful update
+        setShowSuccessDialog(false);
+      }
+    } catch (error) {
+      console.error('Error updating player progress:', error);
+    }
+  };
+
+  // Check if robot has reached the goal
+  const checkGoalReached = (newLevelData: number[]) => {
+    // Find robot position
+    const robotPos = newLevelData.findIndex(tile => tile === TileType.ROBOT);
+
+    // Check if there's a goal in the level
+    const hasGoal = initialLevelData.some(tile => tile === TileType.GOAL);
+
+    // If there's no goal, we can't reach it
+    if (!hasGoal) return false;
+
+    // Check if the robot is at the position where the goal was in the initial level data
+    const goalPos = initialLevelData.findIndex(tile => tile === TileType.GOAL);
+
+    console.log("goalPos", goalPos);
+    console.log("robotPos", robotPos);
+    // If robot is at the goal position, level is completed
+    return robotPos === goalPos;
+  };
+
   // Effect to handle the movement sequence
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
-  
+
     if (isExecuting && movementSequence.length > 0 && currentMoveIndex < movementSequence.length) {
       timeoutId = setTimeout(() => {
-        // Create new level data array based on the current levelData (not from a function parameter)
+        // Create new level data array based on the current levelData
         const newLevelData = [...levelData];
-        
+
         // Find the current robot position
         const currentPos = newLevelData.findIndex(tile => tile === TileType.ROBOT);
-        
+
         // Clear previous position
         newLevelData[currentPos] = TileType.EMPTY;
-        
+
         // Set new position
         const newPos = movementSequence[currentMoveIndex];
-        
+
         // Check if the new position has a collectible
         if (newLevelData[newPos] === TileType.COLLECTIBLE) {
           setRobotState(prev => ({ ...prev, collected: prev.collected + 1 }));
         }
-        
+
         newLevelData[newPos] = TileType.ROBOT;
-        
+
         // Pass the new array directly to setLevelData
         setLevelData(newLevelData);
-        
+
+        // Check if robot has reached the goal
+        const goalReached = checkGoalReached(newLevelData);
+        console.log("goalReached", goalReached);
+        if (goalReached) {
+          setLevelCompleted(true);
+        }
+
         setCurrentMoveIndex(prev => prev + 1);
       }, 500); // Move every 500ms
     } else if (currentMoveIndex >= movementSequence.length && movementSequence.length > 0) {
       setIsExecuting(false);
       setCurrentMoveIndex(0);
     }
-  
+
     return () => clearTimeout(timeoutId);
-  }, [isExecuting, currentMoveIndex, movementSequence, setLevelData]);
+  }, [isExecuting, currentMoveIndex, movementSequence, levelData, setLevelData]);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    // If level was completed, show success dialog after a short delay
+    if (levelCompleted) {
+      timeoutId = setTimeout(() => {
+        console.log("levelCompleted", levelCompleted);
+        debugger
+        setShowSuccessDialog(true);
+      }, 1000);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [levelCompleted]);
 
   return (
     <div className="flex-1 flex flex-col bg-slate-900 rounded-xl border-2 border-slate-700 overflow-hidden w-full md:h-[800px]">
@@ -193,6 +321,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
             onClick={handleExecuteCode}
             className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm"
             icon={Play}
+            disabled={isExecuting}
           >
             Ejecutar
           </Button>
@@ -241,11 +370,20 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Help Dialog */}
       <HelpDialog isOpen={showHelp} onClose={() => setShowHelp(false)} />
+
+      {/* Success Dialog */}
+      <SuccessDialog
+        isOpen={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}
+        onConfirm={handleConfirmLevelCompletion}
+        isPending={isPendingUpdate}
+      />
     </div>
   );
 };
-
 
 const HelpDialog: React.FC<HelpDialogProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
