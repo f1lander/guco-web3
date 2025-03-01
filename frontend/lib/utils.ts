@@ -62,7 +62,7 @@ export const levelToBytes32 = (level: number[]): `0x${string}` => {
   for (let i = 0; i < level.length; i++) {
     bytes[i] = level[i];
   }
-  
+
   // Convert to hex string
   const hexString: `0x${string}` = '0x' + Array.from(bytes)
     .map(byte => byte.toString(16).padStart(2, '0'))
@@ -75,7 +75,7 @@ export const levelToBytes32 = (level: number[]): `0x${string}` => {
   if (!isValid) {
     throw new Error('Encoding validation failed: decoded value does not match original level');
   }
-  
+
   return hexString as `0x${string}`;
 };
 
@@ -84,19 +84,19 @@ export const bytes32ToLevel = (bytes32Value: `0x${string}`): number[] => {
 
   // Remove 0x prefix
   const hex = bytes32Value.slice(2);
-  
+
   if (hex.length !== 64) {
     throw new Error('Invalid bytes32 hex string length');
   }
-  
+
   const result: number[] = [];
-  
+
   // Extract each byte
   for (let i = 0; i < 32; i++) {
     const byteHex = hex.substring(i * 2, i * 2 + 2);
     result.push(parseInt(byteHex, 16));
   }
-  
+
   return result;
 };
 
@@ -108,7 +108,7 @@ export function getDifficulty(level: { playCount: bigint; completions: bigint })
 }
 
 export const getEmoji = (tileType: TileType) => {
-  switch(tileType) {
+  switch (tileType) {
     case TileType.OBSTACLE: return '🧱';
     case TileType.GOAL: return '🎯';
     case TileType.COLLECTIBLE: return '⭐';
@@ -181,7 +181,7 @@ export const generateRandomLevel = (difficulty: Difficulty = Difficulty.BEGINNER
       // Check if placing obstacle here would block the path
       const prevIsObstacle = i > 0 && level[i - 1] === TileType.OBSTACLE;
       const nextIsObstacle = i < LEVEL_SIZE - 1 && level[i + 1] === TileType.OBSTACLE;
-      
+
       if (!prevIsObstacle && !nextIsObstacle) {
         level[i] = TileType.OBSTACLE;
       }
@@ -195,15 +195,15 @@ const luaCompiler = (commands: string[]) => {
   const validCommands = Object.values(COMMAND_CATEGORIES).flatMap(
     category => category.commands.map(cmd => cmd.command)
   );
-  
+
   const validatedCommands = commands.map(cmd => {
     const cleanCommand = cmd.replace('robot:', '').trim();
     console.log("cleanCommand", cleanCommand);
-    
+
     if (!validCommands.includes(cleanCommand as typeof validCommands[number])) {
       throw new Error(`Invalid command: ${cmd}`);
     }
-    
+
     return cmd.trim();
   });
 
@@ -216,7 +216,7 @@ const javascriptCompiler = (commands: string[]) => {
   );
 
   const validatedCommands = commands.map(cmd => {
-    const cleanCommand = cmd.replace('robot:', '').trim();  
+    const cleanCommand = cmd.replace('robot:', '').trim();
     if (!validCommands.includes(cleanCommand as typeof validCommands[number])) {
       throw new Error(`Invalid command: ${cmd}`);
     }
@@ -227,7 +227,11 @@ const javascriptCompiler = (commands: string[]) => {
 };
 
 export const executeCode = (level: number[], command: string) => {
-  
+  //   I want that compileCode function return me not just the validatedCommands, I need to the actual instructtions that the robot needs to move so for exmaple
+
+  // ['moverDerecha()', moverArriba(), MoverAbajo(), recolectar()]
+
+  // I was thinking what if, compiling these commands I returned the the movements needed, based on the 
 };
 
 export const compileCode = (commands: string[], language: 'lua' | 'javascript') => {
@@ -236,13 +240,13 @@ export const compileCode = (commands: string[], language: 'lua' | 'javascript') 
 };
 
 export const moveRobot = (
-  levelData: number[], 
+  levelData: number[],
   robotState: RobotState,
   command: (typeof COMMANDS)[keyof typeof COMMANDS]
 ): { newLevel: number[], newRobotState: RobotState } => {
   const position = levelData.findIndex(tile => tile === TileType.ROBOT);
   let newPosition = position;
-  
+
   // Calculate current x,y coordinates
   const x = position % GRID_WIDTH;
   const y = Math.floor(position / GRID_WIDTH);
@@ -292,7 +296,7 @@ export const moveRobot = (
     // Update robot position in level data
     newLevel[position] = TileType.EMPTY;
     newLevel[newPosition] = TileType.ROBOT;
-    
+
     return {
       newLevel,
       newRobotState: { ...robotState }
@@ -304,6 +308,114 @@ export const moveRobot = (
     newLevel,
     newRobotState: robotState
   };
+};
+
+// New function to convert commands to movement sequence
+export const commandsToMovementSequence = (commands: string[], levelData: number[]): { sequence: number[], errorIndex: number | null } => {
+  const sequence: number[] = [];
+  let currentGrid = [...levelData];
+  let errorIndex: number | null = null;
+
+  for (let i = 0; i < commands.length; i++) {
+    const cmd = commands[i];
+    const cleanCommand = cmd.replace('robot:', '').trim();
+
+    // Calculate the next position based on the command
+    const { newLevel, validMove } = calculateNextPosition(
+      currentGrid,
+      cleanCommand
+    );
+
+    if (!validMove) {
+      console.error(`Invalid move: ${cleanCommand}`);
+      errorIndex = i;
+      sequence.push(-1);
+      return { sequence, errorIndex };
+    }
+
+    // Update the current grid
+    currentGrid = newLevel;
+
+    // Find new robot position
+    const newRobotPosition = currentGrid.findIndex(tile => tile === TileType.ROBOT);
+    sequence.push(newRobotPosition);
+  }
+
+  return { sequence, errorIndex: null };
+};
+
+// New function to calculate the next position without actually moving the robot
+// First, the calculateNextPosition function needs to be fixed:
+const calculateNextPosition = (
+  levelData: number[],
+  command: string
+): { newLevel: number[], validMove: boolean } => {
+  const position = levelData.findIndex(tile => tile === TileType.ROBOT);
+  let newPosition = position;
+  let validMove = true;
+
+  // Create a new array immediately to avoid mutations
+  const newLevel = [...levelData];
+
+  // Calculate current x,y coordinates
+  const x = position % GRID_WIDTH;
+  const y = Math.floor(position / GRID_WIDTH);
+
+  switch (command) {
+    case 'robot = Robot.new()':
+      return { newLevel, validMove: true };
+    case 'encender()':
+      return { newLevel, validMove: true };
+    case 'apagar()':
+      return { newLevel, validMove: true };
+    case 'moverDerecha()':
+      if (x < GRID_WIDTH - 1) newPosition = position + 1;
+      else validMove = false;
+      break;
+    case 'moverIzquierda()':
+      if (x > 0) newPosition = position - 1;
+      else validMove = false;
+      break;
+    case 'moverArriba()':
+      if (y > 0) newPosition = position - GRID_WIDTH;
+      else validMove = false;
+      break;
+    case 'moverAbajo()':
+      if (y < 3) newPosition = position + GRID_WIDTH;
+      else validMove = false;
+      break;
+    case 'saltarDerecha()':
+      if (x < GRID_WIDTH - 2) newPosition = position + 2;
+      else validMove = false;
+      break;
+    case 'saltarIzquierda()':
+      if (x > 1) newPosition = position - 2;
+      else validMove = false;
+      break;
+    case 'saltarArriba()':
+      if (y > 1) newPosition = position - (GRID_WIDTH * 2);
+      else validMove = false;
+      break;
+    case 'saltarAbajo()':
+      if (y < 2) newPosition = position + (GRID_WIDTH * 2);
+      else validMove = false;
+      break;
+    default:
+      validMove = false;
+  }
+
+  // Check if new position is valid and different from current position
+  if (validMove && newPosition !== position) {
+    if (newLevel[newPosition] === TileType.OBSTACLE) {
+      validMove = false;
+    } else {
+      // Update robot position in level data
+      newLevel[position] = TileType.EMPTY;
+      newLevel[newPosition] = TileType.ROBOT;
+    }
+  }
+
+  return { newLevel, validMove };
 };
 
 

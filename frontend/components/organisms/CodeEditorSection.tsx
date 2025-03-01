@@ -1,14 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Terminal, Play, GridIcon, ChevronRight, HelpCircle, X } from 'lucide-react';
 import GameView from '../molecules/GameView';
 import { CodeEditor } from '@/components/molecules/CodeEditor';
 import Button from '@/components/atoms/Button';
 import TerminalComponent from '@/components/atoms/Terminal';
 import { colorVariants } from '@/components/atoms/Button';
-import { COMMAND_CATEGORIES, COMMANDS, INITIAL_CODE } from '@/lib/constants';
+import { COMMAND_CATEGORIES, COMMANDS, GRID_WIDTH, INITIAL_CODE } from '@/lib/constants';
 
 import { useTranslation } from '@/providers/language-provider';
-import { compileCode, RobotState, moveRobot, TileType } from '@/lib/utils';
+import { compileCode, RobotState, TileType, commandsToMovementSequence } from '@/lib/utils';
 
 interface CommandSectionProps {
   onSelectCommand: (command: string) => void;
@@ -91,45 +91,94 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   const [isExecuting, setIsExecuting] = useState(false);
   const [isCompiling, setIsCompiling] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [movementSequence, setMovementSequence] = useState<number[]>([]);
+  const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
+  const [initialLevelData, setInitialLevelData] = useState<number[]>([...levelData]);
+
   const handleCommandClick = (command: string) => {
     setCode(prevCode => prevCode + `\n${command};`);
   };
 
+  // Modify the handleExecuteCode function to handle the error index
   const handleExecuteCode = async () => {
     try {
-
+      // Reset the level data to the initial state
+      setLevelData([...initialLevelData]);
+      
+      // Reset other state
       setCommands([]);
       setError(null);
+      setMovementSequence([]);
+      setCurrentMoveIndex(0);
+      setRobotState({ collected: 0, state: 'off' });
+
       const newCommands = code
         .split('-- Area de codigo para programar el robot')[1]
         .split('\n')
         .filter(line => !line.startsWith('--'))
         .filter(line => line.trim()); // Filter out empty lines
+
       setIsCompiling(true);
       const compiledCommands = compileCode(newCommands, 'lua');
-      console.log(compiledCommands);
       await new Promise(resolve => setTimeout(resolve, 1000));
       setCommands(compiledCommands);
       setIsCompiling(false);
+
+      // Convert commands to movement sequence
+      // We need to use initialLevelData here to calculate the sequence from the original state
+      const { sequence, errorIndex } = commandsToMovementSequence(compiledCommands, initialLevelData);
+
+      setMovementSequence(sequence);
+      
+      if (errorIndex !== null) {
+        setError(`Error en el comando: ${compiledCommands[errorIndex]}`);
+      }
+      
       setIsExecuting(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Reset execution state after all commands are done
-      setTimeout(() => {
-        setIsExecuting(false);
-      }, newCommands.length * 500 + 500); // Add extra 500ms for cleanup
     } catch (error) {
       console.error('Error executing code:', error);
-      setError("Error al compilar el codigo");
+      setError("Error al compilar el código");
+      setIsExecuting(false);
     }
   };
 
-  const handleExecuteCommand = async (command: (typeof COMMANDS)[keyof typeof COMMANDS]) => {
-    debugger;
-    const newRobotState = moveRobot(levelData, robotState, command);
-    setRobotState(newRobotState.newRobotState);
-    setLevelData(newRobotState.newLevel);
-    console.log(newRobotState);
-  }
+  // Effect to handle the movement sequence
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+  
+    if (isExecuting && movementSequence.length > 0 && currentMoveIndex < movementSequence.length) {
+      timeoutId = setTimeout(() => {
+        // Create new level data array based on the current levelData (not from a function parameter)
+        const newLevelData = [...levelData];
+        
+        // Find the current robot position
+        const currentPos = newLevelData.findIndex(tile => tile === TileType.ROBOT);
+        
+        // Clear previous position
+        newLevelData[currentPos] = TileType.EMPTY;
+        
+        // Set new position
+        const newPos = movementSequence[currentMoveIndex];
+        
+        // Check if the new position has a collectible
+        if (newLevelData[newPos] === TileType.COLLECTIBLE) {
+          setRobotState(prev => ({ ...prev, collected: prev.collected + 1 }));
+        }
+        
+        newLevelData[newPos] = TileType.ROBOT;
+        
+        // Pass the new array directly to setLevelData
+        setLevelData(newLevelData);
+        
+        setCurrentMoveIndex(prev => prev + 1);
+      }, 500); // Move every 500ms
+    } else if (currentMoveIndex >= movementSequence.length && movementSequence.length > 0) {
+      setIsExecuting(false);
+      setCurrentMoveIndex(0);
+    }
+  
+    return () => clearTimeout(timeoutId);
+  }, [isExecuting, currentMoveIndex, movementSequence, setLevelData]);
 
   return (
     <div className="flex-1 flex flex-col bg-slate-900 rounded-xl border-2 border-slate-700 overflow-hidden w-full md:h-[800px]">
@@ -181,7 +230,14 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
             />
           </div>
           <div className="h-[43%]">
-            <TerminalComponent commands={commands} isExecuting={isExecuting} isCompiling={isCompiling} error={error} executeCommand={handleExecuteCommand} />
+            <TerminalComponent
+              commands={commands}
+              isExecuting={isExecuting}
+              isCompiling={isCompiling}
+              error={error}
+              executeCommand={() => { }} // Empty function as we're handling execution here
+              currentCommandIndex={currentMoveIndex}
+            />
           </div>
         </div>
       </div>

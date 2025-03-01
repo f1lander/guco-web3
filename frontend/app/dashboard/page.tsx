@@ -20,7 +20,7 @@ export default function LevelsExplorer() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 20;
   const { t } = useTranslation();
   const { getLevels, getLevelCount } = useGucoLevels();
   const [levels, setLevels] = useState<Level[]>([]);
@@ -92,7 +92,7 @@ export default function LevelsExplorer() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
         {levels.map((level, index) => (
           <LevelCard
             key={`${level.creator}-${index}`}

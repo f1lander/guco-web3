@@ -1,39 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Terminal as TerminalIcon, BookOpen } from 'lucide-react';
 import { COMMANDS } from '@/lib/constants';
+
 interface TerminalProps {
   commands: string[];
   isExecuting: boolean;
   isCompiling: boolean;
   error: string | null;
   executeCommand: (command: (typeof COMMANDS)[keyof typeof COMMANDS]) => void;
+  currentCommandIndex: number;
 }
 
-const TerminalComponent: React.FC<TerminalProps> = ({ commands, isExecuting, isCompiling, error, executeCommand }) => {
+const TerminalComponent: React.FC<TerminalProps> = ({ commands, isExecuting, isCompiling, error, executeCommand, currentCommandIndex }) => {
   const [activeTab, setActiveTab] = useState<'terminal' | 'instructions'>('terminal');
-  const [executingIndex, setExecutingIndex] = useState(-1);
   const terminalRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isExecuting && commands.length > 0) {
-      setExecutingIndex(-1);
-      const executeCommands = async () => {
-        for (let i = 0; i < commands.length; i++) {
-          setExecutingIndex(i);
-          const command = commands[i].replace('robot:', '') as (typeof COMMANDS)[keyof typeof COMMANDS];
-          await executeCommand(command);
-        }
-        setExecutingIndex(-1);
-      };
-      executeCommands();
-    }
-  }, [isExecuting, commands, executeCommand]);
 
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
-  }, [executingIndex]);
+  }, [currentCommandIndex]);
 
   return (
     <div className="flex flex-col h-full bg-slate-950 border-t-2 border-slate-700">
@@ -84,20 +70,20 @@ const TerminalComponent: React.FC<TerminalProps> = ({ commands, isExecuting, isC
               <div
                 key={index}
                 className={`transition-all duration-200 ${
-                  index === executingIndex
+                  index === currentCommandIndex
                     ? 'text-yellow-400 bg-slate-700/50 -mx-4 px-4 py-1'
-                    : index < executingIndex
+                    : index < currentCommandIndex
                     ? 'text-slate-400'
                     : 'text-slate-500'
                 }`}
               >
-                {index === executingIndex && '> '}
+                {index === currentCommandIndex && '> '}
                 {command}
-                {index < executingIndex && ' ✓'}
+                {index < currentCommandIndex && ' ✓'}
               </div>
             );
           })}
-          {executingIndex === -1 && commands.length > 0 && (
+          {currentCommandIndex >= commands.length && commands.length > 0 && (
             <div className="text-green-400 mt-2">$ Programa completado</div>
           )}
         </div>
