@@ -1,5 +1,10 @@
 # GUCO - Plataforma Educativa de Programación para Niños
 
+## devlog #1
+Demo de como va, actualmente ya hacer collect de los items e implemente tone.js para sound effects
+
+https://github.com/user-attachments/assets/68333b3b-0a59-4897-b9aa-942c34fb8c86
+
 ## Resumen Ejecutivo
 GUCO es una plataforma web educativa diseñada para introducir a los niños en el mundo de la programación a través de una experiencia gamificada e interactiva. El proyecto busca despertar el interés por la programación desde temprana edad mediante un sistema de comandos simple pero efectivo que permite controlar un robot virtual.
 
