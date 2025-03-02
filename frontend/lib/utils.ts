@@ -125,6 +125,7 @@ export enum TileType {
   COLLECTIBLE = 4,
 }
 
+
 export enum Difficulty {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
@@ -310,49 +311,16 @@ export const moveRobot = (
   };
 };
 
-// New function to convert commands to movement sequence
-export const commandsToMovementSequence = (commands: string[], levelData: number[]): { sequence: number[], errorIndex: number | null } => {
-  const sequence: number[] = [];
-  let currentGrid = [...levelData];
-  let errorIndex: number | null = null;
-
-  for (let i = 0; i < commands.length; i++) {
-    const cmd = commands[i];
-    const cleanCommand = cmd.replace('robot:', '').trim();
-
-    // Calculate the next position based on the command
-    const { newLevel, validMove } = calculateNextPosition(
-      currentGrid,
-      cleanCommand
-    );
-
-    if (!validMove) {
-      console.error(`Invalid move: ${cleanCommand}`);
-      errorIndex = i;
-      sequence.push(-1);
-      return { sequence, errorIndex };
-    }
-
-    // Update the current grid
-    currentGrid = newLevel;
-
-    // Find new robot position
-    const newRobotPosition = currentGrid.findIndex(tile => tile === TileType.ROBOT);
-    sequence.push(newRobotPosition);
-  }
-
-  return { sequence, errorIndex: null };
-};
-
-// New function to calculate the next position without actually moving the robot
-// First, the calculateNextPosition function needs to be fixed:
+// Enhance calculateNextPosition to properly handle the recolectar() command
 const calculateNextPosition = (
   levelData: number[],
-  command: string
-): { newLevel: number[], validMove: boolean } => {
+  command: string,
+  initialLevelData: number[] = [] // Add initialLevelData as a parameter
+): { newLevel: number[], validMove: boolean, collectibleCollected: boolean } => {
   const position = levelData.findIndex(tile => tile === TileType.ROBOT);
   let newPosition = position;
   let validMove = true;
+  let collectibleCollected = false;
 
   // Create a new array immediately to avoid mutations
   const newLevel = [...levelData];
@@ -363,11 +331,22 @@ const calculateNextPosition = (
 
   switch (command) {
     case 'robot = Robot.new()':
-      return { newLevel, validMove: true };
+      return { newLevel, validMove: true, collectibleCollected: false };
     case 'encender()':
-      return { newLevel, validMove: true };
+      return { newLevel, validMove: true, collectibleCollected: false };
     case 'apagar()':
-      return { newLevel, validMove: true };
+      return { newLevel, validMove: true, collectibleCollected: false };
+    case 'recolectar()':
+      // If initialLevelData is provided, check if the robot's current position originally had a collectible
+      if (initialLevelData.length > 0 && position !== -1) {
+        if (initialLevelData[position] === TileType.COLLECTIBLE) {
+          collectibleCollected = true;
+        }
+      } else {
+        // Fallback to original logic if initialLevelData not provided
+        collectibleCollected = position !== -1;
+      }
+      return { newLevel, validMove: true, collectibleCollected };
     case 'moverDerecha()':
       if (x < GRID_WIDTH - 1) newPosition = position + 1;
       else validMove = false;
@@ -415,9 +394,55 @@ const calculateNextPosition = (
     }
   }
 
-  return { newLevel, validMove };
+  return { newLevel, validMove, collectibleCollected: false };
 };
 
+// Update commandsToMovementSequence to use initialLevelData
+export const commandsToMovementSequence = (commands: string[], levelData: number[]): { 
+  sequence: number[], 
+  errorIndex: number | null,
+  collectSteps: number[] // New array to track when to collect
+} => {
+  const sequence: number[] = [];
+  const collectSteps: number[] = []; // Store indices of steps where collection happens
+  let currentGrid = [...levelData];
+  const initialLevelData = [...levelData]; // Keep a copy of the initial level data
+  let errorIndex: number | null = null;
+
+  for (let i = 0; i < commands.length; i++) {
+    const cmd = commands[i];
+    const cleanCommand = cmd.replace('robot:', '').trim();
+
+    // Calculate the next position based on the command
+    const { newLevel, validMove, collectibleCollected } = calculateNextPosition(
+      currentGrid,
+      cleanCommand,
+      initialLevelData // Pass the initial level data
+    );
+
+    if (!validMove) {
+      console.error(`Invalid move: ${cleanCommand}`);
+      errorIndex = i;
+      sequence.push(-1);
+      return { sequence, errorIndex, collectSteps };
+    }
+
+    // If this is a collect command, mark this step regardless of whether something is collected
+    // The CodeEditorSection will check if the robot is on a collectible when executing
+    if (cleanCommand === 'recolectar()') {
+      collectSteps.push(i);
+    }
+
+    // Update the current grid
+    currentGrid = newLevel;
+
+    // Find new robot position
+    const newRobotPosition = currentGrid.findIndex(tile => tile === TileType.ROBOT);
+    sequence.push(newRobotPosition);
+  }
+
+  return { sequence, errorIndex: null, collectSteps };
+};
 
 export const compileUserCode = (code: string): string[] => {
   // Extract only the user code section

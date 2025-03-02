@@ -162,6 +162,9 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   const [initialLevelData, setInitialLevelData] = useState<number[]>([...levelData]);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [levelCompleted, setLevelCompleted] = useState(false);
+  const [collectiblePositions, setCollectiblePositions] = useState<number[]>([]);
+  const [totalCollectibles, setTotalCollectibles] = useState<number>(0);
+  const [collectSteps, setCollectSteps] = useState<number[]>([]);
 
   const { updatePlayer, isPendingUpdate, getLevel } = useGucoLevels();
 
@@ -176,6 +179,12 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       // Reset the level data to the initial state
       setLevelData([...initialLevelData]);
 
+      // Reset collectible positions to initial state
+      const collectibles = initialLevelData
+        .map((tile, index) => tile === TileType.COLLECTIBLE ? index : -1)
+        .filter(index => index !== -1);
+      setCollectiblePositions(collectibles);
+
       // Reset other state
       setCommands([]);
       setError(null);
@@ -184,10 +193,10 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       setRobotState({ collected: 0, state: 'off' });
       setLevelCompleted(false);
 
-      // Use the new utility function to extract commands
+      // Use the utility function to extract commands
       const newCommands = compileUserCode(code);
       console.log("newCommands", newCommands);
-      debugger;
+      
       setIsCompiling(true);
       const compiledCommands = compileCode(newCommands, 'lua');
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -195,9 +204,10 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       setIsCompiling(false);
 
       // Convert commands to movement sequence
-      const { sequence, errorIndex } = commandsToMovementSequence(compiledCommands, initialLevelData);
+      const { sequence, errorIndex, collectSteps } = commandsToMovementSequence(compiledCommands, initialLevelData);
 
       setMovementSequence(sequence);
+      setCollectSteps(collectSteps);
 
       if (errorIndex !== null) {
         setError(`Error en el comando: ${compiledCommands[errorIndex]}`);
@@ -249,7 +259,17 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     return robotPos === goalPos;
   };
 
-  // Effect to handle the movement sequence
+  // Initialize collectible data when level loads
+  useEffect(() => {
+    const collectibles = initialLevelData
+      .map((tile, index) => tile === TileType.COLLECTIBLE ? index : -1)
+      .filter(index => index !== -1);
+    
+    setCollectiblePositions(collectibles);
+    setTotalCollectibles(collectibles.length);
+  }, [initialLevelData]);
+
+  // Update the movement sequence effect to handle collectibles correctly
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
@@ -261,26 +281,49 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         // Find the current robot position
         const currentPos = newLevelData.findIndex(tile => tile === TileType.ROBOT);
 
-        // Clear previous position
-        newLevelData[currentPos] = TileType.EMPTY;
-
-        // Set new position
+        // Get the position where the robot will move
         const newPos = movementSequence[currentMoveIndex];
 
-        // Check if the new position has a collectible
-        if (newLevelData[newPos] === TileType.COLLECTIBLE) {
-          setRobotState(prev => ({ ...prev, collected: prev.collected + 1 }));
+        // Check if current command is a collect command
+        const isCollectCommand = collectSteps.includes(currentMoveIndex);
+        
+        // If this is a collect command and robot is on a collectible position, collect it
+        if (isCollectCommand) {
+          debugger;
+          // Check if the current position has a collectible in the initial level data
+          // and it hasn't been collected yet
+          const robotIsOnCollectible = initialLevelData[currentPos] === TileType.COLLECTIBLE;
+          const isPositionNotCollectedYet = collectiblePositions.includes(currentPos);
+          
+          if (robotIsOnCollectible && isPositionNotCollectedYet) {
+            // Collect the item
+            setRobotState(prev => ({ ...prev, collected: prev.collected + 1 }));
+            // Remove this position from collectible positions
+            setCollectiblePositions(prev => prev.filter(pos => pos !== currentPos));
+          }
         }
 
+        // Clear previous position, restoring the original tile if needed
+        if (initialLevelData[currentPos] === TileType.COLLECTIBLE && 
+            collectiblePositions.includes(currentPos)) {
+          // If this was a collectible position and it hasn't been collected yet, restore it
+          newLevelData[currentPos] = TileType.COLLECTIBLE;
+        } else {
+          // Otherwise, set to empty
+          newLevelData[currentPos] = TileType.EMPTY;
+        }
+
+        // Put robot in new position
         newLevelData[newPos] = TileType.ROBOT;
 
         // Pass the new array directly to setLevelData
         setLevelData(newLevelData);
 
-        // Check if robot has reached the goal
+        // Check if robot has reached the goal and collected all collectibles
         const goalReached = checkGoalReached(newLevelData);
-        console.log("goalReached", goalReached);
-        if (goalReached) {
+        const allCollectiblesCollected = robotState.collected === totalCollectibles; 
+        
+        if (goalReached && (allCollectiblesCollected || totalCollectibles === 0)) {
           setLevelCompleted(true);
         }
 
@@ -292,7 +335,8 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     }
 
     return () => clearTimeout(timeoutId);
-  }, [isExecuting, currentMoveIndex, movementSequence, levelData, setLevelData]);
+  }, [isExecuting, currentMoveIndex, movementSequence, levelData, collectiblePositions, 
+      collectSteps, totalCollectibles, initialLevelData, robotState.collected]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -316,7 +360,11 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           <Terminal className="w-3 h-3 md:w-4 md:h-4 text-slate-400" />
           <span className="text-xs md:text-sm font-semibold text-slate-400">Panel de Control</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <div className="text-xs md:text-sm font-medium text-yellow-400 flex items-center">
+            <span className="mr-2">⭐</span>
+            {robotState.collected} / {totalCollectibles}
+          </div>
           <Button
             onClick={handleExecuteCode}
             className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm"
