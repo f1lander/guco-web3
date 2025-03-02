@@ -17,6 +17,15 @@ import {
   DialogTitle,
   DialogDescription
 } from '@/components/ui/dialog';
+import { 
+  initAudio, 
+  playRobotOnSound,
+  playMoveSound, 
+  playCollectSound, 
+  playGoalSound,
+  playBackgroundMusic,
+  stopBackgroundMusic
+} from '@/lib/sounds';
 
 interface CommandSectionProps {
   onSelectCommand: (command: string) => void;
@@ -168,6 +177,32 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
   const { updatePlayer, isPendingUpdate, getLevel } = useGucoLevels();
 
+  // Add audio state
+  const [audioInitialized, setAudioInitialized] = useState(false);
+  const prevRobotStateRef = useRef<RobotState>({ collected: 0, state: 'off' });
+  
+  // Initialize audio context on component mount
+  useEffect(() => {
+    const handleUserInteraction = async () => {
+      if (!audioInitialized) {
+        try {
+          await initAudio();
+          setAudioInitialized(true);
+          document.removeEventListener('click', handleUserInteraction);
+        } catch (error) {
+          console.error('Failed to initialize audio:', error);
+        }
+      }
+    };
+    
+    document.addEventListener('click', handleUserInteraction);
+    
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      stopBackgroundMusic();
+    };
+  }, [audioInitialized]);
+
   // Handle command click
   const handleCommandClick = (command: string) => {
     setCode(prevCode => prevCode + `\n${command};`);
@@ -268,6 +303,25 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     setTotalCollectibles(collectibles.length);
   }, [initialLevelData]);
 
+  // Play sounds based on robot state changes
+  useEffect(() => {
+    if (!audioInitialized) return;
+    
+    // Play robot on/off sound
+    if (prevRobotStateRef.current.state !== robotState.state) {
+      if (robotState.state === 'on') {
+        playRobotOnSound();
+      }
+    }
+    
+    // Play collect sound
+    if (robotState.collected > prevRobotStateRef.current.collected) {
+      playCollectSound();
+    }
+    
+    prevRobotStateRef.current = robotState;
+  }, [robotState, audioInitialized]);
+
   // Update the movement sequence effect to handle robotState
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -343,6 +397,11 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         // Put robot in new position
         newLevelData[newPos] = TileType.ROBOT;
 
+        // Play movement sound
+        if (audioInitialized && robotState.state === 'on') {
+          playMoveSound();
+        }
+
         // Pass the new array directly to setLevelData
         setLevelData(newLevelData);
 
@@ -352,6 +411,11 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         
         if (goalReached && (allCollectiblesCollected || totalCollectibles === 0)) {
           setLevelCompleted(true);
+          
+          // Play goal reached sound
+          if (audioInitialized) {
+            playGoalSound();
+          }
         }
 
         setCurrentMoveIndex(prev => prev + 1);
@@ -363,15 +427,13 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
     return () => clearTimeout(timeoutId);
   }, [isExecuting, currentMoveIndex, movementSequence, levelData, collectiblePositions, 
-      collectSteps, totalCollectibles, initialLevelData, robotState, commands]);
+      collectSteps, totalCollectibles, initialLevelData, robotState, commands, audioInitialized]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     // If level was completed, show success dialog after a short delay
     if (levelCompleted) {
       timeoutId = setTimeout(() => {
-        console.log("levelCompleted", levelCompleted);
-
         setShowSuccessDialog(true);
       }, 1000);
     }
