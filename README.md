@@ -3,6 +3,32 @@
 ## devlog #1
 Demo de como va, actualmente ya hacer collect de los items e implemente tone.js para sound effects
 
+### Nuevas Implementaciones
+* **Sistema de sonidos con Tone.js:**
+  - Sonidos para encendido/apagado del robot
+  - Efectos de sonido para movimientos
+  - Sonido para recolección de objetos
+  - Sonido para completar el nivel
+  - Música de fondo durante el juego
+
+* **Sistema de estados del robot:**
+  - Estado 'on' (encendido) y 'off' (apagado)
+  - Comandos encender() y apagar()
+  - Efecto visual (escala y filtro grayscale) para robot apagado
+
+* **Sistema de recolección:**
+  - Contador de objetos recolectados
+  - Verificación de recolección completa para avanzar
+  - Comandos recolectar() para interactuar con objetos
+
+* **Detección de objetivo:**
+  - Verificación de posición del robot en la meta
+  - Diálogo de éxito al completar el nivel
+
+**Pendiente:**
+* Actualización de progreso en blockchain al completar niveles
+* Visualización de niveles ya completados por el jugador
+
 https://github.com/user-attachments/assets/68333b3b-0a59-4897-b9aa-942c34fb8c86
 
 ## Resumen Ejecutivo
