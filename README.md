@@ -27,6 +27,7 @@ Demo de como va, actualmente ya hacer collect de los items e implemente tone.js 
 
 **Pendiente:**
 * Actualización de progreso en blockchain al completar niveles
+* Implementacion de comandos de logica, y bucles como if, else, for, while en caso de ser necesarios
 * Visualización de niveles ya completados por el jugador
 
 https://github.com/user-attachments/assets/68333b3b-0a59-4897-b9aa-942c34fb8c86
