@@ -195,7 +195,6 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
       // Use the utility function to extract commands
       const newCommands = compileUserCode(code);
-      console.log("newCommands", newCommands);
       
       setIsCompiling(true);
       const compiledCommands = compileCode(newCommands, 'lua');
@@ -269,12 +268,41 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     setTotalCollectibles(collectibles.length);
   }, [initialLevelData]);
 
-  // Update the movement sequence effect to handle collectibles correctly
+  // Update the movement sequence effect to handle robotState
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     if (isExecuting && movementSequence.length > 0 && currentMoveIndex < movementSequence.length) {
       timeoutId = setTimeout(() => {
+        // Get the current command (for state checks)
+        const currentCommand = commands[currentMoveIndex]?.replace('robot:', '').trim();
+        
+        // Skip the robot = Robot.new() command as it's just initialization
+        if (currentCommand === 'robot = Robot.new()') {
+          setCurrentMoveIndex(prev => prev + 1);
+          return;
+        }
+        
+        // Process robot state commands
+        if (currentCommand === 'encender()') {
+          // Turn on the robot
+          setRobotState(prev => ({ ...prev, state: 'on' }));
+          setCurrentMoveIndex(prev => prev + 1);
+          return;
+        } else if (currentCommand === 'apagar()') {
+          // Turn off the robot
+          setRobotState(prev => ({ ...prev, state: 'off' }));
+          setCurrentMoveIndex(prev => prev + 1);
+          return;
+        }
+        
+        // Check if robot is turned on for all non-state commands
+        if (robotState.state !== 'on') {
+          setError("Error: El robot necesita ser encendido primero con 'encender()'");
+          setIsExecuting(false);
+          return;
+        }
+        
         // Create new level data array based on the current levelData
         const newLevelData = [...levelData];
 
@@ -289,7 +317,6 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         
         // If this is a collect command and robot is on a collectible position, collect it
         if (isCollectCommand) {
-          debugger;
           // Check if the current position has a collectible in the initial level data
           // and it hasn't been collected yet
           const robotIsOnCollectible = initialLevelData[currentPos] === TileType.COLLECTIBLE;
@@ -336,7 +363,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
     return () => clearTimeout(timeoutId);
   }, [isExecuting, currentMoveIndex, movementSequence, levelData, collectiblePositions, 
-      collectSteps, totalCollectibles, initialLevelData, robotState.collected]);
+      collectSteps, totalCollectibles, initialLevelData, robotState, commands]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -344,7 +371,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     if (levelCompleted) {
       timeoutId = setTimeout(() => {
         console.log("levelCompleted", levelCompleted);
-        debugger
+
         setShowSuccessDialog(true);
       }, 1000);
     }

@@ -132,7 +132,7 @@ const GameView: React.FC<GameViewProps> = ({
               <div className="w-full h-full flex items-center justify-center">
                 <div 
                   className={`text-4xl transform transition-all duration-300 
-                    ${robotState.state === 'on' ? 'scale-100' : 'scale-90 opacity-50'}`}
+                    ${robotState.state === 'on' ? 'scale-100' : 'scale-90 opacity-50 grayscale'}`}
                 >
                   🤖
                 </div>
