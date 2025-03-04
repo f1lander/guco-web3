@@ -109,9 +109,9 @@ export function getDifficulty(level: { playCount: bigint; completions: bigint })
 
 export const getEmoji = (tileType: TileType) => {
   switch (tileType) {
-    case TileType.OBSTACLE: return '🧱';
-    case TileType.GOAL: return '🎯';
-    case TileType.COLLECTIBLE: return '⭐';
+    case TileType.OBSTACLE: return '🪨';
+    case TileType.GOAL: return '🏁';
+    case TileType.COLLECTIBLE: return '🪴';
     case TileType.ROBOT: return '🤖';
     default: return '';
   }
@@ -235,9 +235,18 @@ export const executeCode = (level: number[], command: string) => {
   // I was thinking what if, compiling these commands I returned the the movements needed, based on the 
 };
 
-export const compileCode = (commands: string[], language: 'lua' | 'javascript') => {
-  const compiler = language === 'lua' ? luaCompiler : javascriptCompiler;
-  return compiler(commands);
+// Update compileCode function to handle CommandWithMeta objects
+export const compileCode = (commands: string[] | CommandWithMeta[], language: 'lua' | 'javascript'): string[] => {
+  const cleanCommands = Array.isArray(commands) ? 
+    commands.map(cmd => typeof cmd === 'string' ? cmd : cmd.command) : 
+    [];
+    
+  if (language === 'lua') {
+    return luaCompiler(cleanCommands);
+  } else if (language === 'javascript') {
+    return javascriptCompiler(cleanCommands);
+  }
+  return cleanCommands;
 };
 
 export const moveRobot = (
@@ -444,20 +453,175 @@ export const commandsToMovementSequence = (commands: string[], levelData: number
   return { sequence, errorIndex: null, collectSteps };
 };
 
-export const compileUserCode = (code: string): string[] => {
+// Define an interface for command structure
+export interface CommandWithMeta {
+  command: string;
+  isLoopStart?: boolean;
+  isLoopEnd?: boolean;
+  loopCount?: number;
+  inLoop?: boolean;
+  indentLevel?: number;
+}
+
+export const compileUserCode = (code: string): CommandWithMeta[] => {
   // Extract only the user code section
   const userCodeSection = code.split('-- Area de codigo para programar el robot')[1]?.split('-- class definition')[0];
   
   if (!userCodeSection) return [];
   
-  // Get lines that contain robot commands
-  return userCodeSection
+  const lines = userCodeSection
     .split('\n')
     .map(line => line.trim())
-    .filter(line => line && !line.startsWith('--')) // Remove comments and empty lines
-    .filter(line => {
-      // Keep lines that are robot commands or robot initialization
-      return line.includes('robot:') || line.includes('robot =') || line.includes('Robot.new');
-    })
-    .map(line => line.replace(/;$/, '')); // Remove trailing semicolons
+    .filter(line => line && !line.startsWith('--')); // Remove comments and empty lines
+  
+  // Track variables defined in the code
+  const variables: Record<string, number> = {};
+  
+  // Process for loops and preserve structure
+  const structuredCommands: CommandWithMeta[] = [];
+  let indentLevel = 0;
+  let inForLoop = false;
+  let forLoopStart = 0;
+  let forLoopEnd = 0;
+  let forLoopCommands: CommandWithMeta[] = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    // Check for variable assignments
+    const varAssignmentMatch = line.match(/(\w+)\s*=\s*(\d+)/);
+    if (varAssignmentMatch && !line.includes('for') && !line.includes('robot')) {
+      const variableName = varAssignmentMatch[1];
+      const variableValue = parseInt(varAssignmentMatch[2], 10);
+      variables[variableName] = variableValue;
+      continue;
+    }
+    
+    // Check for for loop start with either literal numbers or variables
+    const forLoopMatch = line.match(/for\s+(\w+)\s*=\s*(\w+|\d+)\s*,\s*(\w+|\d+)\s*do/);
+    if (forLoopMatch) {
+      inForLoop = true;
+      indentLevel++;
+      
+      // Get start value (either a number or a variable)
+      let startValue = forLoopMatch[2];
+      if (/^\d+$/.test(startValue)) {
+        forLoopStart = parseInt(startValue, 10);
+      } else if (variables[startValue] !== undefined) {
+        forLoopStart = variables[startValue];
+      } else {
+        // Default to 1 if variable not found
+        forLoopStart = 1;
+        console.warn(`Variable ${startValue} not found, using default value 1`);
+      }
+      
+      // Get end value (either a number or a variable)
+      let endValue = forLoopMatch[3];
+      if (/^\d+$/.test(endValue)) {
+        forLoopEnd = parseInt(endValue, 10);
+      } else if (variables[endValue] !== undefined) {
+        forLoopEnd = variables[endValue];
+      } else {
+        // Default to the start value if variable not found
+        forLoopEnd = forLoopStart;
+        console.warn(`Variable ${endValue} not found, using default value ${forLoopStart}`);
+      }
+      
+      // Record the loop start in structured commands
+      const loopCount = Math.max(0, forLoopEnd - forLoopStart + 1);
+      structuredCommands.push({
+        command: `for ${forLoopMatch[1]}=${forLoopStart},${forLoopEnd} do`,
+        isLoopStart: true,
+        loopCount: loopCount,
+        indentLevel: indentLevel
+      });
+      
+      forLoopCommands = [];
+      continue;
+    }
+    
+    // Check for end of for loop
+    if (inForLoop && line === 'end') {
+      inForLoop = false;
+      
+      // Add all loop commands to the structured commands with metadata
+      forLoopCommands.forEach(cmd => {
+        structuredCommands.push({
+          ...cmd,
+          inLoop: true,
+          indentLevel: indentLevel
+        });
+      });
+      
+      // Record the loop end
+      structuredCommands.push({
+        command: 'end',
+        isLoopEnd: true,
+        indentLevel: indentLevel
+      });
+      
+      indentLevel--;
+      continue;
+    }
+    
+    // Process commands inside or outside for loop
+    if (line.includes('robot:') || line.includes('robot =') || line.includes('Robot.new')) {
+      const cmdWithoutSemicolon = line.replace(/;$/, '');
+      
+      if (inForLoop) {
+        // Store commands inside the loop temporarily
+        forLoopCommands.push({
+          command: cmdWithoutSemicolon,
+          indentLevel: indentLevel
+        });
+      } else {
+        // Add normal commands to the structured array
+        structuredCommands.push({
+          command: cmdWithoutSemicolon,
+          indentLevel: 0
+        });
+      }
+    }
+  }
+  
+  return structuredCommands;
+};
+
+// Function to flatten the structured commands for execution
+export const flattenCommands = (structuredCommands: CommandWithMeta[]): string[] => {
+  const flatCommands: string[] = [];
+  
+  for (let i = 0; i < structuredCommands.length; i++) {
+    const cmd = structuredCommands[i];
+    
+    if (cmd.isLoopStart && cmd.loopCount) {
+      // Find the matching loop end
+      let loopEndIndex = i + 1;
+      let nestLevel = 1;
+      
+      while (nestLevel > 0 && loopEndIndex < structuredCommands.length) {
+        if (structuredCommands[loopEndIndex].isLoopStart) nestLevel++;
+        if (structuredCommands[loopEndIndex].isLoopEnd) nestLevel--;
+        loopEndIndex++;
+      }
+      
+      // Extract the loop body
+      const loopBody = structuredCommands.slice(i + 1, loopEndIndex - 1);
+      const filteredLoopBody = loopBody.filter(cmd => !cmd.isLoopStart && !cmd.isLoopEnd);
+      
+      // Repeat the loop body for loopCount times
+      for (let j = 0; j < cmd.loopCount; j++) {
+        filteredLoopBody.forEach(loopCmd => {
+          flatCommands.push(loopCmd.command);
+        });
+      }
+      
+      // Skip to after the loop
+      i = loopEndIndex - 1;
+    } else if (!cmd.isLoopStart && !cmd.isLoopEnd) {
+      flatCommands.push(cmd.command);
+    }
+  }
+  
+  return flatCommands;
 };

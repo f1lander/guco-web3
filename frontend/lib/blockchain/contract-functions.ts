@@ -1,7 +1,6 @@
 import client from "./client";
-
+import { getAccount, writeContract, waitForTransaction } from '@wagmi/core';
 import { gucoAbi } from "./abis/guco.abi";
-
 import { GUCO_CONTRACT_ADDRESSES } from "@/lib/constants";
 import { Level } from "../types";
 

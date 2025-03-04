@@ -125,8 +125,8 @@ const GameView: React.FC<GameViewProps> = ({
               style={{
                 width: `${tileSize}px`,
                 height: `${tileSize}px`,
-                top: `${robotPosition.y * tileSize}px`,
-                left: `${robotPosition.x * tileSize}px`,
+                top: `${(robotPosition.y * tileSize) + 5}px`,
+                left: `${(robotPosition.x * tileSize) + 5}px`,
               }}
             >
               <div className="w-full h-full flex items-center justify-center">

@@ -129,7 +129,9 @@ export const COMMANDS = {
   jump_down: 'saltarAbajo()'
   ,
   collect_item: 'recolectar()',
-
+  variable_assign: 'veces = 3',
+  for_loop: 'for i=1,veces do',
+  end_loop: 'end',
 } as const;
 
 export const COMMAND_CATEGORIES = {
@@ -163,6 +165,15 @@ export const COMMAND_CATEGORIES = {
       { command: COMMANDS.collect_item, description: 'collect_item' },
     ]
   },
+  control: {
+    label: 'control',
+    color: 'purple',
+    commands: [
+      { command: COMMANDS.variable_assign, description: 'set_variable' },
+      { command: COMMANDS.for_loop, description: 'repeat_command' },
+      { command: COMMANDS.end_loop, description: 'end_loop' },
+    ]
+  },
 } as const;
 
 export const INITIAL_CODE = `
@@ -171,14 +182,19 @@ robot = Robot.new()
 
 robot:encender()
 robot:moverArriba()
-robot:moverIzquierda()
-robot:moverIzquierda()
-robot:moverIzquierda()
+
+-- Definir variable para el número de repeticiones
+veces = 3
+
+-- Ejemplo de bucle for con variable: moverse 'veces' veces a la izquierda
+for i=1,veces do
+  robot:moverIzquierda()
+end
+
 robot:saltarAbajo()
 
 -- class definition
 --------------------------------    
---------------------------------
 --------------------------------
 --------------------------------
 --------------------------------
