@@ -12,6 +12,10 @@ interface GameViewProps {
   robotState?: { collected: number, state: 'off' | 'on' | 'error' };
   editable?: boolean;
   onLevelChange?: (newLevel: number[]) => void;
+  collisionState?: {
+    isColliding: boolean;
+    obstaclePosition: number;
+  };
 }
 
 const GameView: React.FC<GameViewProps> = ({
@@ -20,6 +24,7 @@ const GameView: React.FC<GameViewProps> = ({
   onMove = () => { },
   editable = false,
   onLevelChange = () => { },
+  collisionState,
 }) => {
   const [isRotated, setIsRotated] = useState(false);
   const [previousRobotPos, setPreviousRobotPos] = useState<{ x: number, y: number } | null>(null);
@@ -113,6 +118,7 @@ const GameView: React.FC<GameViewProps> = ({
                   editable={editable}
                   className="flex-1 aspect-square"
                   robotState={robotState}
+                  isColliding={collisionState?.isColliding && collisionState.obstaclePosition === rowIndex * GRID_WIDTH + colIndex}
                 />
               ))}
             </div>

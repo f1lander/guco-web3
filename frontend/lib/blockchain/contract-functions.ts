@@ -10,14 +10,14 @@ export const getLevels = async (offset: number, limit: number): Promise<Level[]>
     const data = await client.readContract({
       address: GUCO_CONTRACT_ADDRESSES,
       abi: gucoAbi,
-      functionName: "getLevels",
+      functionName: "getLevelsWithId",
       args: [BigInt(offset), BigInt(limit)],
     });
-
     // Convert the timestamp to a Date object
-    const formattedLevels = (data as Level[]).map(level => ({
-      ...level,
-      createdAt: new Date(Number(level.createdAt) * 1000) // Convert from Unix timestamp to JS Date
+    const formattedLevels = data.map(level => ({
+      ...level.level,
+      id: Number(level.id),
+      createdAt: new Date(Number(level.level.createdAt) * 1000) // Convert from Unix timestamp to JS Date
     }));
 
     console.log('Formatted levels:', formattedLevels);

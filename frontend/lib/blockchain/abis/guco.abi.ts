@@ -63,6 +63,11 @@ export const gucoAbi = [
             "name": "verified",
             "type": "bool",
             "internalType": "bool"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       }
@@ -146,6 +151,79 @@ export const gucoAbi = [
             "name": "verified",
             "type": "bool",
             "internalType": "bool"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getLevelsWithId",
+    "inputs": [
+      {
+        "name": "offset",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "limit",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple[]",
+        "internalType": "struct IGucoGame.LevelWithId[]",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "level",
+            "type": "tuple",
+            "internalType": "struct IGucoGame.Level",
+            "components": [
+              {
+                "name": "levelData",
+                "type": "bytes32",
+                "internalType": "bytes32"
+              },
+              {
+                "name": "creator",
+                "type": "address",
+                "internalType": "address"
+              },
+              {
+                "name": "playCount",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "completions",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "verified",
+                "type": "bool",
+                "internalType": "bool"
+              },
+              {
+                "name": "createdAt",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
           }
         ]
       }
@@ -202,6 +280,11 @@ export const gucoAbi = [
                 "name": "verified",
                 "type": "bool",
                 "internalType": "bool"
+              },
+              {
+                "name": "createdAt",
+                "type": "uint256",
+                "internalType": "uint256"
               }
             ]
           }
@@ -288,6 +371,11 @@ export const gucoAbi = [
         "name": "verified",
         "type": "bool",
         "internalType": "bool"
+      },
+      {
+        "name": "createdAt",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -450,6 +538,11 @@ export const gucoAbi = [
             "name": "verified",
             "type": "bool",
             "internalType": "bool"
+          },
+          {
+            "name": "createdAt",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       }
@@ -472,12 +565,6 @@ export const gucoAbi = [
         "type": "address",
         "indexed": true,
         "internalType": "address"
-      },
-      {
-        "name": "completionTime",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
       }
     ],
     "anonymous": false

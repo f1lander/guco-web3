@@ -10,7 +10,8 @@ type Level = {
   creator: `0x${string}`,
   playCount: bigint,
   completions: bigint,
-  verified: boolean
+  verified: boolean,
+  createdAt: bigint
 }
 
 export const useGucoLevels = () => {
@@ -87,20 +88,22 @@ export const useGucoLevels = () => {
 
   return {
     // Write functions
-    createGucoLevel,
     updatePlayer,
+    isPendingUpdate,
+    isSuccessUpdate,
+    isErrorUpdate,
+    dataUpdate,
+    
+    createGucoLevel,
     isPendingCreate,
     isSuccessCreate,
     isErrorCreate,
     isPendingComplete,
     isSuccessComplete,
     isErrorComplete,
-    isPendingUpdate,
-    isSuccessUpdate,
-    isErrorUpdate,
+    
     dataCreate,
     dataComplete,
-    dataUpdate,
     // Read functions
     getLevelCount,
     getLevel,

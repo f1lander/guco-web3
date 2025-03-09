@@ -7,14 +7,8 @@ import { useTranslation } from '@/providers/language-provider';
 import { GameInput } from '@/components/molecules/GameInput';
 import { LevelCardSkeleton } from '@/components/molecules/LevelCardSkeleton';
 import { GameFilter } from '@/components/molecules/GameFilter';
+import { Level } from '@/lib/types';
 
-type Level = {
-  levelData: `0x${string}`;
-  creator: `0x${string}`;
-  playCount: bigint;
-  completions: bigint;
-  verified: boolean;
-};
 
 export default function LevelsExplorer() {
   const [search, setSearch] = useState('');

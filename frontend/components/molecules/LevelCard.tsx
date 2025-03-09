@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Trophy, Users, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Level } from '@/lib/types';
 
 const colorVariants = {
   yellow: {
@@ -35,14 +36,6 @@ const colorVariants = {
 
 type ColorVariant = keyof typeof colorVariants;
 
-type Level = {
-  levelData: `0x${string}`;
-  creator: `0x${string}`;
-  playCount: bigint;
-  completions: bigint;
-  verified: boolean;
-};
-
 interface LevelCardProps {
   level: Level;
   index: number;
@@ -59,7 +52,7 @@ export function LevelCard({ level, index, color = 'yellow' }: LevelCardProps) {
 
   return (
     <Link 
-      href={`/dashboard/level?levelData=${level.levelData}`}
+      href={`/dashboard/level?levelData=${level.levelData}&levelId=${level.id}`}
       className={cn(
         "group relative p-6 transition-all duration-200",
         "rounded-lg border-2",
@@ -77,9 +70,9 @@ export function LevelCard({ level, index, color = 'yellow' }: LevelCardProps) {
         "flex items-center justify-center",
         colors.header
       )}>
-        <span className={cn("font-bold", colors.headerText)}>
+        <div className={cn("font-bold", colors.headerText)}>
           Level {index + 1}
-        </span>
+        </div>
       </div>
 
       <div className="relative flex flex-col gap-4 pt-4">

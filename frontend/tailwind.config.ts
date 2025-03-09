@@ -159,11 +159,23 @@ const config = {
           '66.67%': { color: '#0000ff' }, // Blue
           '83.33%': { color: '#4b0082' }, // Indigo
         },
+        buzz: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-5px) rotate(-5deg)' },
+          '50%': { transform: 'translateX(5px) rotate(5deg)' },
+          '75%': { transform: 'translateX(-5px) rotate(-5deg)' },
+        },
+        pulse: {
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.85', transform: 'scale(1.2)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         rainbow: 'rainbow 10s ease-in-out infinite',
+        buzz: 'buzz 0.15s linear infinite',
+        pulse: 'pulse 1s ease-in-out infinite',
       },
       boxShadow: {
         // light

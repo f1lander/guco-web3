@@ -24,6 +24,12 @@ const collectSynth = new Tone.PolySynth(Tone.Synth).toDestination();
 
 const goalSynth = new Tone.PolySynth(Tone.Synth).toDestination();
 
+// Create a synth for error sounds with dissonant characteristics
+const errorSynth = new Tone.PolySynth(Tone.Synth, {
+  oscillator: { type: "sawtooth" },
+  envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2 }
+}).toDestination();
+
 // Robot power on sound
 export const playRobotOnSound = () => {
   const now = Tone.now();
@@ -60,6 +66,27 @@ export const playGoalSound = () => {
   goalSynth.triggerAttackRelease(["D5", "F5", "A5"], "8n", now + 0.2);
   goalSynth.triggerAttackRelease(["E5", "G5", "B5"], "8n", now + 0.4);
   goalSynth.triggerAttackRelease(["C6", "E6", "G6"], "4n", now + 0.6);
+};
+
+// Robot error/crash sound
+export const playErrorSound = () => {
+  const now = Tone.now();
+  errorSynth.volume.value = -8;
+  
+  // Play dissonant notes for error effect
+  errorSynth.triggerAttackRelease("C4", "16n", now);
+  errorSynth.triggerAttackRelease("C#4", "16n", now + 0.05);
+  errorSynth.triggerAttackRelease("B3", "8n", now + 0.1);
+  
+  // Add distortion effect for crash feeling
+  const distortion = new Tone.Distortion(0.8).toDestination();
+  const noiseSynth = new Tone.NoiseSynth({
+    noise: { type: "white" },
+    envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 }
+  }).connect(distortion);
+  
+  noiseSynth.volume.value = -15;
+  noiseSynth.triggerAttackRelease("16n", now + 0.1);
 };
 
 // Background Music

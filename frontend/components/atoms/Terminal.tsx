@@ -254,14 +254,19 @@ const TerminalComponent: React.FC<TerminalProps> = ({ commands, isExecuting, isC
             );
           }
           
+          // Add error state check
+          const isErrorCommand = error && index === highlightedCommandInfo.commandIndex && !isExecuting;
+          
           // For regular commands (not loop start/end)
           if (!cmd.isLoopStart && !cmd.isLoopEnd) {
             let textColorClass = isInLoop ? 'text-cyan-600' : 'text-slate-500';
             
-            if (isHighlighted) {
+            if (isErrorCommand) {
+              textColorClass = 'text-red-400';
+            } else if (isHighlighted) {
               textColorClass = 'text-yellow-400';
             } else if (index < highlightedCommandInfo.commandIndex || 
-                      (currentCommandIndex > 0 && !isExecuting)) {
+                      (currentCommandIndex > 0 && !isExecuting && !error)) {
               textColorClass = isInLoop ? 'text-cyan-400' : 'text-slate-400';
             }
             
@@ -275,20 +280,32 @@ const TerminalComponent: React.FC<TerminalProps> = ({ commands, isExecuting, isC
                 key={`cmd-${index}`}
                 data-command-index={index}
                 className={`transition-all duration-200 whitespace-pre ${
-                  isHighlighted ? 'bg-slate-700/50 -mx-4 px-4 py-1' : ''
+                  isHighlighted || isErrorCommand
+                    ? isErrorCommand
+                      ? 'bg-red-900/30 -mx-4 px-4 py-1' 
+                      : 'bg-slate-700/50 -mx-4 px-4 py-1'
+                    : ''
                 } ${textColorClass}`}
               >
-                {isHighlighted && '> '}
+                {isErrorCommand && '✖ '}
+                {isHighlighted && !isErrorCommand && '> '}
                 {displayIndent}{cmd.command}
                 {(index < highlightedCommandInfo.commandIndex || 
-                  (currentCommandIndex > 0 && !isExecuting)) && ' ✓'}
+                  (currentCommandIndex > 0 && !isExecuting && !error)) && ' ✓'}
                 
                 {/* Only show iteration for commands inside loops that are executing */}
-                {isHighlighted && isInLoop && highlightedCommandInfo.loopIteration !== undefined ? (
+                {isHighlighted && isInLoop && highlightedCommandInfo.loopIteration !== undefined && !isErrorCommand ? (
                   <span className="ml-2 text-xs bg-slate-800/50 px-2 py-0.5 rounded-full">
                     iteración {highlightedCommandInfo.loopIteration} 
                   </span>
                 ) : null}
+                
+                {/* Show error message if this is the error command */}
+                {isErrorCommand && (
+                  <div className="mt-1 text-xs text-red-400">
+                    {error}
+                  </div>
+                )}
               </div>
             );
           }

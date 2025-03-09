@@ -2,6 +2,12 @@
 pragma solidity ^0.8.20;
 
 interface IGucoGame {
+
+    struct LevelWithId {
+        uint256 id;
+        Level level;
+    }
+
     struct Level {
         bytes32 levelData;  // Changed from uint8[]
         address creator;
@@ -26,7 +32,6 @@ interface IGucoGame {
     event LevelCreated(uint256 indexed levelId, address indexed creator);
     event LevelCompleted(
         uint256 indexed levelId,
-        address indexed userAddress,
-        uint256 completionTime
+        address indexed userAddress
     );
 }

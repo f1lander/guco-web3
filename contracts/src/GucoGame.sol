@@ -62,6 +62,25 @@ contract GucoGame is IGucoGame, Ownable {
         return result;
     }
 
+    function getLevelsWithId(
+        uint256 offset,
+        uint256 limit
+    ) external view returns (LevelWithId[] memory) {
+        uint256 totalLevels = _nextLevelId;
+        uint256 end = offset + limit;
+
+        if (end > totalLevels) {
+            end = totalLevels;
+        }
+
+        LevelWithId[] memory result = new LevelWithId[](end - offset);
+        for (uint256 i = offset; i < end; i++) {
+            result[i - offset] = LevelWithId({id: i, level: levels[i]});
+        }
+
+        return result;
+    }
+
     function getPlayer(address player) external view returns (Player memory) {
         return players[player];
     }

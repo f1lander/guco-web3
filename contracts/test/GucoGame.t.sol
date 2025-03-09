@@ -54,7 +54,8 @@ contract GucoGameTest is Test {
             creator: player1,
             playCount: 1,
             completions: 1,
-            verified: false
+            verified: false,
+            createdAt: block.timestamp
         });
         
         game.updatePlayer(player1, levelId, completedLevel);
@@ -97,7 +98,8 @@ contract GucoGameTest is Test {
             creator: player1,
             playCount: 1,
             completions: 1,
-            verified: false
+            verified: false,
+            createdAt: block.timestamp
         });
         
         game.updatePlayer(player1, levelId, completedLevel);

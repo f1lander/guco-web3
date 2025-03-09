@@ -33,7 +33,8 @@ export const translations = {
         categories: {
           basic: 'Iniciación',
           movement: 'Movimiento',
-          actions: 'Acciones'
+          actions: 'Acciones',
+          control: 'Control'
         },
         descriptions: {
           create_robot_instance: 'Crear instancia de robot',
@@ -48,7 +49,8 @@ export const translations = {
           jump_up: 'Saltar arriba',
           jump_down: 'Saltar abajo',
           collect_item: 'Recolectar item'
-        }
+        },
+        
       }
     },
     footer: {
