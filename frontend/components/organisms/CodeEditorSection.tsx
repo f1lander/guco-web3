@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal as TerminalIcon, Play, GridIcon, ChevronRight, HelpCircle, X, Trophy, Check } from 'lucide-react';
+import { Terminal as TerminalIcon, Play, GridIcon, ChevronRight, HelpCircle, X, Trophy, Check, Code, Puzzle } from 'lucide-react';
 import GameView from '../molecules/GameView';
 import { CodeEditor } from '@/components/molecules/CodeEditor';
+import BlocklyEditor from '@/components/molecules/BlocklyEditor';
 import Button from '@/components/atoms/Button';
 import { Terminal } from '@/components/atoms/Terminal';
 import { colorVariants } from '@/components/atoms/Button';
@@ -220,6 +221,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   const [collectSteps, setCollectSteps] = useState<number[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showFailureDialog, setShowFailureDialog] = useState(false);
+  const [editorType, setEditorType] = useState<'code' | 'blocks'>('code');
 
   const { updatePlayer, isPendingUpdate, isSuccessUpdate, isErrorUpdate, dataUpdate, getLevel } = useGucoLevels();
 
@@ -240,6 +242,11 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   // Handle command click
   const handleCommandClick = (command: string) => {
     setCode(prevCode => prevCode + `\n${command};`);
+  };
+
+  // Ensure this handler updates the shared code state
+  const handleCodeChange = (newCode: string) => {
+    setCode(newCode);
   };
 
   // Handle execute code
@@ -266,7 +273,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     setCollectiblePositions(collectibles);
 
     try {
-      // Compile the user code to get structured commands
+      // Important: Always use the current code state regardless of which editor is active
       const structuredCommands = compileUserCode(code);
 
       // Set the structured commands for display in the terminal
@@ -285,10 +292,6 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
       setMovementSequence(sequence);
       setCollectSteps(collectSteps);
-
-      // if (errorIndex !== null) {
-      //   setError(`Error en el comando: ${flattenedCommands[errorIndex]}`);
-      // }
 
       // Check if robot has reached the goal
       const goalReached = checkGoalReached(sequence);
@@ -626,6 +629,26 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
             <span className="mr-2">🪴</span>
             {robotState.collected} / {totalCollectibles}
           </div>
+          
+          {/* Editor Type Toggle */}
+          <div className="flex bg-slate-700 rounded-md overflow-hidden">
+            <button
+              onClick={() => setEditorType('code')}
+              className={`flex items-center gap-1 px-2 py-1 text-xs ${editorType === 'code' ? 'bg-blue-600 text-white' : 'bg-transparent text-slate-300'}`}
+            >
+              <Code className="w-3 h-3" />
+              Código
+            </button>
+            <button
+              onClick={() => setEditorType('blocks')}
+              className={`flex items-center gap-1 px-2 py-1 text-xs ${editorType === 'blocks' ? 'bg-purple-600 text-white' : 'bg-transparent text-slate-300'}`}
+            >
+              <Puzzle className="w-3 h-3" />
+              Bloques
+            </button>
+          </div>
+          
+          {/* Make sure this button uses the same handler regardless of editor mode */}
           <Button
             onClick={handleExecuteCode}
             className="px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm"
@@ -647,16 +670,27 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       <div className="flex-1 grid gap-4 h-full grid-cols-1 md:grid-cols-2">
         {/* Left Column - Editor & Commands */}
         <div className="flex flex-col h-full order-2 md:order-1">
-          {/* Editor */}
+          {/* Editor - Toggle between Code and Blocks */}
           <div className="flex-1 h-full">
-            <CodeEditor
-              value={code}
-              onChange={(newValue) => setCode(newValue || '')}
-            />
+            {editorType === 'code' ? (
+              <CodeEditor
+                value={code}
+                onChange={handleCodeChange}
+              />
+            ) : (
+              <BlocklyEditor
+                value={code}
+                onChange={handleCodeChange}
+              />
+            )}
           </div>
-          <div className="min-h-[80px]">
-            <CommandSection onSelectCommand={(cmd) => handleCommandClick(cmd)} />
-          </div>
+          
+          {/* Command Section - Show only in code editor mode */}
+          {editorType === 'code' && (
+            <div className="min-h-[80px]">
+              <CommandSection onSelectCommand={(cmd) => handleCommandClick(cmd)} />
+            </div>
+          )}
         </div>
 
         {/* Right Column - Game View */}

@@ -81,7 +81,7 @@ export const useGucoLevels = () => {
   // Read Functions
   const _isLevelCompleted = async (levelId: number) => {
     if (!address) {
-      throw new Error("No address found");
+      return false;
     }
     return isLevelCompleted(address, levelId);
   };

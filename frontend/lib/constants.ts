@@ -114,24 +114,27 @@ export const GRID_WIDTH = 8;
 export const GRID_HEIGHT = 4;
 
 export const COMMANDS = {
-  create_robot_instance: 'robot = Robot.new()',
-  turn_on_robot: 'encender()',
-  turn_off_robot: 'apagar()',
+  // create_robot_instance: 'robot = Robot.new()',
+  turn_on_robot: 'robot:encender()',
+  turn_off_robot: 'robot:apagar()',
 
-  move_right: 'moverDerecha()',
-  move_left: 'moverIzquierda()',
-  move_up: 'moverArriba()',
-  move_down: 'moverAbajo()',
+  move_right: 'robot:moverDerecha()',
+  move_left: 'robot:moverIzquierda()',
+  move_up: 'robot:moverArriba()',
+  move_down: 'robot:moverAbajo()',
 
-  jump_right: 'saltarDerecha()',
-  jump_left: 'saltarIzquierda()',
-  jump_up: 'saltarArriba()',
-  jump_down: 'saltarAbajo()'
-  ,
-  collect_item: 'recolectar()',
+  jump_right: 'robot:saltarDerecha()',
+  jump_left: 'robot:saltarIzquierda()',
+  jump_up: 'robot:saltarArriba()',
+  jump_down: 'robot:saltarAbajo()',
+
+  collect_item: 'robot:recolectar()',
   variable_assign: 'veces = 3',
   for_loop: 'for i=1,veces do',
   end_loop: 'end',
+  hayObstaculo: 'robot:hayObstaculo()',
+  if_statement: 'if robot:hayObstaculo() then',
+  else_statement: 'else',
 } as const;
 
 export const COMMAND_CATEGORIES = {
@@ -139,7 +142,7 @@ export const COMMAND_CATEGORIES = {
     label: 'basic',
     color: 'green',
     commands: [
-      { command: COMMANDS.create_robot_instance, description: 'create_robot_instance' },
+      // { command: COMMANDS.create_robot_instance, description: 'create_robot_instance' },
       { command: COMMANDS.turn_on_robot, description: 'turn_on_robot' },
       { command: COMMANDS.turn_off_robot, description: 'turn_off_robot' },
     ]
@@ -169,11 +172,21 @@ export const COMMAND_CATEGORIES = {
     label: 'control',
     color: 'purple',
     commands: [
-      { command: COMMANDS.variable_assign, description: 'set_variable' },
-      { command: COMMANDS.for_loop, description: 'repeat_command' },
+      { command: COMMANDS.variable_assign, description: 'set_variable', type: 'variable' },
+      { command: COMMANDS.for_loop, description: 'repeat_command', type: 'loop' },
       { command: COMMANDS.end_loop, description: 'end_loop' },
     ]
   },
+  // condicionales: {
+  //   label: 'Condicionales',
+  //   color: 'orange',
+  //   commands: [
+  //     { command: COMMANDS.hayObstaculo, description: 'Verifica si hay un obstáculo adelante' },
+  //     { command: COMMANDS.if_statement, description: 'Inicio de bloque if' },
+  //     { command: COMMANDS.else_statement, description: 'Bloque alternativo' },
+  //     { command: COMMANDS.end_loop, description: 'Fin del bloque if' },
+  //   ]
+  // },
 } as const;
 
 export const INITIAL_CODE = `
@@ -192,74 +205,5 @@ for i=1,veces do
 end
 
 robot:saltarAbajo()
-
--- class definition
---------------------------------    
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
---------------------------------
-
-
--- Robot class
-Robot = {}
-Robot.__index = Robot
-
-function Robot.new()
-    local self = setmetatable({}, Robot)
-    self.x = 0
-    self.y = 0
-    self.stars = 0
-    return self
-end
-
-function Robot:moverDerecha()
-    self.x = self.x + 1
-end
-
-function Robot:moverIzquierda()
-    self.x = self.x - 1
-end
-
-function Robot:moverArriba()
-    self.y = self.y - 1
-end
-
-function Robot:moverAbajo()
-    self.y = self.y + 1
-end
-
-function Robot:recolectar()
-    self.stars = self.stars + 1
-end
-
-function Robot:encender()
-    self.state = 'on'
-end
-
-function Robot:apagar()
-    self.state = 'off'
-end
 `;
 
