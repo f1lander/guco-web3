@@ -33,7 +33,7 @@ const GameSection = () => {
         <Card className="bg-slate-800/50 backdrop-blur-sm h-[85vh] lg:h-[70vh] mb-4">
           <CodeEditorSection
             levelData={level}
-            onRobotMove={setRobotPosition}
+            setLevelData={setLevel}
           />
         </Card>
 

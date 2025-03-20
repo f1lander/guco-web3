@@ -102,7 +102,7 @@ const GameView: React.FC<GameViewProps> = ({
   }, [level]);
 
   return (
-    <div className="relative w-full h-full bg-slate-800 rounded-xl md:rounded-none overflow-hidden flex flex-col">
+    <div className="relative w-full h-full bg-slate-800 overflow-hidden flex flex-col">
       <div 
         ref={gridRef}
         className={`flex-1 p-2 transition-transform duration-300 ${isRotated ? 'rotate-90 scale-[0.65]' : ''} relative`}

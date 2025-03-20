@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Terminal as TerminalIcon, Play, GridIcon, ChevronRight, HelpCircle, X, Trophy, Check, Code, Puzzle } from 'lucide-react';
 import GameView from '../molecules/GameView';
 import { CodeEditor } from '@/components/molecules/CodeEditor';
-import BlocklyEditor from '@/components/molecules/BlocklyEditor';
+import BlocklyReact from '@/components/molecules/BlocklyReact';
 import Button from '@/components/atoms/Button';
 import { Terminal } from '@/components/atoms/Terminal';
 import { colorVariants } from '@/components/atoms/Button';
@@ -246,6 +246,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
   // Ensure this handler updates the shared code state
   const handleCodeChange = (newCode: string) => {
+    console.log("Code changed:", newCode);
     setCode(newCode);
   };
 
@@ -603,33 +604,15 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   }, [levelCompleted]);
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-900 rounded-xl border-2 border-slate-700 overflow-hidden w-full md:h-[800px]">
+    <div className="flex-1 flex flex-col bg-slate-900 border-2 overflow-hidden w-full h-[calc(100vh-64px)]">
       {/* Editor Header */}
-      <div className="flex items-center justify-between p-3 bg-slate-800">
+      <div className="flex items-center justify-between gap-2 p-3 bg-slate-800">
         <div className="flex items-center gap-2">
-          <TerminalIcon className="w-3 h-3 md:w-4 md:h-4 text-slate-400" />
-          <span className="text-xs md:text-sm font-semibold text-slate-400">Panel de Control</span>
-        </div>
 
-        <div className="text-xs md:text-sm font-medium text-green-400 flex items-center">
-          {isCompleted ? (
-            <>
-              <span className="mr-2">🌟</span>
-              Nivel completado
-            </>
-          ) : (
-            <p className="text-xs md:text-sm font-medium text-red-400 flex items-center">
-              Aun no completas el nivel
-            </p>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="text-xs md:text-sm font-medium text-yellow-400 flex items-center">
-            <span className="mr-2">🪴</span>
-            {robotState.collected} / {totalCollectibles}
+          <div className="hidden md:flex items-center gap-2">
+            <TerminalIcon className="w-3 h-3 md:w-4 md:h-4 text-slate-400" />
+            <span className="text-xs md:text-sm font-semibold text-slate-400">Panel de Control</span>
           </div>
-          
           {/* Editor Type Toggle */}
           <div className="flex bg-slate-700 rounded-md overflow-hidden">
             <button
@@ -647,7 +630,30 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
               Bloques
             </button>
           </div>
-          
+
+        </div>
+        <div className="flex text-xs md:text-sm font-medium text-green-400 items-center">
+          {isCompleted ? (
+            <>
+              <span className="mr-2">🌟</span>
+              <p className="hidden md:block">
+                Nivel completado
+              </p>
+            </>
+          ) : (
+            <p className="hidden md:flex text-xs md:text-sm font-medium text-red-400 items-center">
+              Nivel incompleto
+
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="text-xs md:text-sm font-medium text-yellow-400 items-center">
+            <span className="mr-2">🪴</span>
+            {robotState.collected} / {totalCollectibles}
+          </div>
+
           {/* Make sure this button uses the same handler regardless of editor mode */}
           <Button
             onClick={handleExecuteCode}
@@ -655,7 +661,10 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
             icon={Play}
             disabled={isExecuting}
           >
-            Ejecutar
+            <p className="hidden md:block">
+              Ejecutar
+            </p>
+
           </Button>
           <button
             onClick={() => setShowHelp(true)}
@@ -667,7 +676,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 grid gap-4 h-full grid-cols-1 md:grid-cols-2">
+      <div className="hidden md:grid md:gap-4 h-full grid-cols-1 md:grid-cols-2">
         {/* Left Column - Editor & Commands */}
         <div className="flex flex-col h-full order-2 md:order-1">
           {/* Editor - Toggle between Code and Blocks */}
@@ -675,34 +684,28 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
             {editorType === 'code' ? (
               <CodeEditor
                 value={code}
-                onChange={handleCodeChange}
+                onChange={(value: string | undefined) => handleCodeChange(value ?? '')}
               />
             ) : (
-              <BlocklyEditor
-                value={code}
-                onChange={handleCodeChange}
+              <BlocklyReact
+                code={code}
+                onGenerateCode={(code: string) => handleCodeChange(code)}
               />
             )}
           </div>
-          
-          {/* Command Section - Show only in code editor mode */}
-          {editorType === 'code' && (
-            <div className="min-h-[80px]">
-              <CommandSection onSelectCommand={(cmd) => handleCommandClick(cmd)} />
-            </div>
-          )}
+
         </div>
 
         {/* Right Column - Game View */}
-        <div className="flex flex-col h-full order-1 md:order-2">
-          <div className="h-[57%]">
+        <div className="flex flex-col h-[500px] md:h-full order-1 md:order-2">
+          <div>
             <GameView
               level={levelData}
               robotState={robotState}
               collisionState={collisionState}
             />
           </div>
-          <div className="h-[43%]">
+          <div className="block h-[200px] md:flex-grow md:h-0">
             <Terminal
               commands={commands}
               isExecuting={isExecuting}
@@ -712,6 +715,39 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
               currentCommandIndex={currentMoveIndex}
             />
           </div>
+        </div>
+      </div>
+
+      <div className="flex md:hidden flex-col h-full">
+        <div>
+          <GameView
+            level={levelData}
+            robotState={robotState}
+            collisionState={collisionState}
+          />
+        </div>
+        <div className="h-[150px] xs:h-[175px] sm:h-[200px]">
+          <Terminal
+            commands={commands}
+            isExecuting={isExecuting}
+            isCompiling={isCompiling}
+            error={error}
+            executeCommand={() => { }}
+            currentCommandIndex={currentMoveIndex}
+          />
+        </div>
+        <div className="flex-1 h-full">
+          {editorType === 'code' ? (
+            <CodeEditor
+              value={code}
+              onChange={(value: string | undefined) => handleCodeChange(value ?? '')}
+            />
+          ) : (
+            <BlocklyReact
+              code={code}
+              onGenerateCode={(code: string) => handleCodeChange(code)}
+            />
+          )}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
+'use client'
 import React, { useEffect, useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
-import Button from '../atoms/Button';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 // Available commands categorized by type
 const ROBOT_COMMANDS = {
@@ -191,64 +192,39 @@ export const CodeEditor = ({
 }: CodeEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
 
-  const [fileName, setFileName] = useState('GUCO.js');
-  const [advancedMode, setAdvancedMode] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // Get both width and height from the screen size hook
+  const { height, editorContainerHeightClass } = useScreenSize();
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // 768px is a common breakpoint for mobile
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-
+  // Configure options based on screen dimensions
   const options = {
     selectOnLineNumbers: false,
-    lineNumbers: isMobile ? 'off' as const : 'on' as const,
-    minimap: { enabled: true },
-    fontSize: isMobile ? 14 : 12,
-    lineHeight: isMobile ? 20 : 16,
+    lineNumbers: height < 750 ? 'off' as const : 'on' as const,
+    minimap: { enabled: height > 750 },
+    fontSize: height < 600 ? 14 : height < 900 ? 13 : 12,
+    lineHeight: height < 750 ? 20 : 16,
     readOnly: readOnly,
     scrollBeyondLastLine: false,
     automaticLayout: true,
-    padding: { top: 4, bottom: 4 },
+    padding: { 
+      top: height < 750 ? 6 : 4, 
+      bottom: height < 750 ? 6 : 4 
+    },
     wordWrap: 'on' as const,
   };
 
+  // Calculate editor height based on actual device height
+  console.log('editorContainerHeightClass', editorContainerHeightClass);
+  
+  // Add this state for client-side rendering
+  const [mounted, setMounted] = useState(false);
+  
+  // Only apply the dynamic height class after client-side hydration is complete
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
-    <div className={'h-[300px] md:h-full flex flex-col'}>
-      {/* <div className="flex border-b border-slate-700">
-        <div className="flex flex-row justify-between">
-          {advancedMode && Object.keys(files).map((name) => (
-            <Button
-              key={name}
-              onClick={() => setFileName(name)}
-              className={`px-4 py-2 rounded-none border-r border-slate-700 ${fileName === name
-                ? 'bg-slate-800 text-white border-b-2 border-b-blue-500'
-                : 'bg-slate-900 text-slate-400 hover:bg-slate-800'
-                }`}
-            >
-              {name}
-            </Button>
-          ))}
-        </div>
-        <div className="flex w-full border-slate-700 justify-end p-1">
-          <Button
-            onClick={() => setAdvancedMode(!advancedMode)}
-            className={`px-4 py-1 m-2 rounded-full transition-colors text-xs ${advancedMode
-                ? 'bg-blue-600 text-white'
-                : 'bg-slate-700 text-slate-300'
-              }`}
-          >
-            {advancedMode ? 'Simple' : 'Advanzado'}
-          </Button>
-        </div>
-      </div> */}
+    <div className={`${mounted ? editorContainerHeightClass : ''} flex flex-col`}>
       <Editor
         height="100%"
         defaultLanguage="lua"
@@ -256,10 +232,9 @@ export const CodeEditor = ({
         defaultValue={value}
         options={options}
         onChange={onChange}
-        loading={<div className="text-slate-700">Loading editor...</div>}
+        loading={<div className="text-slate-700">Cargando editor...</div>}
         onMount={(editor) => {
           (editorRef as React.MutableRefObject<any>).current = editor;
-
         }}
       />
     </div>

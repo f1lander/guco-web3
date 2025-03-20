@@ -173,8 +173,7 @@ export const COMMAND_CATEGORIES = {
     color: 'purple',
     commands: [
       { command: COMMANDS.variable_assign, description: 'set_variable', type: 'variable' },
-      { command: COMMANDS.for_loop, description: 'repeat_command', type: 'loop' },
-      { command: COMMANDS.end_loop, description: 'end_loop' },
+      { command: COMMANDS.for_loop, description: 'repeat_command', type: 'loop' }
     ]
   },
   // condicionales: {
@@ -191,8 +190,6 @@ export const COMMAND_CATEGORIES = {
 
 export const INITIAL_CODE = `
 -- Area de codigo para programar el robot
-robot = Robot.new()
-
 robot:encender()
 robot:moverArriba()
 

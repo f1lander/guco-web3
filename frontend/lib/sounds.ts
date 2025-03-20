@@ -2,36 +2,56 @@ import * as Tone from "tone";
 
 // Initialize audio context on user interaction
 export const initAudio = async () => {
-  await Tone.start();
-  console.log("Audio context started");
+  if (typeof window === 'undefined') return;
   
-  // Start background music
-  playBackgroundMusic();
+  try {
+    await Tone.start();
+    console.log("Audio context started");
+    
+    // Start background music
+    playBackgroundMusic();
+  } catch (error) {
+    console.error("Failed to initialize audio:", error);
+  }
 };
 
 // Sound Effects
-const fxSynth = new Tone.Synth({
-  oscillator: { type: "sine" },
-  envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.1 }
-}).toDestination();
+let fxSynth: Tone.Synth | null = null;
+let jumpSynth: Tone.Synth | null = null;
+let collectSynth: Tone.PolySynth | null = null;
+let goalSynth: Tone.PolySynth | null = null;
+let errorSynth: Tone.PolySynth | null = null;
+let backgroundSynth: Tone.PolySynth | null = null;
 
-const jumpSynth = new Tone.Synth({
-  oscillator: { type: "triangle" },
-  envelope: { attack: 0.01, decay: 0.3, sustain: 0.1, release: 0.1 }
-}).toDestination();
+// Initialize synths only on client side
+const initSynths = () => {
+  if (typeof window === 'undefined') return;
+  
+  fxSynth = new Tone.Synth({
+    oscillator: { type: "sine" },
+    envelope: { attack: 0.01, decay: 0.1, sustain: 0.1, release: 0.1 }
+  }).toDestination();
 
-const collectSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+  jumpSynth = new Tone.Synth({
+    oscillator: { type: "triangle" },
+    envelope: { attack: 0.01, decay: 0.3, sustain: 0.1, release: 0.1 }
+  }).toDestination();
 
-const goalSynth = new Tone.PolySynth(Tone.Synth).toDestination();
-
-// Create a synth for error sounds with dissonant characteristics
-const errorSynth = new Tone.PolySynth(Tone.Synth, {
-  oscillator: { type: "sawtooth" },
-  envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2 }
-}).toDestination();
+  collectSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+  goalSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+  
+  errorSynth = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: "sawtooth" },
+    envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2 }
+  }).toDestination();
+  
+  backgroundSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+};
 
 // Robot power on sound
 export const playRobotOnSound = () => {
+  if (typeof window === 'undefined' || !fxSynth) return;
+  
   const now = Tone.now();
   fxSynth.volume.value = -10;
   fxSynth.triggerAttackRelease("C5", "16n", now);
@@ -41,12 +61,16 @@ export const playRobotOnSound = () => {
 
 // Robot movement sound
 export const playMoveSound = () => {
+  if (typeof window === 'undefined' || !fxSynth) return;
+  
   fxSynth.volume.value = -20;
   fxSynth.triggerAttackRelease("G4", "32n");
 };
 
 // Robot jump sound
 export const playJumpSound = () => {
+  if (typeof window === 'undefined' || !jumpSynth) return;
+  
   jumpSynth.volume.value = -15;
   jumpSynth.triggerAttackRelease("C6", "8n");
   jumpSynth.frequency.rampTo("G6", 0.1);
@@ -54,12 +78,16 @@ export const playJumpSound = () => {
 
 // Collect item sound
 export const playCollectSound = () => {
+  if (typeof window === 'undefined' || !collectSynth) return;
+  
   collectSynth.volume.value = -10;
   collectSynth.triggerAttackRelease(["C6", "E6"], "16n");
 };
 
 // Goal reached sound
 export const playGoalSound = () => {
+  if (typeof window === 'undefined' || !goalSynth) return;
+  
   const now = Tone.now();
   goalSynth.volume.value = -5;
   goalSynth.triggerAttackRelease(["C5", "E5", "G5"], "8n", now);
@@ -70,6 +98,8 @@ export const playGoalSound = () => {
 
 // Robot error/crash sound
 export const playErrorSound = () => {
+  if (typeof window === 'undefined' || !errorSynth) return;
+  
   const now = Tone.now();
   errorSynth.volume.value = -8;
   
@@ -91,10 +121,9 @@ export const playErrorSound = () => {
 
 // Background Music
 let bgMusicPlaying = false;
-const backgroundSynth = new Tone.PolySynth(Tone.Synth).toDestination();
 
 export const playBackgroundMusic = () => {
-  if (bgMusicPlaying) return;
+  if (typeof window === 'undefined' || !backgroundSynth || bgMusicPlaying) return;
   
   backgroundSynth.volume.value = -20;
   
@@ -113,7 +142,7 @@ export const playBackgroundMusic = () => {
   // Create a sequence
   const sequence = new Tone.Sequence(
     (time, { note, duration }) => {
-      backgroundSynth.triggerAttackRelease(note, duration, time);
+      backgroundSynth?.triggerAttackRelease(note, duration, time);
     },
     melody.map(event => ({ ...event })),
     "8n"
@@ -130,9 +159,14 @@ export const playBackgroundMusic = () => {
 };
 
 export const stopBackgroundMusic = () => {
-  if (!bgMusicPlaying) return;
+  if (typeof window === 'undefined' || !bgMusicPlaying) return;
   
   Tone.Transport.stop();
   Tone.Transport.cancel();
   bgMusicPlaying = false;
-}; 
+};
+
+// Initialize synths when the module is loaded
+if (typeof window !== 'undefined') {
+  initSynths();
+} 

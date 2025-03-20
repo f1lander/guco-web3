@@ -464,8 +464,12 @@ export interface CommandWithMeta {
 }
 
 export const compileUserCode = (code: string): CommandWithMeta[] => {
-  // Extract only the user code section
-  const userCodeSection = code.split('-- Area de codigo para programar el robot')[1]?.split('-- class definition')[0];
+  // Check if code contains markers - if yes, extract section, if not, use entire code
+  let userCodeSection = code;
+  
+  if (code.includes('-- Area de codigo para programar el robot')) {
+    userCodeSection = code.split('-- Area de codigo para programar el robot')[1]?.split('-- class definition')[0] || '';
+  }
 
   if (!userCodeSection) return [];
 
@@ -592,6 +596,49 @@ export const compileUserCode = (code: string): CommandWithMeta[] => {
   }
 
   return structuredCommands;
+};
+
+
+/**
+ * 
+ * @param structuredCommands 
+ * @returns 
+ */
+export const structuredCommandsToBlockly = (structuredCommands: CommandWithMeta[]): string[] => {
+  const flatCommands: string[] = [];
+
+  for (let i = 0; i < structuredCommands.length; i++) {
+    const cmd = structuredCommands[i];
+
+    if (cmd.isLoopStart && cmd.loopCount) {
+      // Find the matching loop end
+      let loopEndIndex = i + 1;
+      let nestLevel = 1;
+
+      while (nestLevel > 0 && loopEndIndex < structuredCommands.length) {
+        if (structuredCommands[loopEndIndex].isLoopStart) nestLevel++;
+        if (structuredCommands[loopEndIndex].isLoopEnd) nestLevel--;
+        loopEndIndex++;
+      }
+
+      if (nestLevel === 0) {
+        // Extract the loop body
+        const loopBody = structuredCommands.slice(i + 1, loopEndIndex - 1);
+        const filteredLoopBody = loopBody.filter(cmd => !cmd.isLoopStart && !cmd.isLoopEnd);
+
+        // Repeat the loop body for loopCount times
+        for (let j = 0; j < cmd.loopCount; j++) {
+          filteredLoopBody.forEach(loopCmd => {
+            flatCommands.push(loopCmd.command);
+          });
+        }
+      }
+    } else if (!cmd.isLoopStart && !cmd.isLoopEnd) {
+      flatCommands.push(cmd.command);
+    }
+  }
+
+  return flatCommands;
 };
 
 // Function to flatten the structured commands for execution

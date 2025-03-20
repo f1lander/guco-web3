@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     ],
     locale: 'es_ES',
     type: 'website',
-  }, 
+  },
 };
 
 export default function RootLayout({
@@ -52,22 +52,22 @@ export default function RootLayout({
             <LanguageProvider>
               <div className="flex min-h-screen w-full flex-col bg-black font-mono">
                 <DotBackground>
-                  <TopNavbar />
-                  <div className="flex flex-col gap-4 py-4">
-                    <main className="main flex flex-col gap-4 px-2 pt-16 md:px-8">
-                      {children}
-                      <Toaster />
-                    </main>
-                    <div className="flex flex-col items-center justify-center gap-4 px-4 text-center">
+
+                  <div className="flex flex-col">
+                    <TopNavbar />
+                    {children}
+                    <Toaster />
+
+                    {/* <div className="flex flex-col items-center justify-center gap-4 px-4 text-center">
                       <p className="text-lg text-gray-800 dark:text-gray-400">© 2025 GUCO Network. All rights reserved.</p>                   
-                    </div>
+                    </div> */}
                   </div>
                 </DotBackground>
               </div>
             </LanguageProvider>
           </ThemeProvider>
         </Providers>
-        
+
         <Toaster />
       </body>
     </html>

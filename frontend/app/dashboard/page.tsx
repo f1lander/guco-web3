@@ -65,9 +65,7 @@ export default function LevelsExplorer() {
   }
 
   return (
-    <div className="flex flex-col gap-20">
-
-
+    <div className="flex flex-col gap-20 p-8">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-2xl font-bold">{t('dashboard.exploreLevels')}</h2>

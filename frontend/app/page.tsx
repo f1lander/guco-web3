@@ -10,13 +10,16 @@ import LeaderboardSection from '@/components/organisms/LeaderboardSection';
 
 export default function Page() {
   return (
-    <div className="flex flex-col min-h-screen gap-8">
-      <HeroSection />
-      <FeaturesSection />
-      <GameSection />
-      <BlockchainSection />
-      <LeaderboardSection />
-      <TutorialSection />
-    </div>
+    <main className="main flex flex-col gap-4 px-2 pt-16 md:px-8">
+
+      <div className="flex flex-col min-h-screen gap-8">
+        <HeroSection />
+        <FeaturesSection />
+        <GameSection />
+        <BlockchainSection />
+        <LeaderboardSection />
+        <TutorialSection />
+      </div>
+    </main>
   );
 }
