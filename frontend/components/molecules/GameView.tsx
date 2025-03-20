@@ -30,7 +30,7 @@ const GameView: React.FC<GameViewProps> = ({
   const [previousRobotPos, setPreviousRobotPos] = useState<{ x: number, y: number } | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const [tileSize, setTileSize] = useState<number>(0);
-  
+
   // Calculate tile size on mount and window resize
   useEffect(() => {
     const updateTileSize = () => {
@@ -39,12 +39,12 @@ const GameView: React.FC<GameViewProps> = ({
         setTileSize(gridWidth / GRID_WIDTH);
       }
     };
-    
+
     updateTileSize();
     window.addEventListener('resize', updateTileSize);
     return () => window.removeEventListener('resize', updateTileSize);
   }, []);
-  
+
   // Memoize robot position to prevent recalculation on every render
   const robotPosition = useMemo(() => {
     const robotIndex = level.findIndex(tile => tile === TileType.ROBOT);
@@ -53,7 +53,7 @@ const GameView: React.FC<GameViewProps> = ({
       y: Math.floor(robotIndex / GRID_WIDTH)
     };
   }, [level]);
-  
+
   // Update previousRobotPos when robotPosition changes
   useEffect(() => {
     if (previousRobotPos === null) {
@@ -92,7 +92,7 @@ const GameView: React.FC<GameViewProps> = ({
     if (robotIndex !== -1) {
       levelWithoutRobot[robotIndex] = TileType.EMPTY;
     }
-    
+
     // Convert to 2D grid
     return Array.from({ length: GRID_HEIGHT }, (_, rowIndex) =>
       Array.from({ length: GRID_WIDTH }, (_, colIndex) =>
@@ -103,7 +103,7 @@ const GameView: React.FC<GameViewProps> = ({
 
   return (
     <div className="relative w-full h-full bg-slate-800 overflow-hidden flex flex-col">
-      <div 
+      <div
         ref={gridRef}
         className={`flex-1 p-2 transition-transform duration-300 ${isRotated ? 'rotate-90 scale-[0.65]' : ''} relative`}
       >
@@ -123,25 +123,41 @@ const GameView: React.FC<GameViewProps> = ({
               ))}
             </div>
           ))}
-          
+
           {/* Animated Robot */}
           {tileSize > 0 && (
-            <div 
+            <div
               className="absolute transition-all duration-500 ease-in-out"
               style={{
                 width: `${tileSize}px`,
                 height: `${tileSize}px`,
-                top: `${(robotPosition.y * tileSize) + 5}px`,
-                left: `${(robotPosition.x * tileSize) + 5}px`,
+                top: `${robotPosition.y * tileSize + 5}px`,
+                left: `${robotPosition.x * tileSize - 5}px`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
-              <div className="w-full h-full flex items-center justify-center">
-                <div 
-                  className={`text-4xl transform transition-all duration-300 
-                    ${robotState.state === 'on' ? 'scale-100' : 'scale-90 opacity-50 grayscale'}`}
+              <div
+                className={`transform transition-all duration-300
+                  ${robotState.state === 'on' ? 'scale-100 opacity-100' : 'scale-90 opacity-50 grayscale'}`}
+                style={{
+                  width: `${tileSize * 0.7}px`,      // 70% of tile size
+                  height: `${tileSize * 0.7}px`,     // 70% of tile size
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <span
+                  role="img"
+                  aria-label="robot"
+                  style={{
+                    fontSize: `${Math.max(tileSize * 0.4, 16)}px` // Responsive font size with minimum
+                  }}
                 >
                   🤖
-                </div>
+                </span>
               </div>
             </div>
           )}
