@@ -1,57 +1,55 @@
 // use screen size hook
+'use client';
 import { useState, useEffect } from 'react';
 
 
 const getEditorContainerHeight = (height: number, width: number) => {
-
-  console.log(height);
   // For very short devices
   if (width < 480) {
     if (height < 600) {
-      return 'h-[200px]';
+      return 200; // Return pixel value instead of Tailwind class
     }
     // For medium-height phones
     else if (height < 750) {
-      return 'h-[270px]';
+      return 270;
     }
     // For taller phones like iPhone 14 (932px)
     else if (height < 1000 ) {
-      return 'h-[450px]';
+      return 450;
     }
     // For tablets and small laptops
     else if (height < 1200) {
-      return 'h-[550px]';
+      return 550;
     }
   }
   // For larger screens
   else {
-    return 'h-[900px]';
+    return 900;
   }
 };
 
 const getBlocklyContainerHeight = (height: number, width: number) => {
-  console.log(height);
   // For very short devices
   if (width < 480) {
     if (height < 600) {
-      return 'h-[200px]';
+      return 200;
     }
     // For medium-height phones
     else if (height < 750) {
-      return 'h-[270px]';
+      return 270;
     }
     // For taller phones like iPhone 14 (932px)
     else if (height < 1000 ) {
-      return 'h-[450px]';
+      return 450;
     }
     // For tablets and small laptops
     else if (height < 1200) {
-      return 'h-[550px]';
+      return 550;
     }
   }
   // For larger screens
   else {
-    return 'h-[500px]';
+    return 500;
   }
 };
 
@@ -88,10 +86,16 @@ export const useScreenSize = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Add this to return the editor container height class along with other screen properties
-  const editorContainerHeightClass = getEditorContainerHeight(screenSize.height, screenSize.width);
-  const blocklyContainerHeightClass = getBlocklyContainerHeight(screenSize.height, screenSize.width);
-  return { ...screenSize, screenCategory, editorContainerHeightClass, blocklyContainerHeightClass };
+  // Return numeric height values instead of classes
+  const editorContainerHeight = getEditorContainerHeight(screenSize.height, screenSize.width);
+  const blocklyContainerHeight = getBlocklyContainerHeight(screenSize.height, screenSize.width);
+  
+  return { 
+    ...screenSize, 
+    screenCategory, 
+    editorContainerHeight, 
+    blocklyContainerHeight 
+  };
 };
 
 // Export the standalone function as well if needed

@@ -23,7 +23,13 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
   const [blocklyLoaded, setBlocklyLoaded] = useState(false);
   const [themeLoaded, setThemeLoaded] = useState(false);
   const [workspace, setWorkspace] = useState(null);
-  const { screenCategory, blocklyContainerHeightClass } = useScreenSize();
+  const { screenCategory, blocklyContainerHeight } = useScreenSize();
+  const [mounted, setMounted] = useState(false);
+
+  // Add effect to handle client-side rendering
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Cargar scripts de Blockly y el tema oscuro dinámicamente
   useEffect(() => {
@@ -504,7 +510,7 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
         onGenerateCode(jsCode);
       });
 
-      // Corrección para el problema de la barra de desplazamiento
+      // Corrección para el problema de la barra de desplazamiento y z-index
       const style = document.createElement('style');
       style.type = 'text/css';
       style.innerHTML = `
@@ -512,20 +518,44 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
           overflow-x: hidden !important;
           background-color: #333 !important;
           color: #fff !important;
+          z-index: 50 !important; /* Lower z-index for toolbox */
         }
         .blocklyFlyout {
           overflow: hidden !important;
+          z-index: 49 !important; /* Lower z-index for flyout */
         }
         .blocklyFlyoutScrollbar {
           display: none !important;
         }
         
+        /* Control z-index for dropdown elements */
+        .blocklyWidgetDiv {
+          z-index: 51 !important; /* Higher than toolbox but lower than app dialogs */
+        }
+        
+        /* Control z-index for the main blockly workspace */
+        .blocklyWorkspace {
+          z-index: 10 !important;
+        }
+        
+        /* Control z-index for tooltips */
+        .blocklyTooltipDiv {
+          z-index: 52 !important; /* Higher than widgets but lower than app dialogs */
+        }
+        
+        /* Ensure your app dialogs have z-index higher than 100 */
+        .app-dialog, .modal, .dialog, [role="dialog"] {
+          z-index: 1000 !important; /* Much higher than any Blockly component */
+        }
+        
         /* Asegurarse de que los íconos de la papelera y zoom sean visibles */
         .blocklyTrash {
           opacity: 1 !important;
+          z-index: 40 !important;
         }
         .blocklyZoom {
           opacity: 1 !important;
+          z-index: 40 !important;
         }
         
         /* Mejorar la visibilidad de los iconos en tema oscuro */
@@ -541,7 +571,8 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
     <div className="flex flex-col h-full">
       <div
         ref={blocklyContainerRef}
-        className={`${blocklyContainerHeightClass} flex flex-col`}
+        className="flex flex-col"
+        style={{ height: mounted ? `${blocklyContainerHeight}px` : 'auto' }}
       />
       <div className="flex-grow hidden sm:block">
         <CodeBlock

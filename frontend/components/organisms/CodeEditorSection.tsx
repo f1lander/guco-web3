@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal as TerminalIcon, Play, GridIcon, ChevronRight, HelpCircle, X, Trophy, Check, Code, Puzzle } from 'lucide-react';
 import GameView from '../molecules/GameView';
@@ -29,63 +31,11 @@ import { useRobotSounds } from '@/hooks/useRobotSounds';
 import { useCollectiblesInit } from '@/hooks/useCollectiblesInit';
 import { useLevelCompletion } from '@/hooks/useLevelCompletion';
 
-interface CommandSectionProps {
-  onSelectCommand: (command: string) => void;
-}
 
 interface HelpDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-interface Command {
-  command: string;
-  description: string;
-}
-
-
-const CommandSection: React.FC<CommandSectionProps> = ({ onSelectCommand }) => {
-  const [selectedCategory, setSelectedCategory] = useState<keyof typeof COMMAND_CATEGORIES>('basico');
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex flex-col bg-slate-800/50 border-t-2 border-slate-700 p-1 md:p-2">
-      {/* Categories */}
-      <div className="flex gap-1 md:gap-2 p-1 md:p-2 overflow-x-auto command-scroll items-center justify-center">
-        {Object.entries(COMMAND_CATEGORIES).map(([key, category]) => (
-          <Button
-            key={key}
-            variant="command"
-            color={selectedCategory === key ? category.color : 'slate'}
-            onClick={() => setSelectedCategory(key as keyof typeof COMMAND_CATEGORIES)}
-            className="text-xs md:text-sm px-2 py-1 md:px-3 md:py-1.5"
-          >
-            {t(`game.commands.categories.${category.label}`)}
-          </Button>
-        ))}
-      </div>
-
-      {/* Commands */}
-      <div className="overflow-x-auto command-scroll p-1 md:p-2">
-        <div className="flex gap-1 md:gap-2">
-          {COMMAND_CATEGORIES[selectedCategory].commands.map((cmd, index) => (
-            <Button
-              key={index}
-              variant="command"
-              color={COMMAND_CATEGORIES[selectedCategory].color}
-              icon={ChevronRight}
-              className="text-xs md:text-sm px-2 py-1 md:px-3 md:py-1.5"
-              onClick={() => onSelectCommand(cmd.command)}
-              title={t(`game.commands.descriptions.${cmd.description}`)}
-            >
-              {cmd.command}
-            </Button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 interface SuccessDialogProps {
   isOpen: boolean;

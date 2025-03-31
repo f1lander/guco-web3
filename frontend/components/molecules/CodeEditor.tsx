@@ -192,8 +192,8 @@ export const CodeEditor = ({
 }: CodeEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
 
-  // Get both width and height from the screen size hook
-  const { height, editorContainerHeightClass } = useScreenSize();
+  // Get height value from the screen size hook (now returning pixels)
+  const { height, editorContainerHeight } = useScreenSize();
 
   // Configure options based on screen dimensions
   const options = {
@@ -211,20 +211,19 @@ export const CodeEditor = ({
     },
     wordWrap: 'on' as const,
   };
-
-  // Calculate editor height based on actual device height
-  console.log('editorContainerHeightClass', editorContainerHeightClass);
   
   // Add this state for client-side rendering
   const [mounted, setMounted] = useState(false);
   
-  // Only apply the dynamic height class after client-side hydration is complete
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
-    <div className={`${mounted ? editorContainerHeightClass : ''} flex flex-col`}>
+    <div 
+      className="flex flex-col"
+      style={{ height: mounted ? `${editorContainerHeight}px` : 'auto' }}
+    >
       <Editor
         height="100%"
         defaultLanguage="lua"
