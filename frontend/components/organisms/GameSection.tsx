@@ -36,27 +36,6 @@ const GameSection = () => {
             setLevelData={setLevel}
           />
         </Card>
-
-        {/* Controls and Status - Mobile only */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:hidden">
-          <Card className="bg-slate-800/50 backdrop-blur-sm p-4">
-            <h3 className="text-lg font-semibold mb-2">Estado del Robot</h3>
-            <div className="space-y-2 text-sm text-slate-400">
-              <p>Posición: ({robotPosition.x}, {robotPosition.y})</p>
-              <p>Energía: 100%</p>
-              <p>Items Recolectados: 0</p>
-            </div>
-          </Card>
-
-          <Card className="bg-slate-800/50 backdrop-blur-sm p-4">
-            <h3 className="text-lg font-semibold mb-2">Nivel Actual</h3>
-            <div className="space-y-2 text-sm text-slate-400">
-              <p>Nivel: 1</p>
-              <p>Objetivo: Mover el robot hasta la meta</p>
-              <p>Progreso: 0/3 objetivos completados</p>
-            </div>
-          </Card>
-        </div>
       </div>
     </section>
   );
