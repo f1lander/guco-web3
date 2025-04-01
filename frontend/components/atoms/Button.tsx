@@ -3,7 +3,7 @@ import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'command';
+  variant?: 'default' | 'command' | 'link';
   color?: string;
   icon?: LucideIcon;
   children: React.ReactNode;
@@ -71,10 +71,12 @@ const Button: React.FC<ButtonProps> = ({
   const baseStyles = cn(
     "relative flex items-center justify-center gap-2 px-4 py-2 font-semibold rounded-lg",
     "transition-all duration-[31ms] cubic-bezier(.5, .7, .4, 1)",
-    colorVariants[color as keyof typeof colorVariants]?.shadow,
-    colorVariants[color as keyof typeof colorVariants]?.activeShadow,
-    "active:translate-y-[7px]",
-    "active:transition-[35ms]"
+    variant !== 'link' && [
+      colorVariants[color as keyof typeof colorVariants]?.shadow,
+      colorVariants[color as keyof typeof colorVariants]?.activeShadow,
+      "active:translate-y-[7px]",
+      "active:transition-[35ms]"
+    ]
   );
   
   const variants = {
@@ -83,6 +85,11 @@ const Button: React.FC<ButtonProps> = ({
     ),
     command: cn(
       `flex-shrink-0 bg-${color}-500 text-white font-mono text-sm`
+    ),
+    link: cn(
+      'bg-slate-800/30 hover:bg-slate-700/50',
+      'text-slate-300 hover:text-white',
+      'transition-colors duration-200'
     )
   };
 

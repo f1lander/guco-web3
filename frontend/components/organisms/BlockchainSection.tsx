@@ -33,7 +33,7 @@ const BlockchainSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-slate-900/50">
+    <section className="py-20 mt-[100px] bg-slate-900/50">
       <div className="container mx-auto px-4">
         <SectionTitle className="text-center mb-12">
           {t('blockchain.title')}

@@ -133,8 +133,8 @@ export const COMMANDS = {
   for_loop: 'for i=1,veces do',
   end_loop: 'end',
   hayObstaculo: 'robot:hayObstaculo()',
-  if_statement: 'if robot:hayObstaculo() then',
-  else_statement: 'else',
+  // if_statement: 'if robot:hayObstaculo() then',
+  // else_statement: 'else',
 } as const;
 
 export const COMMAND_CATEGORIES = {
