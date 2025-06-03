@@ -29,7 +29,7 @@ export const NETWORK = {
   },
   DEVNET: {
     chainId: 1337,
-    rpcUrl: 'http://localhost:8545',
+    rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || 'http://localhost:8545',
   },
 } as const;
 

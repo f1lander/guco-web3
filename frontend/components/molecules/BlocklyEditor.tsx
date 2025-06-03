@@ -606,11 +606,10 @@ const BlocklyEditor: React.FC<BlocklyEditorProps> = ({ value, onChange }) => {
               
               const blockType = commandStr.includes('for') ? 'loop' : 
                               (commandStr.includes('if') ? 'if' : 
-                              (commandStr === 'else' ? 'else' : 
+                              (commandStr.includes('else') ? 'else' : 
                               (commandStr.includes('=') && !commandStr.includes('for') ? 'variable' : 'command')));
               
               const blockColor = getBlockColor(commandStr, blockType);
-              
               return (
                 <div
                   key={index}

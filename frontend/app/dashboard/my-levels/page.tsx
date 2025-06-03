@@ -99,7 +99,7 @@ export default function MyLevels() {
   }
 
   return (
-    <div className="flex flex-col gap-20 mt-8">
+    <div className="flex flex-col gap-20 mt-8 mx-8">
       {address && <ProfileHeader address={address} stats={stats} />}
 
       <div className="flex flex-col gap-6">
