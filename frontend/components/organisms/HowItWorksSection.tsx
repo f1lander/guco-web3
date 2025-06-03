@@ -1,28 +1,31 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import SectionTitle from '../atoms/SectionTitle';
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import SectionTitle from "../atoms/SectionTitle";
 
 const steps = [
   {
-    title: 'Escribe Código',
-    description: 'Utiliza comandos simples en español para controlar tu robot virtual.',
-    icon: '⌨️'
+    title: "Escribe Código",
+    description:
+      "Utiliza comandos simples en español para controlar tu robot virtual.",
+    icon: "⌨️",
   },
   {
-    title: 'Ejecuta y Observa',
-    description: 'Ve cómo tu robot sigue tus instrucciones y completa los desafíos.',
-    icon: '▶️'
+    title: "Ejecuta y Observa",
+    description:
+      "Ve cómo tu robot sigue tus instrucciones y completa los desafíos.",
+    icon: "▶️",
   },
   {
-    title: 'Aprende y Mejora',
-    description: 'Descubre nuevos conceptos de programación mientras avanzas en los niveles.',
-    icon: '📚'
+    title: "Aprende y Mejora",
+    description:
+      "Descubre nuevos conceptos de programación mientras avanzas en los niveles.",
+    icon: "📚",
   },
   {
-    title: 'Gana Recompensas',
-    description: 'Obtén logros y reconocimientos almacenados en la blockchain.',
-    icon: '🏆'
-  }
+    title: "Gana Recompensas",
+    description: "Obtén logros y reconocimientos almacenados en la blockchain.",
+    icon: "🏆",
+  },
 ];
 
 const HowItWorksSection = () => {

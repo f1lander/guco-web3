@@ -1,45 +1,39 @@
-'use client';
+"use client";
 
-import { http, createStorage, cookieStorage } from 'wagmi';
-import { defineChain } from 'viem';
-import { anvil, holesky } from 'wagmi/chains';
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import {
-  WALLET_CONNECTION_PROJECT_ID,
-  RPC_URL,
-  isTestnet,
-} from '@/lib/constants';
+import { http, createStorage, cookieStorage } from "wagmi";
+import { defineChain } from "viem";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { WALLET_CONNECTION_PROJECT_ID, RPC_URL } from "@/lib/constants";
 
-const devnet = defineChain({
+// Define the GUCO devnet chain
+const guco_devnet = defineChain({
   id: 1337,
-  name: 'Devnet',
+  name: "GUCO Devnet",
   nativeCurrency: {
     decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
+    name: "Ether",
+    symbol: "ETH",
   },
   rpcUrls: {
     default: {
-      http: [RPC_URL || ''],
+      http: [RPC_URL || "https://geth.devnet.drosera.io"],
     },
   },
+  testnet: true,
 });
 
 export const rainbowConfig = getDefaultConfig({
-  appName: 'WalletConnection',
+  appName: "Guco Web3",
   projectId: WALLET_CONNECTION_PROJECT_ID,
-  chains: isTestnet ? [holesky] : [anvil, devnet, holesky],
+  chains: [guco_devnet], // Only support devnet
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
   }),
-  transports: isTestnet
-    ? {
-        [holesky.id]: http(),
-      }
-    : {
-        [holesky.id]: http(),
-        [anvil.id]: http(),
-        [devnet.id]: http(),
-      },
+  transports: {
+    [guco_devnet.id]: http(),
+  },
 });
+
+// Export the devnet chain for use in other parts of the app
+export { guco_devnet };

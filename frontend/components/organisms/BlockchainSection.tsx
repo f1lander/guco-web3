@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import SectionTitle from '../atoms/SectionTitle';
-import { Wallet, Code, Trophy, Database } from 'lucide-react';
-import { useTranslation } from '@/providers/language-provider';
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import SectionTitle from "../atoms/SectionTitle";
+import { Wallet, Code, Trophy, Database } from "lucide-react";
+import { useTranslation } from "@/providers/language-provider";
 
 const BlockchainSection = () => {
   const { t } = useTranslation();
@@ -12,31 +12,32 @@ const BlockchainSection = () => {
   const features = [
     {
       icon: <Wallet className="w-8 h-8" />,
-      translationKey: 'digitalIdentity',
-      techDetail: 'mapping(address => Player) internal players'
+      translationKey: "digitalIdentity",
+      techDetail: "mapping(address => Player) internal players",
     },
     {
       icon: <Code className="w-8 h-8" />,
-      translationKey: 'levelCreation',
-      techDetail: 'mapping(uint256 => Level) public levels'
+      translationKey: "levelCreation",
+      techDetail: "mapping(uint256 => Level) public levels",
     },
     {
       icon: <Trophy className="w-8 h-8" />,
-      translationKey: 'verifiableAchievements',
-      techDetail: 'mapping(address => mapping(uint256 => bool)) public playerCompletedLevels'
+      translationKey: "verifiableAchievements",
+      techDetail:
+        "mapping(address => mapping(uint256 => bool)) public playerCompletedLevels",
     },
     {
       icon: <Database className="w-8 h-8" />,
-      translationKey: 'globalStats',
-      techDetail: 'mapping(address => uint256) public playerLevelCount'
-    }
+      translationKey: "globalStats",
+      techDetail: "mapping(address => uint256) public playerLevelCount",
+    },
   ];
 
   return (
-    <section className="py-20 bg-slate-900/50">
+    <section className="py-20 mt-[100px] bg-slate-900/50">
       <div className="container mx-auto px-4">
         <SectionTitle className="text-center mb-12">
-          {t('blockchain.title')}
+          {t("blockchain.title")}
         </SectionTitle>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -66,4 +67,4 @@ const BlockchainSection = () => {
   );
 };
 
-export default BlockchainSection; 
+export default BlockchainSection;

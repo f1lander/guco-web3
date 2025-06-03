@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Custom hook to handle level completion dialog
@@ -7,10 +7,10 @@ import { useState, useEffect } from 'react';
  */
 export const useLevelCompletion = (levelCompleted: boolean) => {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  
+
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
-    
+
     // If level was completed, show success dialog after a short delay
     if (levelCompleted) {
       timeoutId = setTimeout(() => {
@@ -21,8 +21,8 @@ export const useLevelCompletion = (levelCompleted: boolean) => {
     return () => clearTimeout(timeoutId);
   }, [levelCompleted]);
 
-  return { 
-    showSuccessDialog, 
-    setShowSuccessDialog
+  return {
+    showSuccessDialog,
+    setShowSuccessDialog,
   };
-}; 
+};

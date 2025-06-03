@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { DEFAULT_LEVEL, GRID_WIDTH, GRID_HEIGHT } from '@/lib/constants';
-import { TileType } from '@/lib/utils';
-import { GameTile } from '../atoms/GameTile';
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { DEFAULT_LEVEL, GRID_WIDTH, GRID_HEIGHT } from "@/lib/constants";
+import { TileType } from "@/lib/utils";
+import { GameTile } from "../atoms/GameTile";
 
 interface GameViewProps {
   showControls?: boolean;
   level?: number[];
-  onMove?: (position: { x: number, y: number }) => void;
-  robotState?: { collected: number, state: 'off' | 'on' | 'error' };
+  onMove?: (position: { x: number; y: number }) => void;
+  robotState?: { collected: number; state: "off" | "on" | "error" };
   editable?: boolean;
   onLevelChange?: (newLevel: number[]) => void;
   collisionState?: {
@@ -19,15 +19,18 @@ interface GameViewProps {
 }
 
 const GameView: React.FC<GameViewProps> = ({
-  robotState = { collected: 0, state: 'off' },
+  robotState = { collected: 0, state: "off" },
   level = DEFAULT_LEVEL,
-  onMove = () => { },
+  onMove = () => {},
   editable = false,
-  onLevelChange = () => { },
+  onLevelChange = () => {},
   collisionState,
 }) => {
   const [isRotated, setIsRotated] = useState(false);
-  const [previousRobotPos, setPreviousRobotPos] = useState<{ x: number, y: number } | null>(null);
+  const [previousRobotPos, setPreviousRobotPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const [tileSize, setTileSize] = useState<number>(0);
 
@@ -41,16 +44,16 @@ const GameView: React.FC<GameViewProps> = ({
     };
 
     updateTileSize();
-    window.addEventListener('resize', updateTileSize);
-    return () => window.removeEventListener('resize', updateTileSize);
+    window.addEventListener("resize", updateTileSize);
+    return () => window.removeEventListener("resize", updateTileSize);
   }, []);
 
   // Memoize robot position to prevent recalculation on every render
   const robotPosition = useMemo(() => {
-    const robotIndex = level.findIndex(tile => tile === TileType.ROBOT);
+    const robotIndex = level.findIndex((tile) => tile === TileType.ROBOT);
     return {
       x: robotIndex % GRID_WIDTH,
-      y: Math.floor(robotIndex / GRID_WIDTH)
+      y: Math.floor(robotIndex / GRID_WIDTH),
     };
   }, [level]);
 
@@ -58,7 +61,10 @@ const GameView: React.FC<GameViewProps> = ({
   useEffect(() => {
     if (previousRobotPos === null) {
       setPreviousRobotPos(robotPosition);
-    } else if (robotPosition.x !== previousRobotPos.x || robotPosition.y !== previousRobotPos.y) {
+    } else if (
+      robotPosition.x !== previousRobotPos.x ||
+      robotPosition.y !== previousRobotPos.y
+    ) {
       setPreviousRobotPos(robotPosition);
     }
   }, [robotPosition, previousRobotPos]);
@@ -74,7 +80,7 @@ const GameView: React.FC<GameViewProps> = ({
 
     // If placing a robot or goal, remove the existing one first
     if (value === TileType.ROBOT || value === TileType.GOAL) {
-      const existingIndex = level.findIndex(tile => tile === value);
+      const existingIndex = level.findIndex((tile) => tile === value);
       if (existingIndex !== -1) {
         newLevel[existingIndex] = TileType.EMPTY;
       }
@@ -88,16 +94,17 @@ const GameView: React.FC<GameViewProps> = ({
   const gridWithoutRobot = useMemo(() => {
     // Create a copy of the level without the robot
     const levelWithoutRobot = [...level];
-    const robotIndex = level.findIndex(tile => tile === TileType.ROBOT);
+    const robotIndex = level.findIndex((tile) => tile === TileType.ROBOT);
     if (robotIndex !== -1) {
       levelWithoutRobot[robotIndex] = TileType.EMPTY;
     }
 
     // Convert to 2D grid
     return Array.from({ length: GRID_HEIGHT }, (_, rowIndex) =>
-      Array.from({ length: GRID_WIDTH }, (_, colIndex) =>
-        levelWithoutRobot[rowIndex * GRID_WIDTH + colIndex]
-      )
+      Array.from(
+        { length: GRID_WIDTH },
+        (_, colIndex) => levelWithoutRobot[rowIndex * GRID_WIDTH + colIndex],
+      ),
     );
   }, [level]);
 
@@ -105,7 +112,7 @@ const GameView: React.FC<GameViewProps> = ({
     <div className="relative w-full h-full bg-slate-800 overflow-hidden flex flex-col">
       <div
         ref={gridRef}
-        className={`flex-1 p-2 transition-transform duration-300 ${isRotated ? 'rotate-90 scale-[0.65]' : ''} relative`}
+        className={`flex-1 p-2 transition-transform duration-300 ${isRotated ? "rotate-90 scale-[0.65]" : ""} relative`}
       >
         <div className="w-full min-w-full mx-auto">
           {gridWithoutRobot.map((row, rowIndex) => (
@@ -114,11 +121,17 @@ const GameView: React.FC<GameViewProps> = ({
                 <GameTile
                   key={`${rowIndex}-${colIndex}`}
                   type={tile as TileType}
-                  onClick={(value) => handleTileChange(rowIndex * GRID_WIDTH + colIndex, value)}
+                  onClick={(value) =>
+                    handleTileChange(rowIndex * GRID_WIDTH + colIndex, value)
+                  }
                   editable={editable}
                   className="flex-1 aspect-square"
                   robotState={robotState}
-                  isColliding={collisionState?.isColliding && collisionState.obstaclePosition === rowIndex * GRID_WIDTH + colIndex}
+                  isColliding={
+                    collisionState?.isColliding &&
+                    collisionState.obstaclePosition ===
+                      rowIndex * GRID_WIDTH + colIndex
+                  }
                 />
               ))}
             </div>
@@ -133,27 +146,27 @@ const GameView: React.FC<GameViewProps> = ({
                 height: `${tileSize}px`,
                 top: `${robotPosition.y * tileSize + 5}px`,
                 left: `${robotPosition.x * tileSize - 5}px`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               <div
                 className={`transform transition-all duration-300
-                  ${robotState.state === 'on' ? 'scale-100 opacity-100' : 'scale-90 opacity-50 grayscale'}`}
+                  ${robotState.state === "on" ? "scale-100 opacity-100" : "scale-90 opacity-50 grayscale"}`}
                 style={{
-                  width: `${tileSize * 0.7}px`,      // 70% of tile size
-                  height: `${tileSize * 0.7}px`,     // 70% of tile size
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  width: `${tileSize * 0.7}px`, // 70% of tile size
+                  height: `${tileSize * 0.7}px`, // 70% of tile size
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <span
                   role="img"
                   aria-label="robot"
                   style={{
-                    fontSize: `${Math.max(tileSize * 0.4, 16)}px` // Responsive font size with minimum
+                    fontSize: `${Math.max(tileSize * 0.4, 16)}px`, // Responsive font size with minimum
                   }}
                 >
                   🤖
@@ -167,6 +180,6 @@ const GameView: React.FC<GameViewProps> = ({
   );
 };
 
-GameView.displayName = 'GameView';
+GameView.displayName = "GameView";
 
 export default GameView;

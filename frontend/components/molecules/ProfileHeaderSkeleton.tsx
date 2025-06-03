@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 export function ProfileHeaderSkeleton() {
   return (
@@ -19,7 +19,7 @@ export function ProfileHeaderSkeleton() {
             className={cn(
               "relative p-4 rounded-lg border-2",
               "bg-gray-800 border-gray-700",
-              "flex items-center gap-3"
+              "flex items-center gap-3",
             )}
           >
             {/* Icon Skeleton */}
@@ -36,4 +36,4 @@ export function ProfileHeaderSkeleton() {
       </div>
     </div>
   );
-} 
+}

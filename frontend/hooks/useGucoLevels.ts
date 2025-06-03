@@ -3,19 +3,24 @@ import { GUCO_CONTRACT_ADDRESSES } from "@/lib/constants";
 import { useWriteContract, useAccount } from "wagmi";
 import { levelToBytes32 } from "@/lib/utils";
 
-import { getLevels, getLevelCount, getLevel, isLevelCompleted, getPlayer } from "@/lib/blockchain/contract-functions";
+import {
+  getLevels,
+  getLevelCount,
+  getLevel,
+  isLevelCompleted,
+  getPlayer,
+} from "@/lib/blockchain/contract-functions";
 
 type Level = {
-  levelData: `0x${string}`,
-  creator: `0x${string}`,
-  playCount: bigint,
-  completions: bigint,
-  verified: boolean,
-  createdAt: bigint
-}
+  levelData: `0x${string}`;
+  creator: `0x${string}`;
+  playCount: bigint;
+  completions: bigint;
+  verified: boolean;
+  createdAt: bigint;
+};
 
 export const useGucoLevels = () => {
-
   const { address } = useAccount();
 
   const {
@@ -24,7 +29,6 @@ export const useGucoLevels = () => {
     isSuccess: isSuccessCreate,
     isError: isErrorCreate,
     data: dataCreate,
-    
   } = useWriteContract();
 
   const {
@@ -32,7 +36,7 @@ export const useGucoLevels = () => {
     isPending: isPendingComplete,
     isSuccess: isSuccessComplete,
     isError: isErrorComplete,
-    data: dataComplete
+    data: dataComplete,
   } = useWriteContract();
 
   const {
@@ -40,9 +44,8 @@ export const useGucoLevels = () => {
     isPending: isPendingUpdate,
     isSuccess: isSuccessUpdate,
     isError: isErrorUpdate,
-    data: dataUpdate
+    data: dataUpdate,
   } = useWriteContract();
-
 
   // Write Functions
   const createGucoLevel = async (level: number[]) => {
@@ -58,10 +61,7 @@ export const useGucoLevels = () => {
     return tx;
   };
 
-  const updatePlayer = async (
-    levelId: number,
-    levelCompleted: Level
-  ) => {
+  const updatePlayer = async (levelId: number, levelCompleted: Level) => {
     if (!address) {
       throw new Error("No address found");
     }
@@ -69,11 +69,7 @@ export const useGucoLevels = () => {
       address: GUCO_CONTRACT_ADDRESSES,
       abi: gucoAbi,
       functionName: "updatePlayer",
-      args: [
-        address,
-        BigInt(levelId),
-        levelCompleted
-      ],
+      args: [address, BigInt(levelId), levelCompleted],
     });
     return tx;
   };
@@ -93,7 +89,7 @@ export const useGucoLevels = () => {
     isSuccessUpdate,
     isErrorUpdate,
     dataUpdate,
-    
+
     createGucoLevel,
     isPendingCreate,
     isSuccessCreate,
@@ -101,7 +97,7 @@ export const useGucoLevels = () => {
     isPendingComplete,
     isSuccessComplete,
     isErrorComplete,
-    
+
     dataCreate,
     dataComplete,
     // Read functions
@@ -112,5 +108,3 @@ export const useGucoLevels = () => {
     getPlayer,
   };
 };
-
-

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 import {IGucoGame} from "./interfaces/IGucoGame.sol";
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/access/Ownable.sol";
 
 contract GucoGame is IGucoGame, Ownable {
     uint256 private _nextLevelId;

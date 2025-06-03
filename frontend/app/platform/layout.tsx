@@ -1,6 +1,5 @@
-
-import { Sidebar } from '@/components/organisms/Sidebar';
-import { WalletHeader } from '@/components/organisms/WalletHeader';
+import { Sidebar } from "@/components/organisms/Sidebar";
+import { WalletHeader } from "@/components/organisms/WalletHeader";
 
 export default function PlatformLayout({
   children,
@@ -12,9 +11,7 @@ export default function PlatformLayout({
       <Sidebar />
       <div className="flex-1">
         <WalletHeader />
-        <main className="flex-1 p-8">
-          {children}
-        </main>
+        <main className="flex-1 p-8">{children}</main>
       </div>
     </div>
   );

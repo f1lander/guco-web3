@@ -1,8 +1,8 @@
-'use client';
-import { COMMANDS } from '@/lib/constants';
-import React, { useEffect, useRef, useState } from 'react';
-import { CodeBlock } from './CodeBlock';
-import { useScreenSize } from '@/hooks/useScreenSize';
+"use client";
+import { COMMANDS } from "@/lib/constants";
+import React, { useEffect, useRef, useState } from "react";
+import { CodeBlock } from "./CodeBlock";
+import { useScreenSize } from "@/hooks/useScreenSize";
 
 // Add type declarations for dynamic Blockly properties
 declare global {
@@ -18,7 +18,10 @@ interface BlocklyWorkspaceProps {
   onGenerateCode: (code: string) => void;
 }
 
-const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) => {
+const BlocklyRobotWorkspace = ({
+  code,
+  onGenerateCode,
+}: BlocklyWorkspaceProps) => {
   const blocklyContainerRef = useRef(null);
   const [blocklyLoaded, setBlocklyLoaded] = useState(false);
   const [themeLoaded, setThemeLoaded] = useState(false);
@@ -37,13 +40,17 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
       if (!blocklyLoaded) {
         try {
           // Cargar Blockly principal
-          await loadScript('https://cdnjs.cloudflare.com/ajax/libs/blockly/9.3.1/blockly.min.js');
+          await loadScript(
+            "https://cdnjs.cloudflare.com/ajax/libs/blockly/9.3.1/blockly.min.js",
+          );
 
           // Cargar generador JavaScript
-          await loadScript('https://cdnjs.cloudflare.com/ajax/libs/blockly/9.3.1/javascript.min.js');
+          await loadScript(
+            "https://cdnjs.cloudflare.com/ajax/libs/blockly/9.3.1/javascript.min.js",
+          );
 
           // Crear un script para cargar el tema oscuro manualmente
-          const darkThemeScript = document.createElement('script');
+          const darkThemeScript = document.createElement("script");
           darkThemeScript.textContent = `
             if (window.Blockly) {
               window.DarkTheme = Blockly.Theme.defineTheme('darkBlockly', {
@@ -112,7 +119,7 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
           setBlocklyLoaded(true);
           setThemeLoaded(true);
         } catch (error) {
-          console.error('Error cargando scripts:', error);
+          console.error("Error cargando scripts:", error);
         }
       }
     };
@@ -120,12 +127,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
     const loadScript = (src: string) => {
       return new Promise((resolve, reject) => {
         // Create a script element
-        const script = document.createElement('script');
+        const script = document.createElement("script");
         script.src = src;
         script.async = true;
 
         // Add a data-manual attribute to prevent automatic loading as AMD module
-        script.setAttribute('data-manual', 'true');
+        script.setAttribute("data-manual", "true");
 
         // Before script loads, temporarily disable AMD define
         const originalDefine = window.define;
@@ -141,7 +148,8 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
           resolve(true);
         };
 
-        script.onerror = () => reject(new Error(`Error cargando script: ${src}`));
+        script.onerror = () =>
+          reject(new Error(`Error cargando script: ${src}`));
         document.body.appendChild(script);
       });
     };
@@ -151,19 +159,25 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
   // Inicializar Blockly con bloques personalizados cuando los scripts estén cargados
   useEffect(() => {
-    if (blocklyLoaded && themeLoaded && window.Blockly && window.DarkTheme && blocklyContainerRef.current && !workspace) {
+    if (
+      blocklyLoaded &&
+      themeLoaded &&
+      window.Blockly &&
+      window.DarkTheme &&
+      blocklyContainerRef.current &&
+      !workspace
+    ) {
       // Definir bloques personalizados basados en los comandos del robot
 
       // Bloques de la categoría Básico
       window.Blockly.Blocks[COMMANDS.turn_on_robot] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Encender Robot");
+          this.appendDummyInput().appendField("Encender Robot");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(120); // verde
           this.setTooltip("Enciende el robot");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.turn_on_robot] = function () {
@@ -172,13 +186,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.turn_off_robot] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Apagar Robot");
+          this.appendDummyInput().appendField("Apagar Robot");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(120); // verde
           this.setTooltip("Apaga el robot");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.turn_off_robot] = function () {
@@ -188,13 +201,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
       // Bloques de la categoría Movimiento
       window.Blockly.Blocks[COMMANDS.move_right] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Mover Derecha");
+          this.appendDummyInput().appendField("Mover Derecha");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Mueve el robot hacia la derecha");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.move_right] = function () {
@@ -203,13 +215,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.move_left] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Mover Izquierda");
+          this.appendDummyInput().appendField("Mover Izquierda");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Mueve el robot hacia la izquierda");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.move_left] = function () {
@@ -218,13 +229,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.move_up] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Mover Arriba");
+          this.appendDummyInput().appendField("Mover Arriba");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Mueve el robot hacia arriba");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.move_up] = function () {
@@ -233,13 +243,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.move_down] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Mover Abajo");
+          this.appendDummyInput().appendField("Mover Abajo");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Mueve el robot hacia abajo");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.move_down] = function () {
@@ -248,13 +257,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.jump_right] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Saltar Derecha");
+          this.appendDummyInput().appendField("Saltar Derecha");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Hace que el robot salte hacia la derecha");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.jump_right] = function () {
@@ -263,13 +271,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.jump_left] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Saltar Izquierda");
+          this.appendDummyInput().appendField("Saltar Izquierda");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Hace que el robot salte hacia la izquierda");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.jump_left] = function () {
@@ -278,13 +285,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.jump_up] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Saltar Arriba");
+          this.appendDummyInput().appendField("Saltar Arriba");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Hace que el robot salte hacia arriba");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.jump_up] = function () {
@@ -293,13 +299,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
 
       window.Blockly.Blocks[COMMANDS.jump_down] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Saltar Abajo");
+          this.appendDummyInput().appendField("Saltar Abajo");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(160); // cian
           this.setTooltip("Hace que el robot salte hacia abajo");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.jump_down] = function () {
@@ -309,13 +314,12 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
       // Bloques de la categoría Acciones
       window.Blockly.Blocks[COMMANDS.collect_item] = {
         init: function () {
-          this.appendDummyInput()
-            .appendField("Recolectar Objeto");
+          this.appendDummyInput().appendField("Recolectar Objeto");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(60); // amarillo
           this.setTooltip("Recoge un objeto en la posición del robot");
-        }
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.collect_item] = function () {
@@ -334,12 +338,19 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
           this.setNextStatement(true, null);
           this.setColour(270); // púrpura
           this.setTooltip("Asigna un valor a una variable");
-        }
+        },
       };
 
-      window.Blockly.JavaScript[COMMANDS.variable_assign] = function (block: any) {
-        const variable = block.getFieldValue('VAR');
-        const value = window.Blockly.JavaScript.valueToCode(block, 'VALUE', window.Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+      window.Blockly.JavaScript[COMMANDS.variable_assign] = function (
+        block: any,
+      ) {
+        const variable = block.getFieldValue("VAR");
+        const value =
+          window.Blockly.JavaScript.valueToCode(
+            block,
+            "VALUE",
+            window.Blockly.JavaScript.ORDER_ASSIGNMENT,
+          ) || "0";
         return `local ${variable} = ${value}\n`;
       };
 
@@ -348,76 +359,81 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
           this.appendValueInput("TIMES")
             .setCheck("Number")
             .appendField("repetir");
-          this.appendDummyInput()
-            .appendField("veces");
-          this.appendStatementInput("DO")
-            .setCheck(null)
-            .appendField("hacer");
+          this.appendDummyInput().appendField("veces");
+          this.appendStatementInput("DO").setCheck(null).appendField("hacer");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(270); // púrpura
-          this.setTooltip("Repite los comandos encerrados un número específico de veces");
-        }
+          this.setTooltip(
+            "Repite los comandos encerrados un número específico de veces",
+          );
+        },
       };
 
       window.Blockly.JavaScript[COMMANDS.for_loop] = function (block: any) {
-        const times = window.Blockly.JavaScript.valueToCode(block, 'TIMES', window.Blockly.JavaScript.ORDER_ASSIGNMENT) || '1';
-        const statements = window.Blockly.JavaScript.statementToCode(block, 'DO');
+        const times =
+          window.Blockly.JavaScript.valueToCode(
+            block,
+            "TIMES",
+            window.Blockly.JavaScript.ORDER_ASSIGNMENT,
+          ) || "1";
+        const statements = window.Blockly.JavaScript.statementToCode(
+          block,
+          "DO",
+        );
         return `for i=1,${times} do\n${statements}end\n`;
       };
 
       // Configuración del toolbox basada en las categorías de comandos
       const toolbox = {
-        kind: 'categoryToolbox',
-        size: 'small',
+        kind: "categoryToolbox",
+        size: "small",
         contents: [
           {
-            kind: 'category',
-            name: 'Inicio',
-            colour: '120', // verde
+            kind: "category",
+            name: "Inicio",
+            colour: "120", // verde
             contents: [
-              { kind: 'block', type: COMMANDS.turn_on_robot },
-              { kind: 'block', type: COMMANDS.turn_off_robot },
+              { kind: "block", type: COMMANDS.turn_on_robot },
+              { kind: "block", type: COMMANDS.turn_off_robot },
             ],
           },
           {
-            kind: 'category',
-            name: 'Movimiento',
-            colour: '160', // cian
+            kind: "category",
+            name: "Movimiento",
+            colour: "160", // cian
             contents: [
-              { kind: 'block', type: COMMANDS.move_right },
-              { kind: 'block', type: COMMANDS.move_left },
-              { kind: 'block', type: COMMANDS.move_up },
-              { kind: 'block', type: COMMANDS.move_down },
+              { kind: "block", type: COMMANDS.move_right },
+              { kind: "block", type: COMMANDS.move_left },
+              { kind: "block", type: COMMANDS.move_up },
+              { kind: "block", type: COMMANDS.move_down },
             ],
           },
           {
-            kind: 'category',
-            name: 'Saltos',
-            colour: '180', // azul
+            kind: "category",
+            name: "Saltos",
+            colour: "180", // azul
             contents: [
-              { kind: 'block', type: COMMANDS.jump_right },
-              { kind: 'block', type: COMMANDS.jump_left },
-              { kind: 'block', type: COMMANDS.jump_up },
-              { kind: 'block', type: COMMANDS.jump_down },
+              { kind: "block", type: COMMANDS.jump_right },
+              { kind: "block", type: COMMANDS.jump_left },
+              { kind: "block", type: COMMANDS.jump_up },
+              { kind: "block", type: COMMANDS.jump_down },
             ],
           },
           {
-            kind: 'category',
-            name: 'Acciones',
-            colour: '60', // amarillo
-            contents: [
-              { kind: 'block', type: COMMANDS.collect_item },
-            ],
+            kind: "category",
+            name: "Acciones",
+            colour: "60", // amarillo
+            contents: [{ kind: "block", type: COMMANDS.collect_item }],
           },
           {
-            kind: 'category',
-            name: 'Control',
-            colour: '270', // púrpura
+            kind: "category",
+            name: "Control",
+            colour: "270", // púrpura
             contents: [
-              { kind: 'block', type: COMMANDS.variable_assign },
-              { kind: 'block', type: COMMANDS.for_loop },
-              { kind: 'block', type: 'math_number' },
+              { kind: "block", type: COMMANDS.variable_assign },
+              { kind: "block", type: COMMANDS.for_loop },
+              { kind: "block", type: "math_number" },
             ],
           },
         ],
@@ -426,11 +442,15 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
       // Get scale based on screen size
       const getStartScale = () => {
         switch (screenCategory) {
-          case 'xs': return 0.7;
-          case 'sm': return 0.9;
-          case 'md': 
-          case 'lg': return 1.0;
-          default: return 0.8;
+          case "xs":
+            return 0.7;
+          case "sm":
+            return 0.9;
+          case "md":
+          case "lg":
+            return 1.0;
+          default:
+            return 0.8;
         }
       };
 
@@ -440,7 +460,7 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
         grid: {
           spacing: 20,
           length: 3,
-          colour: '#555',
+          colour: "#555",
           snap: true,
         },
         trashcan: true,
@@ -452,14 +472,14 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
           minScale: 0.3,
         },
         // Especificar la ruta correcta para los íconos
-        media: 'https://blockly-demo.appspot.com/static/media/',
+        media: "https://blockly-demo.appspot.com/static/media/",
         move: {
           scrollbars: {
             horizontal: true,
-            vertical: true
+            vertical: true,
           },
           drag: true,
-          wheel: true
+          wheel: true,
         },
       });
 
@@ -511,8 +531,8 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
       });
 
       // Corrección para el problema de la barra de desplazamiento y z-index
-      const style = document.createElement('style');
-      style.type = 'text/css';
+      const style = document.createElement("style");
+      style.type = "text/css";
       style.innerHTML = `
         .blocklyToolboxDiv {
           overflow-x: hidden !important;
@@ -572,14 +592,10 @@ const BlocklyRobotWorkspace = ({ code, onGenerateCode }: BlocklyWorkspaceProps) 
       <div
         ref={blocklyContainerRef}
         className="flex flex-col"
-        style={{ height: mounted ? `${blocklyContainerHeight}px` : 'auto' }}
+        style={{ height: mounted ? `${blocklyContainerHeight}px` : "auto" }}
       />
       <div className="flex-grow hidden sm:block">
-        <CodeBlock
-          language="lua"
-          filename="robot.lua"
-          code={code}
-        />
+        <CodeBlock language="lua" filename="robot.lua" code={code} />
       </div>
     </div>
   );

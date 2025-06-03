@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { initAudio, stopBackgroundMusic } from '@/lib/sounds';
+import { useState, useEffect } from "react";
+import { initAudio, stopBackgroundMusic } from "@/lib/sounds";
 
 /**
  * Custom hook to handle audio initialization
@@ -7,27 +7,27 @@ import { initAudio, stopBackgroundMusic } from '@/lib/sounds';
  */
 export const useAudioInit = () => {
   const [audioInitialized, setAudioInitialized] = useState(false);
-  
+
   useEffect(() => {
     const handleUserInteraction = async () => {
       if (!audioInitialized) {
         try {
           await initAudio();
           setAudioInitialized(true);
-          document.removeEventListener('click', handleUserInteraction);
+          document.removeEventListener("click", handleUserInteraction);
         } catch (error) {
-          console.error('Failed to initialize audio:', error);
+          console.error("Failed to initialize audio:", error);
         }
       }
     };
-    
-    document.addEventListener('click', handleUserInteraction);
-    
+
+    document.addEventListener("click", handleUserInteraction);
+
     return () => {
-      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener("click", handleUserInteraction);
       stopBackgroundMusic();
     };
   }, [audioInitialized]);
 
   return { audioInitialized };
-}; 
+};

@@ -1,6 +1,6 @@
-import { EXPLORER_BASE_URL } from '@/lib/constants';
-import { isAddress, isHash } from 'viem';
-import ExternalLinkWithIcon from './ExternalLinkWithIcon';
+import { EXPLORER_BASE_URL } from "@/lib/constants";
+import { isAddress, isHash } from "viem";
+import ExternalLinkWithIcon from "./ExternalLinkWithIcon";
 
 type ExplorerAddressProps =
   | {
@@ -22,15 +22,15 @@ type ExplorerAddressProps =
  * @returns null if address is not valid or a link to the address on the explorer
  */
 export const EtherscanExplorer: React.FC<ExplorerAddressProps> = (props) => {
-  if ('hash' in props) {
+  if ("hash" in props) {
     const {
       hash,
-      explorerPath = '/tx',
+      explorerPath = "/tx",
       skipValidation = false,
       className,
     } = props;
-    if (!isHash(hash) && !skipValidation && hash !== '') {
-      console.warn('Invalid hash', hash);
+    if (!isHash(hash) && !skipValidation && hash !== "") {
+      console.warn("Invalid hash", hash);
       return null;
     }
     return (
@@ -43,13 +43,13 @@ export const EtherscanExplorer: React.FC<ExplorerAddressProps> = (props) => {
   }
   const {
     address,
-    explorerPath = '/address',
+    explorerPath = "/address",
     skipValidation = false,
     className,
   } = props;
 
-  if (!isAddress(address) && !skipValidation && address !== '') {
-    console.warn('Invalid address', address);
+  if (!isAddress(address) && !skipValidation && address !== "") {
+    console.warn("Invalid address", address);
     return null;
   }
   return (

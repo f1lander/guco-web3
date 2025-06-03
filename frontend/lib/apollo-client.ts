@@ -3,8 +3,8 @@ import {
   ApolloLink,
   ApolloClient,
   InMemoryCache,
-} from '@apollo/client';
-import { registerApolloClient } from '@apollo/experimental-nextjs-app-support';
+} from "@apollo/client";
+import { registerApolloClient } from "@apollo/experimental-nextjs-app-support";
 const httpLink = new HttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_API_URL,
 });

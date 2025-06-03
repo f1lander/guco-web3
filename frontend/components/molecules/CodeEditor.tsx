@@ -1,57 +1,64 @@
-'use client'
-import React, { useEffect, useRef, useState } from 'react';
-import Editor from '@monaco-editor/react';
-import { useScreenSize } from '@/hooks/useScreenSize';
+"use client";
+import React, { useEffect, useRef, useState } from "react";
+import Editor from "@monaco-editor/react";
+import { useScreenSize } from "@/hooks/useScreenSize";
 
 // Available commands categorized by type
 const ROBOT_COMMANDS = {
   initialization: [
     {
-      command: 'var robot = new Robot();',
-      description: 'Create new robot instance',
-      snippet: 'var robot = new Robot();\n\nrobot.encender();\n\n// Your commands here\n\nrobot.apagar();'
-    }
+      command: "var robot = new Robot();",
+      description: "Create new robot instance",
+      snippet:
+        "var robot = new Robot();\n\nrobot.encender();\n\n// Your commands here\n\nrobot.apagar();",
+    },
   ],
   basic: [
-    { command: 'robot.encender()', description: 'Turn on the robot' },
-    { command: 'robot.apagar()', description: 'Turn off the robot' }
+    { command: "robot.encender()", description: "Turn on the robot" },
+    { command: "robot.apagar()", description: "Turn off the robot" },
   ],
   movement: [
-    { command: 'robot.moveRight()', description: 'Move one step right' },
-    { command: 'robot.moveLeft()', description: 'Move one step left' },
-    { command: 'robot.moveUp()', description: 'Move one step up' },
-    { command: 'robot.moveDown()', description: 'Move one step down' },
-    { command: 'robot.jump()', description: 'Jump over obstacle' }
+    { command: "robot.moveRight()", description: "Move one step right" },
+    { command: "robot.moveLeft()", description: "Move one step left" },
+    { command: "robot.moveUp()", description: "Move one step up" },
+    { command: "robot.moveDown()", description: "Move one step down" },
+    { command: "robot.jump()", description: "Jump over obstacle" },
   ],
   actions: [
-    { command: 'robot.collect()', description: 'Collect item at current position' },
-    { command: 'robot.turnOnLight()', description: 'Turn on robot\'s light' },
-    { command: 'robot.turnOffLight()', description: 'Turn off robot\'s light' },
-    { command: 'robot.scan()', description: 'Scan surroundings for items' }
+    {
+      command: "robot.collect()",
+      description: "Collect item at current position",
+    },
+    { command: "robot.turnOnLight()", description: "Turn on robot's light" },
+    { command: "robot.turnOffLight()", description: "Turn off robot's light" },
+    { command: "robot.scan()", description: "Scan surroundings for items" },
   ],
   conditions: [
-    { command: 'robot.hasItemAhead()', description: 'Check if item is ahead' },
-    { command: 'robot.isPathClear()', description: 'Check if path is clear' },
-    { command: 'robot.isLightNeeded()', description: 'Check if light is needed' }
+    { command: "robot.hasItemAhead()", description: "Check if item is ahead" },
+    { command: "robot.isPathClear()", description: "Check if path is clear" },
+    {
+      command: "robot.isLightNeeded()",
+      description: "Check if light is needed",
+    },
   ],
   loops: [
     {
-      command: 'while (condition) {',
-      description: 'Repeat while condition is true',
-      snippet: 'while (robot.hasItemAhead()) {\n  // Commands here\n}'
+      command: "while (condition) {",
+      description: "Repeat while condition is true",
+      snippet: "while (robot.hasItemAhead()) {\n  // Commands here\n}",
     },
     {
-      command: 'for (var i = 0; i < n; i++) {',
-      description: 'Repeat n times',
-      snippet: 'for (var i = 0; i < 3; i++) {\n  // Commands here\n}'
-    }
-  ]
+      command: "for (var i = 0; i < n; i++) {",
+      description: "Repeat n times",
+      snippet: "for (var i = 0; i < 3; i++) {\n  // Commands here\n}",
+    },
+  ],
 };
 
 const files = {
-  'GameBoard.js': {
-    name: 'GameBoard.js',
-    language: 'javascript',
+  "GameBoard.js": {
+    name: "GameBoard.js",
+    language: "javascript",
     value: `// Game board configuration
 class GameBoard {
     constructor(width = 10, height = 10) {
@@ -78,9 +85,9 @@ class GameBoard {
     }
 }`,
   },
-  'Robot.js': {
-    name: 'Robot.js',
-    language: 'javascript',
+  "Robot.js": {
+    name: "Robot.js",
+    language: "javascript",
     value: `class Robot {
     constructor(gameBoard) {
         this.x = 0;
@@ -139,11 +146,10 @@ class GameBoard {
         return this.collectedItems.length;
     }
 }`,
-
   },
-  'GUCO.js': {
-    name: 'GUCO.js',
-    language: 'javascript',
+  "GUCO.js": {
+    name: "GUCO.js",
+    language: "javascript",
     value: `// Initialize the game
 function initializeGame(width = 8, height = 4) {
     const gameBoard = new GameBoard(width, height);
@@ -172,10 +178,9 @@ function studentCode() {
 }
 
 // Run the game
-studentCode();`
-  }
+studentCode();`,
+  },
 };
-
 
 interface CodeEditorProps {
   value: string;
@@ -188,7 +193,7 @@ export const CodeEditor = ({
   value,
   onChange,
   readOnly = false,
-  className
+  className,
 }: CodeEditorProps) => {
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -198,31 +203,31 @@ export const CodeEditor = ({
   // Configure options based on screen dimensions
   const options = {
     selectOnLineNumbers: false,
-    lineNumbers: height < 750 ? 'off' as const : 'on' as const,
+    lineNumbers: height < 750 ? ("off" as const) : ("on" as const),
     minimap: { enabled: height > 750 },
     fontSize: height < 600 ? 14 : height < 900 ? 13 : 12,
     lineHeight: height < 750 ? 20 : 16,
     readOnly: readOnly,
     scrollBeyondLastLine: false,
     automaticLayout: true,
-    padding: { 
-      top: height < 750 ? 6 : 4, 
-      bottom: height < 750 ? 6 : 4 
+    padding: {
+      top: height < 750 ? 6 : 4,
+      bottom: height < 750 ? 6 : 4,
     },
-    wordWrap: 'on' as const,
+    wordWrap: "on" as const,
   };
-  
+
   // Add this state for client-side rendering
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
-    <div 
+    <div
       className="flex flex-col"
-      style={{ height: mounted ? `${editorContainerHeight}px` : 'auto' }}
+      style={{ height: mounted ? `${editorContainerHeight}px` : "auto" }}
     >
       <Editor
         height="100%"
@@ -240,4 +245,4 @@ export const CodeEditor = ({
   );
 };
 
-CodeEditor.displayName = 'CodeEditor';
+CodeEditor.displayName = "CodeEditor";

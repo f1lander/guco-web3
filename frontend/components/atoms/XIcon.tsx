@@ -1,4 +1,4 @@
-import { SVGProps } from 'react';
+import { SVGProps } from "react";
 
 interface XIconProps extends SVGProps<SVGSVGElement> {
   className?: string;

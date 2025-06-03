@@ -1,17 +1,17 @@
-'use client';
-import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import Link from 'next/link';
-import { Slot } from '@radix-ui/react-slot';
-import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
+"use client";
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import Link from "next/link";
+import { Slot } from "@radix-ui/react-slot";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 // Define link variants using class-variance-authority
-const linkVariants = cva('flex items-center transition-colors', {
+const linkVariants = cva("flex items-center transition-colors", {
   variants: {
     selected: {
-      true: 'text-foreground dark:text-white hover:text-guco-500',
-      false: 'text-muted-foreground hover:text-guco-500',
+      true: "text-foreground dark:text-white hover:text-guco-500",
+      false: "text-muted-foreground hover:text-guco-500",
     },
   },
   defaultVariants: {
@@ -20,12 +20,12 @@ const linkVariants = cva('flex items-center transition-colors', {
 });
 
 const iconVariants = cva(
-  'icon flex h-9 w-9 items-center justify-center md:h-8 md:w-8',
+  "icon flex h-9 w-9 items-center justify-center md:h-8 md:w-8",
   {
     variants: {
       selected: {
-        true: 'rounded-full bg-guco-500 text-white',
-        false: 'rounded-lg',
+        true: "rounded-full bg-guco-500 text-white",
+        false: "rounded-lg",
       },
     },
     defaultVariants: {
@@ -47,7 +47,7 @@ const CustomLink = React.forwardRef<HTMLAnchorElement, CustomLinkProps>(
     const pathname = usePathname();
     const Comp = asChild ? Slot : Link;
     const isSelected =
-      pathname === href || (pathname.startsWith(`/trap`) && href === '/');
+      pathname === href || (pathname.startsWith(`/trap`) && href === "/");
 
     return (
       <Comp
@@ -65,6 +65,6 @@ const CustomLink = React.forwardRef<HTMLAnchorElement, CustomLinkProps>(
   },
 );
 
-CustomLink.displayName = 'CustomLink';
+CustomLink.displayName = "CustomLink";
 
 export { CustomLink, linkVariants };

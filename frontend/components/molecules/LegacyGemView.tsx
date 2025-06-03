@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { GridIcon, Play } from 'lucide-react';
-import { getEmoji } from '@/lib/utils';
+import React, { useState, useEffect } from "react";
+import { GridIcon, Play } from "lucide-react";
+import { getEmoji } from "@/lib/utils";
 
 // Define tile types
 export enum TileType {
@@ -15,10 +15,38 @@ export enum TileType {
 
 // Update DEFAULT_LEVEL to flat array
 const DEFAULT_LEVEL = [
-  0, 0, 0, 0, 0, 0, 0, 2,  // row 1
-  0, 0, 0, 0, 0, 0, 0, 0,  // row 2
-  0, 0, 0, 0, 0, 0, 0, 0,  // row 3
-  3, 0, 0, 0, 0, 0, 0, 0   // row 4
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  2, // row 1
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0, // row 2
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0, // row 3
+  3,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0, // row 4
 ];
 
 const DEFAULT_ROBOT_POSITION = { x: 0, y: 2 }; // Matches DEFAULT_LEVEL robot position
@@ -31,12 +59,12 @@ const GRID_HEIGHT = 4;
 interface GameViewProps {
   showControls?: boolean;
   level?: number[];
-  onMove?: (position: { x: number, y: number }) => void;
+  onMove?: (position: { x: number; y: number }) => void;
   commands?: string[];
   currentCommand?: number;
 }
 
-const GameView: React.FC<GameViewProps> = ({ 
+const GameView: React.FC<GameViewProps> = ({
   showControls = true,
   level = DEFAULT_LEVEL,
   onMove = () => {},
@@ -44,10 +72,10 @@ const GameView: React.FC<GameViewProps> = ({
   currentCommand = DEFAULT_CURRENT_COMMAND,
 }) => {
   // Find robot position from level data
-  const robotIndex = level.findIndex(tile => tile === TileType.ROBOT);
+  const robotIndex = level.findIndex((tile) => tile === TileType.ROBOT);
   const robotPosition = {
     x: robotIndex % GRID_WIDTH,
-    y: Math.floor(robotIndex / GRID_WIDTH)
+    y: Math.floor(robotIndex / GRID_WIDTH),
   };
 
   useEffect(() => {
@@ -64,34 +92,37 @@ const GameView: React.FC<GameViewProps> = ({
           <span className="text-sm font-semibold">Vista del Juego</span>
         </div>
       )}
-      
+
       <div className="flex-1 p-2">
-        <div 
-          className="w-full h-full grid gap-0.5" 
-          style={{ 
+        <div
+          className="w-full h-full grid gap-0.5"
+          style={{
             gridTemplateColumns: `repeat(${GRID_WIDTH}, 1fr)`,
-            gridTemplateRows: `repeat(${GRID_HEIGHT}, 1fr)`
+            gridTemplateRows: `repeat(${GRID_HEIGHT}, 1fr)`,
           }}
         >
-          {Array.from({ length: GRID_HEIGHT }).map((_, y) => 
+          {Array.from({ length: GRID_HEIGHT }).map((_, y) =>
             Array.from({ length: GRID_WIDTH }).map((_, x) => {
               const tileIndex = y * GRID_WIDTH + x;
-              const isRobotHere = x === robotPosition.x && y === robotPosition.y;
-              
+              const isRobotHere =
+                x === robotPosition.x && y === robotPosition.y;
+
               return (
-                <div 
-                  key={`${x}-${y}`} 
+                <div
+                  key={`${x}-${y}`}
                   className={`relative bg-slate-700/50 border border-slate-600/30
-                    ${isRobotHere ? 'bg-blue-500/20' : ''}`}
+                    ${isRobotHere ? "bg-blue-500/20" : ""}`}
                 >
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-xl">
-                      {isRobotHere ? '🤖' : getEmoji(level[tileIndex] as TileType)}
+                      {isRobotHere
+                        ? "🤖"
+                        : getEmoji(level[tileIndex] as TileType)}
                     </span>
                   </div>
                 </div>
               );
-            })
+            }),
           )}
         </div>
       </div>
@@ -102,7 +133,7 @@ const GameView: React.FC<GameViewProps> = ({
             <div
               key={idx}
               className={`text-sm font-mono ${
-                idx === currentCommand ? 'text-blue-400' : 'text-slate-400'
+                idx === currentCommand ? "text-blue-400" : "text-slate-400"
               }`}
             >
               {cmd}
@@ -122,6 +153,5 @@ const GameView: React.FC<GameViewProps> = ({
     </div>
   );
 };
-
 
 export default GameView;

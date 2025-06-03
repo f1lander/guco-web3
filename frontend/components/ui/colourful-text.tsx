@@ -1,10 +1,10 @@
-'use client';
-import React from 'react';
-import { motion } from 'framer-motion';
+"use client";
+import React from "react";
+import { motion } from "framer-motion";
 
 export default function ColourfulText({ text }: { text: string }) {
   const colors = [
-    '#FF6B00', // Drosera orange
+    "#FF6B00", // Drosera orange
   ];
 
   const [currentColors, setCurrentColors] = React.useState(colors);
@@ -20,7 +20,7 @@ export default function ColourfulText({ text }: { text: string }) {
     return () => clearInterval(interval);
   }, []);
 
-  return text.split('').map((char, index) => (
+  return text.split("").map((char, index) => (
     <motion.span
       key={`${char}-${count}-${index}`}
       initial={{
@@ -30,7 +30,7 @@ export default function ColourfulText({ text }: { text: string }) {
         color: currentColors[index % currentColors.length],
         y: [0, -3, 0],
         scale: [1, 1.01, 1],
-        filter: ['blur(0px)', `blur(5px)`, 'blur(0px)'],
+        filter: ["blur(0px)", `blur(5px)`, "blur(0px)"],
         opacity: [1, 0.8, 1],
       }}
       transition={{

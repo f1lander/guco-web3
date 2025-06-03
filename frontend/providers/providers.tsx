@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
-import type { ReactNode } from 'react';
-import { WagmiProvider } from 'wagmi';
+import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
+import type { ReactNode } from "react";
+import { WagmiProvider } from "wagmi";
 
-import { rainbowConfig } from '../lib/rainbow-config';
+import { rainbowConfig } from "../lib/rainbow-config";
 
-import '@rainbow-me/rainbowkit/styles.css';
-import { ApolloWrapper } from './apollo-provider';
+import "@rainbow-me/rainbowkit/styles.css";
+import { ApolloWrapper } from "./apollo-provider";
 
-declare module 'wagmi' {
+declare module "wagmi" {
   interface Register {
     config: typeof rainbowConfig;
   }
@@ -30,11 +30,11 @@ export function Providers({ children, cookie }: Props) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={darkTheme({
-            accentColor: '#3ecc15',
-            accentColorForeground: 'white',
-            borderRadius: 'large',
-            fontStack: 'system',
-            overlayBlur: 'small',
+            accentColor: "#3ecc15",
+            accentColorForeground: "white",
+            borderRadius: "large",
+            fontStack: "system",
+            overlayBlur: "small",
           })}
         >
           <ApolloWrapper>{children}</ApolloWrapper>

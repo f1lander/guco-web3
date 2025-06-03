@@ -1,7 +1,15 @@
 "use client";
 import React, { useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { atomDark, funky, dracula, oneDark, oneLight, solarizedlight, okaidia } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import {
+  atomDark,
+  funky,
+  dracula,
+  oneDark,
+  oneLight,
+  solarizedlight,
+  okaidia,
+} from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
 
 // Create a themes object for easier selection
@@ -26,11 +34,11 @@ type CodeBlockProps = {
   highlightLines?: number[];
   theme?: CodeTheme;
 } & (
-    | {
+  | {
       code: string;
       tabs?: never;
     }
-    | {
+  | {
       code?: never;
       tabs: Array<{
         name: string;
@@ -39,7 +47,7 @@ type CodeBlockProps = {
         highlightLines?: number[];
       }>;
     }
-  );
+);
 
 export const CodeBlock = ({
   language,
@@ -51,11 +59,14 @@ export const CodeBlock = ({
 }: CodeBlockProps) => {
   const [copied, setCopied] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(0);
-  const [selectedTheme, setSelectedTheme] = React.useState<CodeTheme>("atomDark");
+  const [selectedTheme, setSelectedTheme] =
+    React.useState<CodeTheme>("atomDark");
 
   // Load theme from localStorage on component mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as CodeTheme | null;
+    const savedTheme = localStorage.getItem(
+      THEME_STORAGE_KEY,
+    ) as CodeTheme | null;
     // Use saved theme if available, prop theme if provided, or default to atomDark
     setSelectedTheme(savedTheme || propTheme || "atomDark");
   }, [propTheme]);
@@ -95,10 +106,11 @@ export const CodeBlock = ({
               <button
                 key={index}
                 onClick={() => setActiveTab(index)}
-                className={`px-3 !py-2 text-xs transition-colors font-sans ${activeTab === index
-                  ? "text-white"
-                  : "text-zinc-400 hover:text-zinc-200"
-                  }`}
+                className={`px-3 !py-2 text-xs transition-colors font-sans ${
+                  activeTab === index
+                    ? "text-white"
+                    : "text-zinc-400 hover:text-zinc-200"
+                }`}
               >
                 {tab.name}
               </button>
@@ -118,7 +130,7 @@ export const CodeBlock = ({
               >
                 {Object.keys(codeThemes).map((themeName) => (
                   <option key={themeName} value={themeName}>
-                    {themeName.replace(/([A-Z])/g, ' $1').trim()}
+                    {themeName.replace(/([A-Z])/g, " $1").trim()}
                   </option>
                 ))}
               </select>
@@ -133,7 +145,7 @@ export const CodeBlock = ({
           </div>
         )}
       </div>
-      
+
       <div className="overflow-auto flex-grow relative">
         <div className="min-w-full h-[250px]">
           <SyntaxHighlighter
