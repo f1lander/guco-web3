@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-import { bytes32ToLevel } from '@/lib/utils';
-import PlayGameSection from '@/components/organisms/PlayGameSection';
+import { bytes32ToLevel } from "@/lib/utils";
+import PlayGameSection from "@/components/organisms/PlayGameSection";
 
 // const LevelDetailHeader = ({ levelId, levelDescription, levelData, levelCompletions }: { levelId: number, levelDescription: string, levelData: string, levelCompletions: number }) => {
 //   return (
@@ -23,11 +24,11 @@ import PlayGameSection from '@/components/organisms/PlayGameSection';
 //   );
 // };
 
-export default function LevelDetail() {
+function LevelDetailContent() {
   const searchParams = useSearchParams();
-  const levelData = searchParams.get('levelData');
+  const levelData = searchParams.get("levelData");
   let level: number[] = [];
-  const levelId = searchParams.get('levelId');
+  const levelId = searchParams.get("levelId");
 
   if (!levelData) {
     return <div>No level data provided</div>;
@@ -43,5 +44,13 @@ export default function LevelDetail() {
     <div className="flex flex-col items-center gap-4">
       <PlayGameSection levelData={level} levelId={Number(levelId)} />
     </div>
+  );
+}
+
+export default function LevelDetail() {
+  return (
+    <Suspense fallback={<div>Loading level...</div>}>
+      <LevelDetailContent />
+    </Suspense>
   );
 }

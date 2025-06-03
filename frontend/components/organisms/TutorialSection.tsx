@@ -1,32 +1,36 @@
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import SectionTitle from '../atoms/SectionTitle';
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import SectionTitle from "../atoms/SectionTitle";
 
 const tutorials = [
   {
-    title: 'Movimientos Básicos',
-    description: 'Aprende a mover el robot usando comandos como moverDerecha(), moverIzquierda(), moverArriba() y moverAbajo().',
-    code: 'robot:moverDerecha()\nrobot:moverArriba()',
-    level: 'Principiante'
+    title: "Movimientos Básicos",
+    description:
+      "Aprende a mover el robot usando comandos como moverDerecha(), moverIzquierda(), moverArriba() y moverAbajo().",
+    code: "robot:moverDerecha()\nrobot:moverArriba()",
+    level: "Principiante",
   },
   {
-    title: 'Saltos Especiales',
-    description: 'Domina los movimientos avanzados usando saltarDerecha(), saltarIzquierda(), saltarArriba() y saltarAbajo().',
-    code: 'robot:saltarDerecha()\nrobot:saltarAbajo()',
-    level: 'Principiante'
+    title: "Saltos Especiales",
+    description:
+      "Domina los movimientos avanzados usando saltarDerecha(), saltarIzquierda(), saltarArriba() y saltarAbajo().",
+    code: "robot:saltarDerecha()\nrobot:saltarAbajo()",
+    level: "Principiante",
   },
   {
-    title: 'Variables y Repeticiones',
-    description: 'Aprende a usar variables para controlar la cantidad de repeticiones en tus movimientos.',
-    code: 'veces = 3\nfor i=1,veces do\n  robot:moverDerecha()\nend',
-    level: 'Intermedio'
+    title: "Variables y Repeticiones",
+    description:
+      "Aprende a usar variables para controlar la cantidad de repeticiones en tus movimientos.",
+    code: "veces = 3\nfor i=1,veces do\n  robot:moverDerecha()\nend",
+    level: "Intermedio",
   },
   {
-    title: 'Recolección de Items',
-    description: 'Recolecta items del mundo virtual usando el comando recolectar() mientras te mueves.',
-    code: 'robot:moverDerecha()\nrobot:recolectar()\nrobot:saltarIzquierda()',
-    level: 'Intermedio'
-  }
+    title: "Recolección de Items",
+    description:
+      "Recolecta items del mundo virtual usando el comando recolectar() mientras te mueves.",
+    code: "robot:moverDerecha()\nrobot:recolectar()\nrobot:saltarIzquierda()",
+    level: "Intermedio",
+  },
 ];
 
 const TutorialSection = () => {
@@ -64,4 +68,4 @@ const TutorialSection = () => {
   );
 };
 
-export default TutorialSection; 
+export default TutorialSection;

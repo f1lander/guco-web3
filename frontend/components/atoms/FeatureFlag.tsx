@@ -1,4 +1,4 @@
-import { featureFlags } from '@/lib/constants';
+import { featureFlags } from "@/lib/constants";
 
 export type FeatureFlags = keyof typeof featureFlags;
 

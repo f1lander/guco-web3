@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef } from "react";
 
 const EthIcon = forwardRef<SVGSVGElement, { className: string }>(
   ({ className }, ref) => (
@@ -17,6 +17,6 @@ const EthIcon = forwardRef<SVGSVGElement, { className: string }>(
   ),
 );
 
-EthIcon.displayName = 'EthIcon';
+EthIcon.displayName = "EthIcon";
 
 export default EthIcon;

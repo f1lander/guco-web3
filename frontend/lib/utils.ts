@@ -1,10 +1,10 @@
 /* eslint-disable no-prototype-builtins */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type ClassValue, clsx } from 'clsx';
+import { type ClassValue, clsx } from "clsx";
 
-import Identicon from 'identicon.js';
-import { twMerge } from 'tailwind-merge';
-import { COMMAND_CATEGORIES, COMMANDS, GRID_WIDTH } from './constants';
+import Identicon from "identicon.js";
+import { twMerge } from "tailwind-merge";
+import { COMMAND_CATEGORIES, COMMANDS, GRID_WIDTH } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -12,7 +12,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export const middleEllipsis = (str: string, len: number) => {
   if (!str) {
-    return '';
+    return "";
   }
   return `${str.substr(0, len)}...${str.substr(str.length - len, str.length)}`;
 };
@@ -23,11 +23,11 @@ export const truncateEthAddress = (
   sliceEnd = 4,
 ): string => {
   if (!address) {
-    return '';
+    return "";
   }
   return (
     address.slice(_sliceStart[0], _sliceStart[1]) +
-    '...' +
+    "..." +
     address.slice(address.length - sliceEnd, address.length)
   );
 };
@@ -36,7 +36,7 @@ export const bigIntToNumber = (value: bigint) =>
   Number.isSafeInteger(value) ? Number(value) : 0;
 
 export function buildDataUrl(address: string): string {
-  return 'data:image/png;base64,' + new Identicon(address, 420).toString();
+  return "data:image/png;base64," + new Identicon(address, 420).toString();
 }
 
 // Helper function to convert level array to bytes32
@@ -48,12 +48,12 @@ export function buildDataUrl(address: string): string {
 export const levelToBytes32 = (level: number[]): `0x${string}` => {
   // Validate level array length
   if (level.length !== 32) {
-    throw new Error('Level must have exactly 32 numbers');
+    throw new Error("Level must have exactly 32 numbers");
   }
 
   // Validate values (0-4 only)
-  if (level.some(val => val < 0 || val > 4)) {
-    throw new Error('Level values must be between 0 and 4');
+  if (level.some((val) => val < 0 || val > 4)) {
+    throw new Error("Level values must be between 0 and 4");
   }
 
   // Method 1: Simple byte packing
@@ -64,16 +64,19 @@ export const levelToBytes32 = (level: number[]): `0x${string}` => {
   }
 
   // Convert to hex string
-  const hexString: `0x${string}` = '0x' + Array.from(bytes)
-    .map(byte => byte.toString(16).padStart(2, '0'))
-    .join('') as `0x${string}`;
+  const hexString: `0x${string}` = ("0x" +
+    Array.from(bytes)
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("")) as `0x${string}`;
 
   // Validate encoding by decoding and comparing
   const decodedLevel = bytes32ToLevel(hexString);
   const isValid = level.every((num, index) => num === decodedLevel[index]);
 
   if (!isValid) {
-    throw new Error('Encoding validation failed: decoded value does not match original level');
+    throw new Error(
+      "Encoding validation failed: decoded value does not match original level",
+    );
   }
 
   return hexString as `0x${string}`;
@@ -81,12 +84,11 @@ export const levelToBytes32 = (level: number[]): `0x${string}` => {
 
 // Helper function to convert bytes32 back to level array
 export const bytes32ToLevel = (bytes32Value: `0x${string}`): number[] => {
-
   // Remove 0x prefix
   const hex = bytes32Value.slice(2);
 
   if (hex.length !== 64) {
-    throw new Error('Invalid bytes32 hex string length');
+    throw new Error("Invalid bytes32 hex string length");
   }
 
   const result: number[] = [];
@@ -100,20 +102,29 @@ export const bytes32ToLevel = (bytes32Value: `0x${string}`): number[] => {
   return result;
 };
 
-export function getDifficulty(level: { playCount: bigint; completions: bigint }): 'easy' | 'medium' | 'hard' {
-  const completionRate = Number(level.completions) / Number(level.playCount) * 100;
-  if (completionRate > 75) return 'easy';
-  if (completionRate > 25) return 'medium';
-  return 'hard';
+export function getDifficulty(level: {
+  playCount: bigint;
+  completions: bigint;
+}): "easy" | "medium" | "hard" {
+  const completionRate =
+    (Number(level.completions) / Number(level.playCount)) * 100;
+  if (completionRate > 75) return "easy";
+  if (completionRate > 25) return "medium";
+  return "hard";
 }
 
 export const getEmoji = (tileType: TileType) => {
   switch (tileType) {
-    case TileType.OBSTACLE: return '🪨';
-    case TileType.GOAL: return '🏁';
-    case TileType.COLLECTIBLE: return '🪴';
-    case TileType.ROBOT: return '🤖';
-    default: return '';
+    case TileType.OBSTACLE:
+      return "🪨";
+    case TileType.GOAL:
+      return "🏁";
+    case TileType.COLLECTIBLE:
+      return "🪴";
+    case TileType.ROBOT:
+      return "🤖";
+    default:
+      return "";
   }
 };
 // Define tile types
@@ -125,19 +136,20 @@ export enum TileType {
   COLLECTIBLE = 4,
 }
 
-
 export enum Difficulty {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED',
+  BEGINNER = "BEGINNER",
+  INTERMEDIATE = "INTERMEDIATE",
+  ADVANCED = "ADVANCED",
 }
 
 export type RobotState = {
   collected: number;
-  state: 'off' | 'on' | 'error';
-}
+  state: "off" | "on" | "error";
+};
 
-export const generateRandomLevel = (difficulty: Difficulty = Difficulty.BEGINNER) => {
+export const generateRandomLevel = (
+  difficulty: Difficulty = Difficulty.BEGINNER,
+) => {
   const LEVEL_SIZE = 32;
   const level = new Array(LEVEL_SIZE).fill(TileType.EMPTY);
 
@@ -152,15 +164,15 @@ export const generateRandomLevel = (difficulty: Difficulty = Difficulty.BEGINNER
   // Configure difficulty parameters
   const difficultyConfig = {
     [Difficulty.BEGINNER]: {
-      obstacleChance: 0.2,    // 20% chance for obstacles
-      collectibles: 0,        // No collectibles
+      obstacleChance: 0.2, // 20% chance for obstacles
+      collectibles: 0, // No collectibles
     },
     [Difficulty.INTERMEDIATE]: {
-      obstacleChance: 0.3,    // 30% chance for obstacles
+      obstacleChance: 0.3, // 30% chance for obstacles
       collectibles: Math.floor(Math.random() * 3) + 1, // 1-3 collectibles
     },
     [Difficulty.ADVANCED]: {
-      obstacleChance: 0.4,    // 40% chance for obstacles
+      obstacleChance: 0.4, // 40% chance for obstacles
       collectibles: Math.floor(Math.random() * 3) + 3, // 3-5 collectibles
     },
   };
@@ -181,7 +193,8 @@ export const generateRandomLevel = (difficulty: Difficulty = Difficulty.BEGINNER
     if (level[i] === TileType.EMPTY && Math.random() < config.obstacleChance) {
       // Check if placing obstacle here would block the path
       const prevIsObstacle = i > 0 && level[i - 1] === TileType.OBSTACLE;
-      const nextIsObstacle = i < LEVEL_SIZE - 1 && level[i + 1] === TileType.OBSTACLE;
+      const nextIsObstacle =
+        i < LEVEL_SIZE - 1 && level[i + 1] === TileType.OBSTACLE;
 
       if (!prevIsObstacle && !nextIsObstacle) {
         level[i] = TileType.OBSTACLE;
@@ -193,15 +206,17 @@ export const generateRandomLevel = (difficulty: Difficulty = Difficulty.BEGINNER
 };
 
 const luaCompiler = (commands: string[]) => {
-  const validCommands = Object.values(COMMAND_CATEGORIES).flatMap(
-    category => category.commands.map(cmd => cmd.command)
+  const validCommands = Object.values(COMMAND_CATEGORIES).flatMap((category) =>
+    category.commands.map((cmd) => cmd.command),
   );
 
-  const validatedCommands = commands.map(cmd => {
-    const cleanCommand = cmd.replace('robot:', '').trim();
+  const validatedCommands = commands.map((cmd) => {
+    const cleanCommand = cmd.replace("robot:", "").trim();
     console.log("cleanCommand", cleanCommand);
 
-    if (!validCommands.includes(cleanCommand as typeof validCommands[number])) {
+    if (
+      !validCommands.includes(cleanCommand as (typeof validCommands)[number])
+    ) {
       throw new Error(`Invalid command: ${cmd}`);
     }
 
@@ -212,13 +227,15 @@ const luaCompiler = (commands: string[]) => {
 };
 
 const javascriptCompiler = (commands: string[]) => {
-  const validCommands = Object.values(COMMAND_CATEGORIES).flatMap(
-    category => category.commands.map(cmd => cmd.command)
+  const validCommands = Object.values(COMMAND_CATEGORIES).flatMap((category) =>
+    category.commands.map((cmd) => cmd.command),
   );
 
-  const validatedCommands = commands.map(cmd => {
-    const cleanCommand = cmd.replace('robot:', '').trim();
-    if (!validCommands.includes(cleanCommand as typeof validCommands[number])) {
+  const validatedCommands = commands.map((cmd) => {
+    const cleanCommand = cmd.replace("robot:", "").trim();
+    if (
+      !validCommands.includes(cleanCommand as (typeof validCommands)[number])
+    ) {
       throw new Error(`Invalid command: ${cmd}`);
     }
     return cmd.trim();
@@ -229,21 +246,22 @@ const javascriptCompiler = (commands: string[]) => {
 
 export const executeCode = (level: number[], command: string) => {
   //   I want that compileCode function return me not just the validatedCommands, I need to the actual instructtions that the robot needs to move so for exmaple
-
   // ['moverDerecha()', moverArriba(), MoverAbajo(), recolectar()]
-
-  // I was thinking what if, compiling these commands I returned the the movements needed, based on the 
+  // I was thinking what if, compiling these commands I returned the the movements needed, based on the
 };
 
 // Update compileCode function to handle CommandWithMeta objects
-export const compileCode = (commands: string[] | CommandWithMeta[], language: 'lua' | 'javascript'): string[] => {
-  const cleanCommands = Array.isArray(commands) ?
-    commands.map(cmd => typeof cmd === 'string' ? cmd : cmd.command) :
-    [];
+export const compileCode = (
+  commands: string[] | CommandWithMeta[],
+  language: "lua" | "javascript",
+): string[] => {
+  const cleanCommands = Array.isArray(commands)
+    ? commands.map((cmd) => (typeof cmd === "string" ? cmd : cmd.command))
+    : [];
 
-  if (language === 'lua') {
+  if (language === "lua") {
     return luaCompiler(cleanCommands);
-  } else if (language === 'javascript') {
+  } else if (language === "javascript") {
     return javascriptCompiler(cleanCommands);
   }
   return cleanCommands;
@@ -252,9 +270,9 @@ export const compileCode = (commands: string[] | CommandWithMeta[], language: 'l
 export const moveRobot = (
   levelData: number[],
   robotState: RobotState,
-  command: (typeof COMMANDS)[keyof typeof COMMANDS]
-): { newLevel: number[], newRobotState: RobotState } => {
-  const position = levelData.findIndex(tile => tile === TileType.ROBOT);
+  command: (typeof COMMANDS)[keyof typeof COMMANDS],
+): { newLevel: number[]; newRobotState: RobotState } => {
+  const position = levelData.findIndex((tile) => tile === TileType.ROBOT);
   let newPosition = position;
 
   // Calculate current x,y coordinates
@@ -264,40 +282,43 @@ export const moveRobot = (
   // Create a new array immediately to avoid mutations
   const newLevel = [...levelData];
 
-  switch (command) {
-    case 'encender()':
+  // Strip the robot: prefix from the command
+  const cleanCommand = command.replace("robot:", "").trim();
+
+  switch (cleanCommand) {
+    case "encender()":
       return {
         newLevel,
-        newRobotState: { ...robotState, state: 'on' }
+        newRobotState: { ...robotState, state: "on" },
       };
-    case 'apagar()':
+    case "apagar()":
       return {
         newLevel,
-        newRobotState: { ...robotState, state: 'off' }
+        newRobotState: { ...robotState, state: "off" },
       };
-    case 'moverDerecha()':
+    case "moverDerecha()":
       if (x < GRID_WIDTH - 1) newPosition = position + 1;
       break;
-    case 'moverIzquierda()':
+    case "moverIzquierda()":
       if (x > 0) newPosition = position - 1;
       break;
-    case 'moverArriba()':
+    case "moverArriba()":
       if (y > 0) newPosition = position - GRID_WIDTH;
       break;
-    case 'moverAbajo()':
+    case "moverAbajo()":
       if (y < 3) newPosition = position + GRID_WIDTH;
       break;
-    case 'saltarDerecha()':
+    case "saltarDerecha()":
       if (x < GRID_WIDTH - 2) newPosition = position + 2;
       break;
-    case 'saltarIzquierda()':
+    case "saltarIzquierda()":
       if (x > 1) newPosition = position - 2;
       break;
-    case 'saltarArriba()':
-      if (y > 1) newPosition = position - (GRID_WIDTH * 2);
+    case "saltarArriba()":
+      if (y > 1) newPosition = position - GRID_WIDTH * 2;
       break;
-    case 'saltarAbajo()':
-      if (y < 2) newPosition = position + (GRID_WIDTH * 2);
+    case "saltarAbajo()":
+      if (y < 2) newPosition = position + GRID_WIDTH * 2;
       break;
   }
 
@@ -309,14 +330,14 @@ export const moveRobot = (
 
     return {
       newLevel,
-      newRobotState: { ...robotState }
+      newRobotState: { ...robotState },
     };
   }
 
   // Return unchanged state if move was invalid
   return {
     newLevel,
-    newRobotState: robotState
+    newRobotState: robotState,
   };
 };
 
@@ -324,9 +345,13 @@ export const moveRobot = (
 const calculateNextPosition = (
   levelData: number[],
   command: string,
-  initialLevelData: number[] = [] // Add initialLevelData as a parameter
-): { newLevel: number[], validMove: boolean, collectibleCollected: boolean } => {
-  const position = levelData.findIndex(tile => tile === TileType.ROBOT);
+  initialLevelData: number[] = [], // Add initialLevelData as a parameter
+): {
+  newLevel: number[];
+  validMove: boolean;
+  collectibleCollected: boolean;
+} => {
+  const position = levelData.findIndex((tile) => tile === TileType.ROBOT);
   let newPosition = position;
   let validMove = true;
   let collectibleCollected = false;
@@ -339,13 +364,13 @@ const calculateNextPosition = (
   const y = Math.floor(position / GRID_WIDTH);
 
   switch (command) {
-    case 'robot = Robot.new()':
+    case "robot = Robot.new()":
       return { newLevel, validMove: true, collectibleCollected: false };
-    case 'encender()':
+    case "encender()":
       return { newLevel, validMove: true, collectibleCollected: false };
-    case 'apagar()':
+    case "apagar()":
       return { newLevel, validMove: true, collectibleCollected: false };
-    case 'recolectar()':
+    case "recolectar()":
       // If initialLevelData is provided, check if the robot's current position originally had a collectible
       if (initialLevelData.length > 0 && position !== -1) {
         if (initialLevelData[position] === TileType.COLLECTIBLE) {
@@ -356,36 +381,36 @@ const calculateNextPosition = (
         collectibleCollected = position !== -1;
       }
       return { newLevel, validMove: true, collectibleCollected };
-    case 'moverDerecha()':
+    case "moverDerecha()":
       if (x < GRID_WIDTH - 1) newPosition = position + 1;
       else validMove = false;
       break;
-    case 'moverIzquierda()':
+    case "moverIzquierda()":
       if (x > 0) newPosition = position - 1;
       else validMove = false;
       break;
-    case 'moverArriba()':
+    case "moverArriba()":
       if (y > 0) newPosition = position - GRID_WIDTH;
       else validMove = false;
       break;
-    case 'moverAbajo()':
+    case "moverAbajo()":
       if (y < 3) newPosition = position + GRID_WIDTH;
       else validMove = false;
       break;
-    case 'saltarDerecha()':
+    case "saltarDerecha()":
       if (x < GRID_WIDTH - 2) newPosition = position + 2;
       else validMove = false;
       break;
-    case 'saltarIzquierda()':
+    case "saltarIzquierda()":
       if (x > 1) newPosition = position - 2;
       else validMove = false;
       break;
-    case 'saltarArriba()':
-      if (y > 1) newPosition = position - (GRID_WIDTH * 2);
+    case "saltarArriba()":
+      if (y > 1) newPosition = position - GRID_WIDTH * 2;
       else validMove = false;
       break;
-    case 'saltarAbajo()':
-      if (y < 2) newPosition = position + (GRID_WIDTH * 2);
+    case "saltarAbajo()":
+      if (y < 2) newPosition = position + GRID_WIDTH * 2;
       else validMove = false;
       break;
     default:
@@ -407,10 +432,13 @@ const calculateNextPosition = (
 };
 
 // Update commandsToMovementSequence to use initialLevelData
-export const commandsToMovementSequence = (commands: string[], levelData: number[]): {
-  sequence: number[],
-  errorIndex: number | null,
-  collectSteps: number[] // New array to track when to collect
+export const commandsToMovementSequence = (
+  commands: string[],
+  levelData: number[],
+): {
+  sequence: number[];
+  errorIndex: number | null;
+  collectSteps: number[]; // New array to track when to collect
 } => {
   const sequence: number[] = [];
   const collectSteps: number[] = []; // Store indices of steps where collection happens
@@ -420,13 +448,13 @@ export const commandsToMovementSequence = (commands: string[], levelData: number
 
   for (let i = 0; i < commands.length; i++) {
     const cmd = commands[i];
-    const cleanCommand = cmd.replace('robot:', '').trim();
+    const cleanCommand = cmd.replace("robot:", "").trim();
 
     // Calculate the next position based on the command
     const { newLevel, validMove, collectibleCollected } = calculateNextPosition(
       currentGrid,
       cleanCommand,
-      initialLevelData // Pass the initial level data
+      initialLevelData, // Pass the initial level data
     );
 
     if (!validMove) {
@@ -438,7 +466,7 @@ export const commandsToMovementSequence = (commands: string[], levelData: number
 
     // If this is a collect command, mark this step regardless of whether something is collected
     // The CodeEditorSection will check if the robot is on a collectible when executing
-    if (cleanCommand === 'recolectar()') {
+    if (cleanCommand === "recolectar()") {
       collectSteps.push(i);
     }
 
@@ -446,7 +474,9 @@ export const commandsToMovementSequence = (commands: string[], levelData: number
     currentGrid = newLevel;
 
     // Find new robot position
-    const newRobotPosition = currentGrid.findIndex(tile => tile === TileType.ROBOT);
+    const newRobotPosition = currentGrid.findIndex(
+      (tile) => tile === TileType.ROBOT,
+    );
     sequence.push(newRobotPosition);
   }
 
@@ -466,17 +496,20 @@ export interface CommandWithMeta {
 export const compileUserCode = (code: string): CommandWithMeta[] => {
   // Check if code contains markers - if yes, extract section, if not, use entire code
   let userCodeSection = code;
-  
-  if (code.includes('-- Area de codigo para programar el robot')) {
-    userCodeSection = code.split('-- Area de codigo para programar el robot')[1]?.split('-- class definition')[0] || '';
+
+  if (code.includes("-- Area de codigo para programar el robot")) {
+    userCodeSection =
+      code
+        .split("-- Area de codigo para programar el robot")[1]
+        ?.split("-- class definition")[0] || "";
   }
 
   if (!userCodeSection) return [];
 
   const lines = userCodeSection
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line && !line.startsWith('--')); // Remove comments and empty lines
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("--")); // Remove comments and empty lines
 
   // Track variables defined in the code
   const variables: Record<string, number> = {};
@@ -494,22 +527,30 @@ export const compileUserCode = (code: string): CommandWithMeta[] => {
 
     // Check for variable assignments
     const varAssignmentMatch = line.match(/(\w+)\s*=\s*(.*)/);
-    if (varAssignmentMatch && !line.includes('for') && !line.includes('robot')) {
+    if (
+      varAssignmentMatch &&
+      !line.includes("for") &&
+      !line.includes("robot")
+    ) {
       const variableName = varAssignmentMatch[1];
       const variableValueStr = varAssignmentMatch[2].trim();
-      
+
       // Validate that the value is a number
       if (!/^\d+$/.test(variableValueStr)) {
-        throw new Error(`Error de compilación: La variable '${variableName}' solo puede contener valores numéricos enteros, pero se encontró '${variableValueStr}'`);
+        throw new Error(
+          `Error de compilación: La variable '${variableName}' solo puede contener valores numéricos enteros, pero se encontró '${variableValueStr}'`,
+        );
       }
-      
+
       const variableValue = parseInt(variableValueStr, 10);
       variables[variableName] = variableValue;
       continue;
     }
 
     // Check for for loop start with either literal numbers or variables
-    const forLoopMatch = line.match(/for\s+(\w+)\s*=\s*(\w+|\d+)\s*,\s*(\w+|\d+)\s*do/);
+    const forLoopMatch = line.match(
+      /for\s+(\w+)\s*=\s*(\w+|\d+)\s*,\s*(\w+|\d+)\s*do/,
+    );
     if (forLoopMatch) {
       inForLoop = true;
       indentLevel++;
@@ -535,7 +576,9 @@ export const compileUserCode = (code: string): CommandWithMeta[] => {
       } else {
         // Default to the start value if variable not found
         forLoopEnd = forLoopStart;
-        console.warn(`Variable ${endValue} not found, using default value ${forLoopStart}`);
+        console.warn(
+          `Variable ${endValue} not found, using default value ${forLoopStart}`,
+        );
       }
 
       // Record the loop start in structured commands
@@ -544,7 +587,7 @@ export const compileUserCode = (code: string): CommandWithMeta[] => {
         command: `for ${forLoopMatch[1]}=${forLoopStart},${forLoopEnd} do`,
         isLoopStart: true,
         loopCount: loopCount,
-        indentLevel: indentLevel
+        indentLevel: indentLevel,
       });
 
       forLoopCommands = [];
@@ -552,23 +595,23 @@ export const compileUserCode = (code: string): CommandWithMeta[] => {
     }
 
     // Check for end of for loop
-    if (inForLoop && line === 'end') {
+    if (inForLoop && line === "end") {
       inForLoop = false;
 
       // Add all loop commands to the structured commands with metadata
-      forLoopCommands.forEach(cmd => {
+      forLoopCommands.forEach((cmd) => {
         structuredCommands.push({
           ...cmd,
           inLoop: true,
-          indentLevel: indentLevel
+          indentLevel: indentLevel,
         });
       });
 
       // Record the loop end
       structuredCommands.push({
-        command: 'end',
+        command: "end",
         isLoopEnd: true,
-        indentLevel: indentLevel
+        indentLevel: indentLevel,
       });
 
       indentLevel--;
@@ -576,20 +619,24 @@ export const compileUserCode = (code: string): CommandWithMeta[] => {
     }
 
     // Process commands inside or outside for loop
-    if (line.includes('robot:') || line.includes('robot =') || line.includes('Robot.new')) {
-      const cmdWithoutSemicolon = line.replace(/;$/, '');
+    if (
+      line.includes("robot:") ||
+      line.includes("robot =") ||
+      line.includes("Robot.new")
+    ) {
+      const cmdWithoutSemicolon = line.replace(/;$/, "");
 
       if (inForLoop) {
         // Store commands inside the loop temporarily
         forLoopCommands.push({
           command: cmdWithoutSemicolon,
-          indentLevel: indentLevel
+          indentLevel: indentLevel,
         });
       } else {
         // Add normal commands to the structured array
         structuredCommands.push({
           command: cmdWithoutSemicolon,
-          indentLevel: 0
+          indentLevel: 0,
         });
       }
     }
@@ -598,13 +645,14 @@ export const compileUserCode = (code: string): CommandWithMeta[] => {
   return structuredCommands;
 };
 
-
 /**
- * 
- * @param structuredCommands 
- * @returns 
+ *
+ * @param structuredCommands
+ * @returns
  */
-export const structuredCommandsToBlockly = (structuredCommands: CommandWithMeta[]): string[] => {
+export const structuredCommandsToBlockly = (
+  structuredCommands: CommandWithMeta[],
+): string[] => {
   const flatCommands: string[] = [];
 
   for (let i = 0; i < structuredCommands.length; i++) {
@@ -624,11 +672,13 @@ export const structuredCommandsToBlockly = (structuredCommands: CommandWithMeta[
       if (nestLevel === 0) {
         // Extract the loop body
         const loopBody = structuredCommands.slice(i + 1, loopEndIndex - 1);
-        const filteredLoopBody = loopBody.filter(cmd => !cmd.isLoopStart && !cmd.isLoopEnd);
+        const filteredLoopBody = loopBody.filter(
+          (cmd) => !cmd.isLoopStart && !cmd.isLoopEnd,
+        );
 
         // Repeat the loop body for loopCount times
         for (let j = 0; j < cmd.loopCount; j++) {
-          filteredLoopBody.forEach(loopCmd => {
+          filteredLoopBody.forEach((loopCmd) => {
             flatCommands.push(loopCmd.command);
           });
         }
@@ -642,7 +692,9 @@ export const structuredCommandsToBlockly = (structuredCommands: CommandWithMeta[
 };
 
 // Function to flatten the structured commands for execution
-export const flattenCommands = (structuredCommands: CommandWithMeta[]): string[] => {
+export const flattenCommands = (
+  structuredCommands: CommandWithMeta[],
+): string[] => {
   const flatCommands: string[] = [];
 
   for (let i = 0; i < structuredCommands.length; i++) {
@@ -661,11 +713,13 @@ export const flattenCommands = (structuredCommands: CommandWithMeta[]): string[]
 
       // Extract the loop body
       const loopBody = structuredCommands.slice(i + 1, loopEndIndex - 1);
-      const filteredLoopBody = loopBody.filter(cmd => !cmd.isLoopStart && !cmd.isLoopEnd);
+      const filteredLoopBody = loopBody.filter(
+        (cmd) => !cmd.isLoopStart && !cmd.isLoopEnd,
+      );
 
       // Repeat the loop body for loopCount times
       for (let j = 0; j < cmd.loopCount; j++) {
-        filteredLoopBody.forEach(loopCmd => {
+        filteredLoopBody.forEach((loopCmd) => {
           flatCommands.push(loopCmd.command);
         });
       }
@@ -681,13 +735,21 @@ export const flattenCommands = (structuredCommands: CommandWithMeta[]): string[]
 };
 
 export const robotStateToCommand = (commandName: string) => {
-  return commandName.includes('moverDerecha') ? 'moverse a la derecha' :
-    commandName.includes('moverIzquierda') ? 'moverse a la izquierda' :
-      commandName.includes('moverArriba') ? 'moverse hacia arriba' :
-        commandName.includes('moverAbajo') ? 'moverse hacia abajo' :
-          commandName.includes('saltarDerecha') ? 'saltar a la derecha' :
-            commandName.includes('saltarIzquierda') ? 'saltar a la izquierda' :
-              commandName.includes('saltarArriba') ? 'saltar hacia arriba' :
-                commandName.includes('saltarAbajo') ? 'saltar hacia abajo' :
-                  commandName;
+  return commandName.includes("moverDerecha")
+    ? "moverse a la derecha"
+    : commandName.includes("moverIzquierda")
+      ? "moverse a la izquierda"
+      : commandName.includes("moverArriba")
+        ? "moverse hacia arriba"
+        : commandName.includes("moverAbajo")
+          ? "moverse hacia abajo"
+          : commandName.includes("saltarDerecha")
+            ? "saltar a la derecha"
+            : commandName.includes("saltarIzquierda")
+              ? "saltar a la izquierda"
+              : commandName.includes("saltarArriba")
+                ? "saltar hacia arriba"
+                : commandName.includes("saltarAbajo")
+                  ? "saltar hacia abajo"
+                  : commandName;
 };

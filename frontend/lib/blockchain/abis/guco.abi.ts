@@ -1,632 +1,632 @@
 export const gucoAbi = [
   {
-    "type": "constructor",
-    "inputs": [],
-    "stateMutability": "nonpayable"
+    type: "constructor",
+    inputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "createLevel",
-    "inputs": [
+    type: "function",
+    name: "createLevel",
+    inputs: [
       {
-        "name": "levelData",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
+        name: "levelData",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "stateMutability": "nonpayable"
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "getLevel",
-    "inputs": [
+    type: "function",
+    name: "getLevel",
+    inputs: [
       {
-        "name": "levelId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "levelId",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "tuple",
-        "internalType": "struct IGucoGame.Level",
-        "components": [
+        name: "",
+        type: "tuple",
+        internalType: "struct IGucoGame.Level",
+        components: [
           {
-            "name": "levelData",
-            "type": "bytes32",
-            "internalType": "bytes32"
+            name: "levelData",
+            type: "bytes32",
+            internalType: "bytes32",
           },
           {
-            "name": "creator",
-            "type": "address",
-            "internalType": "address"
+            name: "creator",
+            type: "address",
+            internalType: "address",
           },
           {
-            "name": "playCount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "playCount",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "completions",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "completions",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "verified",
-            "type": "bool",
-            "internalType": "bool"
+            name: "verified",
+            type: "bool",
+            internalType: "bool",
           },
           {
-            "name": "createdAt",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      }
+            name: "createdAt",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "getLevelCount",
-    "inputs": [],
-    "outputs": [
+    type: "function",
+    name: "getLevelCount",
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "getLevelData",
-    "inputs": [
+    type: "function",
+    name: "getLevelData",
+    inputs: [
       {
-        "name": "levelId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "levelId",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      }
+        name: "",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "getLevels",
-    "inputs": [
+    type: "function",
+    name: "getLevels",
+    inputs: [
       {
-        "name": "offset",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: "offset",
+        type: "uint256",
+        internalType: "uint256",
       },
       {
-        "name": "limit",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "limit",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "tuple[]",
-        "internalType": "struct IGucoGame.Level[]",
-        "components": [
+        name: "",
+        type: "tuple[]",
+        internalType: "struct IGucoGame.Level[]",
+        components: [
           {
-            "name": "levelData",
-            "type": "bytes32",
-            "internalType": "bytes32"
+            name: "levelData",
+            type: "bytes32",
+            internalType: "bytes32",
           },
           {
-            "name": "creator",
-            "type": "address",
-            "internalType": "address"
+            name: "creator",
+            type: "address",
+            internalType: "address",
           },
           {
-            "name": "playCount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "playCount",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "completions",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "completions",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "verified",
-            "type": "bool",
-            "internalType": "bool"
+            name: "verified",
+            type: "bool",
+            internalType: "bool",
           },
           {
-            "name": "createdAt",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      }
+            name: "createdAt",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "getLevelsWithId",
-    "inputs": [
+    type: "function",
+    name: "getLevelsWithId",
+    inputs: [
       {
-        "name": "offset",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: "offset",
+        type: "uint256",
+        internalType: "uint256",
       },
       {
-        "name": "limit",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "limit",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "tuple[]",
-        "internalType": "struct IGucoGame.LevelWithId[]",
-        "components": [
+        name: "",
+        type: "tuple[]",
+        internalType: "struct IGucoGame.LevelWithId[]",
+        components: [
           {
-            "name": "id",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "id",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "level",
-            "type": "tuple",
-            "internalType": "struct IGucoGame.Level",
-            "components": [
+            name: "level",
+            type: "tuple",
+            internalType: "struct IGucoGame.Level",
+            components: [
               {
-                "name": "levelData",
-                "type": "bytes32",
-                "internalType": "bytes32"
+                name: "levelData",
+                type: "bytes32",
+                internalType: "bytes32",
               },
               {
-                "name": "creator",
-                "type": "address",
-                "internalType": "address"
+                name: "creator",
+                type: "address",
+                internalType: "address",
               },
               {
-                "name": "playCount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: "playCount",
+                type: "uint256",
+                internalType: "uint256",
               },
               {
-                "name": "completions",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: "completions",
+                type: "uint256",
+                internalType: "uint256",
               },
               {
-                "name": "verified",
-                "type": "bool",
-                "internalType": "bool"
+                name: "verified",
+                type: "bool",
+                internalType: "bool",
               },
               {
-                "name": "createdAt",
-                "type": "uint256",
-                "internalType": "uint256"
-              }
-            ]
-          }
-        ]
-      }
+                name: "createdAt",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+        ],
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "getPlayer",
-    "inputs": [
+    type: "function",
+    name: "getPlayer",
+    inputs: [
       {
-        "name": "player",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: "player",
+        type: "address",
+        internalType: "address",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "tuple",
-        "internalType": "struct IGucoGame.Player",
-        "components": [
+        name: "",
+        type: "tuple",
+        internalType: "struct IGucoGame.Player",
+        components: [
           {
-            "name": "levelsCompleted",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "levelsCompleted",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "completedLevels",
-            "type": "tuple[]",
-            "internalType": "struct IGucoGame.Level[]",
-            "components": [
+            name: "completedLevels",
+            type: "tuple[]",
+            internalType: "struct IGucoGame.Level[]",
+            components: [
               {
-                "name": "levelData",
-                "type": "bytes32",
-                "internalType": "bytes32"
+                name: "levelData",
+                type: "bytes32",
+                internalType: "bytes32",
               },
               {
-                "name": "creator",
-                "type": "address",
-                "internalType": "address"
+                name: "creator",
+                type: "address",
+                internalType: "address",
               },
               {
-                "name": "playCount",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: "playCount",
+                type: "uint256",
+                internalType: "uint256",
               },
               {
-                "name": "completions",
-                "type": "uint256",
-                "internalType": "uint256"
+                name: "completions",
+                type: "uint256",
+                internalType: "uint256",
               },
               {
-                "name": "verified",
-                "type": "bool",
-                "internalType": "bool"
+                name: "verified",
+                type: "bool",
+                internalType: "bool",
               },
               {
-                "name": "createdAt",
-                "type": "uint256",
-                "internalType": "uint256"
-              }
-            ]
-          }
-        ]
-      }
+                name: "createdAt",
+                type: "uint256",
+                internalType: "uint256",
+              },
+            ],
+          },
+        ],
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "getPlayerLevels",
-    "inputs": [
+    type: "function",
+    name: "getPlayerLevels",
+    inputs: [
       {
-        "name": "player",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: "player",
+        type: "address",
+        internalType: "address",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "isLevelCompleted",
-    "inputs": [
+    type: "function",
+    name: "isLevelCompleted",
+    inputs: [
       {
-        "name": "player",
-        "type": "address",
-        "internalType": "address"
+        name: "player",
+        type: "address",
+        internalType: "address",
       },
       {
-        "name": "levelId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "levelId",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "levels",
-    "inputs": [
+    type: "function",
+    name: "levels",
+    inputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "levelData",
-        "type": "bytes32",
-        "internalType": "bytes32"
+        name: "levelData",
+        type: "bytes32",
+        internalType: "bytes32",
       },
       {
-        "name": "creator",
-        "type": "address",
-        "internalType": "address"
+        name: "creator",
+        type: "address",
+        internalType: "address",
       },
       {
-        "name": "playCount",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: "playCount",
+        type: "uint256",
+        internalType: "uint256",
       },
       {
-        "name": "completions",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: "completions",
+        type: "uint256",
+        internalType: "uint256",
       },
       {
-        "name": "verified",
-        "type": "bool",
-        "internalType": "bool"
+        name: "verified",
+        type: "bool",
+        internalType: "bool",
       },
       {
-        "name": "createdAt",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "createdAt",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "owner",
-    "inputs": [],
-    "outputs": [
+    type: "function",
+    name: "owner",
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "playerAchievements",
-    "inputs": [
+    type: "function",
+    name: "playerAchievements",
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
+        name: "",
+        type: "address",
+        internalType: "address",
       },
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "name",
-        "type": "string",
-        "internalType": "string"
+        name: "name",
+        type: "string",
+        internalType: "string",
       },
       {
-        "name": "description",
-        "type": "string",
-        "internalType": "string"
+        name: "description",
+        type: "string",
+        internalType: "string",
       },
       {
-        "name": "points",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: "points",
+        type: "uint256",
+        internalType: "uint256",
       },
       {
-        "name": "unlocked",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: "unlocked",
+        type: "bool",
+        internalType: "bool",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "playerCompletedLevels",
-    "inputs": [
+    type: "function",
+    name: "playerCompletedLevels",
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
+        name: "",
+        type: "address",
+        internalType: "address",
       },
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "playerLevelCount",
-    "inputs": [
+    type: "function",
+    name: "playerLevelCount",
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: "",
+        type: "address",
+        internalType: "address",
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
-    "stateMutability": "view"
+    stateMutability: "view",
   },
   {
-    "type": "function",
-    "name": "renounceOwnership",
-    "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    type: "function",
+    name: "renounceOwnership",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "transferOwnership",
-    "inputs": [
+    type: "function",
+    name: "transferOwnership",
+    inputs: [
       {
-        "name": "newOwner",
-        "type": "address",
-        "internalType": "address"
-      }
+        name: "newOwner",
+        type: "address",
+        internalType: "address",
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "function",
-    "name": "updatePlayer",
-    "inputs": [
+    type: "function",
+    name: "updatePlayer",
+    inputs: [
       {
-        "name": "player",
-        "type": "address",
-        "internalType": "address"
+        name: "player",
+        type: "address",
+        internalType: "address",
       },
       {
-        "name": "levelId",
-        "type": "uint256",
-        "internalType": "uint256"
+        name: "levelId",
+        type: "uint256",
+        internalType: "uint256",
       },
       {
-        "name": "levelCompleted",
-        "type": "tuple",
-        "internalType": "struct IGucoGame.Level",
-        "components": [
+        name: "levelCompleted",
+        type: "tuple",
+        internalType: "struct IGucoGame.Level",
+        components: [
           {
-            "name": "levelData",
-            "type": "bytes32",
-            "internalType": "bytes32"
+            name: "levelData",
+            type: "bytes32",
+            internalType: "bytes32",
           },
           {
-            "name": "creator",
-            "type": "address",
-            "internalType": "address"
+            name: "creator",
+            type: "address",
+            internalType: "address",
           },
           {
-            "name": "playCount",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "playCount",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "completions",
-            "type": "uint256",
-            "internalType": "uint256"
+            name: "completions",
+            type: "uint256",
+            internalType: "uint256",
           },
           {
-            "name": "verified",
-            "type": "bool",
-            "internalType": "bool"
+            name: "verified",
+            type: "bool",
+            internalType: "bool",
           },
           {
-            "name": "createdAt",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      }
+            name: "createdAt",
+            type: "uint256",
+            internalType: "uint256",
+          },
+        ],
+      },
     ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
-    "type": "event",
-    "name": "LevelCompleted",
-    "inputs": [
+    type: "event",
+    name: "LevelCompleted",
+    inputs: [
       {
-        "name": "levelId",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
+        name: "levelId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
       },
       {
-        "name": "userAddress",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: "userAddress",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "LevelCreated",
-    "inputs": [
+    type: "event",
+    name: "LevelCreated",
+    inputs: [
       {
-        "name": "levelId",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
+        name: "levelId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
       },
       {
-        "name": "creator",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: "creator",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "event",
-    "name": "OwnershipTransferred",
-    "inputs": [
+    type: "event",
+    name: "OwnershipTransferred",
+    inputs: [
       {
-        "name": "previousOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
+        name: "previousOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
       },
       {
-        "name": "newOwner",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      }
+        name: "newOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
     ],
-    "anonymous": false
+    anonymous: false,
   },
   {
-    "type": "error",
-    "name": "OwnableInvalidOwner",
-    "inputs": [
+    type: "error",
+    name: "OwnableInvalidOwner",
+    inputs: [
       {
-        "name": "owner",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
+        name: "owner",
+        type: "address",
+        internalType: "address",
+      },
+    ],
   },
   {
-    "type": "error",
-    "name": "OwnableUnauthorizedAccount",
-    "inputs": [
+    type: "error",
+    name: "OwnableUnauthorizedAccount",
+    inputs: [
       {
-        "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ]
-  }
+        name: "account",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
 ] as const;

@@ -6,17 +6,21 @@ export type LessonContent = {
   content: string;
   levelId: number;
   levelData: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner" | "intermediate" | "advanced";
   order: number;
 };
 
-export const LESSONS: Record<'beginner' | 'intermediate' | 'advanced', LessonContent[]> = {
+export const LESSONS: Record<
+  "beginner" | "intermediate" | "advanced",
+  LessonContent[]
+> = {
   beginner: [
     {
-      id: 'b1',
-      title: 'Introducción a la Programación',
-      description: 'Aprende los conceptos básicos de la programación y cómo pensar como un programador.',
-      videoUrl: 'https://www.youtube.com/watch?v=hhmvicWxR9M',
+      id: "b1",
+      title: "Introducción a la Programación",
+      description:
+        "Aprende los conceptos básicos de la programación y cómo pensar como un programador.",
+      videoUrl: "https://www.youtube.com/watch?v=hhmvicWxR9M",
       content: `
 # Introducción a la Programación
 
@@ -56,15 +60,17 @@ robot:apagar()
 Ahora que has aprendido los conceptos básicos, intenta crear tu propio programa para resolver el nivel.
       `,
       levelId: 1,
-      levelData: '0x0003010104040102000101010101010100010401010001040104000104040404',
-      difficulty: 'beginner',
-      order: 1
+      levelData:
+        "0x0003010104040102000101010101010100010401010001040104000104040404",
+      difficulty: "beginner",
+      order: 1,
     },
     {
-      id: 'b2',
-      title: 'Bucles y Repeticiones',
-      description: 'Aprende cómo hacer que el robot repita acciones usando bucles.',
-      videoUrl: 'https://www.youtube.com/watch?v=hhmvicWxR9M',
+      id: "b2",
+      title: "Bucles y Repeticiones",
+      description:
+        "Aprende cómo hacer que el robot repita acciones usando bucles.",
+      videoUrl: "https://www.youtube.com/watch?v=hhmvicWxR9M",
       content: `
 # Bucles y Repeticiones
 
@@ -97,17 +103,19 @@ Intenta crear un programa que:
 Ahora intenta resolver el nivel usando bucles para hacer tu código más eficiente.
       `,
       levelId: 2,
-      levelData: '0x0003010104040102000101010101010100010401010001040104000104040404',
-      difficulty: 'beginner',
-      order: 2
-    }
+      levelData:
+        "0x0003010104040102000101010101010100010401010001040104000104040404",
+      difficulty: "beginner",
+      order: 2,
+    },
   ],
   intermediate: [
     {
-      id: 'i1',
-      title: 'Condicionales y Decisiones',
-      description: 'Aprende a tomar decisiones en tus programas usando condicionales.',
-      videoUrl: 'https://www.youtube.com/watch?v=hhmvicWxR9M',
+      id: "i1",
+      title: "Condicionales y Decisiones",
+      description:
+        "Aprende a tomar decisiones en tus programas usando condicionales.",
+      videoUrl: "https://www.youtube.com/watch?v=hhmvicWxR9M",
       content: `
 # Condicionales y Decisiones
 
@@ -139,17 +147,19 @@ Crea un programa que:
 Ahora intenta resolver el nivel usando condicionales para manejar los obstáculos.
       `,
       levelId: 3,
-      levelData: '0x0003010104040102000101010101010100010401010001040104000104040404',
-      difficulty: 'intermediate',
-      order: 1
-    }
+      levelData:
+        "0x0003010104040102000101010101010100010401010001040104000104040404",
+      difficulty: "intermediate",
+      order: 1,
+    },
   ],
   advanced: [
     {
-      id: 'a1',
-      title: 'Optimización y Eficiencia',
-      description: 'Aprende técnicas avanzadas para hacer tus programas más eficientes.',
-      videoUrl: 'https://www.youtube.com/watch?v=hhmvicWxR9M',
+      id: "a1",
+      title: "Optimización y Eficiencia",
+      description:
+        "Aprende técnicas avanzadas para hacer tus programas más eficientes.",
+      videoUrl: "https://www.youtube.com/watch?v=hhmvicWxR9M",
       content: `
 # Optimización y Eficiencia
 
@@ -192,28 +202,33 @@ Crea un programa optimizado que:
 Ahora intenta resolver el nivel de la manera más eficiente posible.
       `,
       levelId: 4,
-      levelData: '0x0003010104040102000101010101010100010401010001040104000104040404',
-      difficulty: 'advanced',
-      order: 1
-    }
-  ]
+      levelData:
+        "0x0003010104040102000101010101010100010401010001040104000104040404",
+      difficulty: "advanced",
+      order: 1,
+    },
+  ],
 };
 
 // Utility function to check if a lesson is unlocked
 export const isLessonUnlocked = (lessonId: string): boolean => {
-  if (typeof window === 'undefined') return false;
-  
-  const unlockedLessons = JSON.parse(localStorage.getItem('unlockedLessons') || '[]');
+  if (typeof window === "undefined") return false;
+
+  const unlockedLessons = JSON.parse(
+    localStorage.getItem("unlockedLessons") || "[]",
+  );
   return unlockedLessons.includes(lessonId);
 };
 
 // Utility function to unlock a lesson
 export const unlockLesson = (lessonId: string): void => {
-  if (typeof window === 'undefined') return;
-  
-  const unlockedLessons = JSON.parse(localStorage.getItem('unlockedLessons') || '[]');
+  if (typeof window === "undefined") return;
+
+  const unlockedLessons = JSON.parse(
+    localStorage.getItem("unlockedLessons") || "[]",
+  );
   if (!unlockedLessons.includes(lessonId)) {
     unlockedLessons.push(lessonId);
-    localStorage.setItem('unlockedLessons', JSON.stringify(unlockedLessons));
+    localStorage.setItem("unlockedLessons", JSON.stringify(unlockedLessons));
   }
-}; 
+};

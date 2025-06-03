@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import HeroSection from '@/components/organisms/HeroSection';
-import FeaturesSection from '@/components/organisms/FeaturesSection';
-import TutorialSection from '@/components/organisms/TutorialSection';
-import GameSection from '@/components/organisms/GameSection';
-import BlockchainSection from '@/components/organisms/BlockchainSection';
-import LeaderboardSection from '@/components/organisms/LeaderboardSection';
+import React from "react";
+import HeroSection from "@/components/organisms/HeroSection";
+import FeaturesSection from "@/components/organisms/FeaturesSection";
+import TutorialSection from "@/components/organisms/TutorialSection";
+import GameSection from "@/components/organisms/GameSection";
+import BlockchainSection from "@/components/organisms/BlockchainSection";
+import LeaderboardSection from "@/components/organisms/LeaderboardSection";
 
 export default function Page() {
   return (

@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 export interface CardItemProps {
   heading: string | React.ReactNode;

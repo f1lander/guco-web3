@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Shield, Wallet } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Shield, Wallet } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const sidebarNavItems = [
   {
-    title: 'Credential Issuers',
-    href: '/platform/issuers',
+    title: "Credential Issuers",
+    href: "/platform/issuers",
     icon: Shield,
   },
   {
-    title: 'User Wallet',
-    href: '/platform/wallet',
+    title: "User Wallet",
+    href: "/platform/wallet",
     icon: Wallet,
   },
 ];
@@ -39,7 +39,7 @@ export function Sidebar() {
                 variant={pathname === item.href ? "secondary" : "ghost"}
                 className={cn(
                   "w-full justify-start gap-2",
-                  pathname === item.href && "bg-muted"
+                  pathname === item.href && "bg-muted",
                 )}
                 asChild
               >

@@ -1,23 +1,24 @@
-import * as React from 'react';
-import type { Metadata } from 'next';
-import './globals.css';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import * as React from "react";
+import type { Metadata } from "next";
+import "./globals.css";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from "@/components/ui/tooltip";
 
-import { HomeIcon, Telescope } from 'lucide-react';
-import { CustomLink } from '@/components/ui/custom-link';
-import { DotBackground } from '@/components/backgrounds/patterns';
-import ThemeSwitch from '@/components/molecules/ThemeSwitch';
+import { HomeIcon, Telescope } from "lucide-react";
+import { CustomLink } from "@/components/ui/custom-link";
+import { DotBackground } from "@/components/backgrounds/patterns";
+import ThemeSwitch from "@/components/molecules/ThemeSwitch";
 
 export const metadata: Metadata = {
-  title: 'Create Web3 App',
-  description: 'A template for creating web3 apps with Next.js, viem, and Tailwind CSS',
+  title: "Create Web3 App",
+  description:
+    "A template for creating web3 apps with Next.js, viem, and Tailwind CSS",
 };
 
 export default function SideBar({
@@ -27,8 +28,8 @@ export default function SideBar({
 }>) {
   const links = [
     {
-      href: '/',
-      label: 'Home',
+      href: "/",
+      label: "Home",
       icon: <HomeIcon className="h-5 w-5" />,
     },
   ];

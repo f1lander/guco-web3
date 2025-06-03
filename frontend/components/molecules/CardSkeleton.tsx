@@ -1,4 +1,4 @@
-export default function CardSkeleton({ className = '' }) {
+export default function CardSkeleton({ className = "" }) {
   return (
     <div
       className={`h-[330px] w-full animate-pulse rounded-lg border border-gray-200 bg-white p-4 shadow dark:border-gray-700 dark:bg-gray-800 ${className}`}

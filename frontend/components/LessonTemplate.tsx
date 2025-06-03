@@ -1,26 +1,29 @@
-import React from 'react';
-import { LessonContent } from './LessonContent';
-import { LessonContent as LessonContentType } from '../lib/lessons';
+import React from "react";
+import { LessonContent } from "./LessonContent";
+import { LessonContent as LessonContentType } from "../lib/lessons";
 
 interface LessonTemplateProps {
   lesson: LessonContentType;
   onStartLevel: () => void;
 }
 
-export const LessonTemplate: React.FC<LessonTemplateProps> = ({ lesson, onStartLevel }) => {
+export const LessonTemplate: React.FC<LessonTemplateProps> = ({
+  lesson,
+  onStartLevel,
+}) => {
   // Convert YouTube URL to embed URL
   const getEmbedUrl = (url: string | undefined): string | null => {
     if (!url) return null;
-    
+
     // Handle youtu.be format
-    if (url.includes('youtu.be')) {
-      const videoId = url.split('youtu.be/')[1];
+    if (url.includes("youtu.be")) {
+      const videoId = url.split("youtu.be/")[1];
       return `https://www.youtube.com/embed/${videoId}`;
     }
-    
+
     // Handle youtube.com format
-    if (url.includes('youtube.com/watch')) {
-      const videoId = new URL(url).searchParams.get('v');
+    if (url.includes("youtube.com/watch")) {
+      const videoId = new URL(url).searchParams.get("v");
       return `https://www.youtube.com/embed/${videoId}`;
     }
 
@@ -48,7 +51,9 @@ export const LessonTemplate: React.FC<LessonTemplateProps> = ({ lesson, onStartL
 
       {/* Content Section */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4 text-gray-100">{lesson.title}</h1>
+        <h1 className="text-4xl font-bold mb-4 text-gray-100">
+          {lesson.title}
+        </h1>
         <p className="text-xl text-gray-400 mb-6">{lesson.description}</p>
         <LessonContent content={lesson.content} />
       </div>
@@ -64,4 +69,4 @@ export const LessonTemplate: React.FC<LessonTemplateProps> = ({ lesson, onStartL
       </div>
     </div>
   );
-}; 
+};

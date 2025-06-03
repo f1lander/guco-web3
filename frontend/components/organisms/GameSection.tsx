@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import CodeEditorSection from './CodeEditorSection';
-import SectionTitle from '../atoms/SectionTitle';
-import { DEFAULT_LEVEL, GRID_WIDTH } from '@/lib/constants';
-
+import React, { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import CodeEditorSection from "./CodeEditorSection";
+import SectionTitle from "../atoms/SectionTitle";
+import { DEFAULT_LEVEL, GRID_WIDTH } from "@/lib/constants";
 
 const GameSection = () => {
   const [level, setLevel] = useState(DEFAULT_LEVEL);
@@ -13,11 +12,11 @@ const GameSection = () => {
 
   // Find initial robot position from level data
   useEffect(() => {
-    const robotIndex = level.findIndex(tile => tile === 3); // ROBOT
+    const robotIndex = level.findIndex((tile) => tile === 3); // ROBOT
     if (robotIndex !== -1) {
       setRobotPosition({
         x: robotIndex % GRID_WIDTH,
-        y: Math.floor(robotIndex / GRID_WIDTH)
+        y: Math.floor(robotIndex / GRID_WIDTH),
       });
     }
   }, [level]);
@@ -31,14 +30,11 @@ const GameSection = () => {
 
         {/* Code Editor Area */}
         <Card className="bg-slate-800/50 backdrop-blur-sm h-[85vh] lg:h-[70vh] mb-4">
-          <CodeEditorSection
-            levelData={level}
-            setLevelData={setLevel}
-          />
+          <CodeEditorSection levelData={level} setLevelData={setLevel} />
         </Card>
       </div>
     </section>
   );
 };
 
-export default GameSection; 
+export default GameSection;

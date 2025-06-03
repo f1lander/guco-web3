@@ -115,12 +115,12 @@ export type ClaimPageFilters = {
 
 export type TrapCardItemDetailsMetadata = Pick<
   TrapItem,
-  'bloomBoostBalance' | 'totalRewards' | 'rewardsReleased'
+  "bloomBoostBalance" | "totalRewards" | "rewardsReleased"
 > & {
   id: `0x${string}`;
   operators: readonly `0x${string}`[];
   hydrationStreams: HydrationStreamPayload[] | undefined;
-  configData: TrapWithConfigPayload['configData'];
+  configData: TrapWithConfigPayload["configData"];
   bloomBoost: bigint;
   bonusReward: bigint;
   trapCreatorAddress: `0x${string}`;
@@ -129,13 +129,23 @@ export type TrapCardItemDetailsMetadata = Pick<
 
 export type TrapCardItemMetadata = Pick<
   TrapItem,
-  | 'bloomBoostBalance'
-  | 'operators'
-  | 'hydrationStreams'
-  | 'totalRewards'
-  | 'rewardsReleased'
+  | "bloomBoostBalance"
+  | "operators"
+  | "hydrationStreams"
+  | "totalRewards"
+  | "rewardsReleased"
 > & {
   bloomBoost: bigint;
   trapCreatorAddress: `0x${string}`;
   trapRewardAddress: `0x${string}`;
 };
+
+// Ethereum window object type declarations
+declare global {
+  interface Window {
+    ethereum?: {
+      request: (args: { method: string; params?: Array<any> }) => Promise<any>;
+      isMetaMask?: boolean;
+    };
+  }
+}

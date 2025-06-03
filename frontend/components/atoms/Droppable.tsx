@@ -1,5 +1,5 @@
-import { useDroppable } from '@dnd-kit/core';
-import { ReactNode } from 'react';
+import { useDroppable } from "@dnd-kit/core";
+import { ReactNode } from "react";
 
 interface DroppableProps {
   droppableId: string;
@@ -7,7 +7,11 @@ interface DroppableProps {
   children: (provided: any, snapshot: { isDraggingOver: boolean }) => ReactNode;
 }
 
-export function Droppable({ droppableId, children, isDropDisabled }: DroppableProps) {
+export function Droppable({
+  droppableId,
+  children,
+  isDropDisabled,
+}: DroppableProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: droppableId,
     disabled: isDropDisabled,
@@ -15,7 +19,6 @@ export function Droppable({ droppableId, children, isDropDisabled }: DroppablePr
 
   return children(
     { innerRef: setNodeRef, droppableProps: {} },
-    { isDraggingOver: isOver }
+    { isDraggingOver: isOver },
   );
 }
-  

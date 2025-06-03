@@ -1,33 +1,54 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Terminal as TerminalIcon, Play, GridIcon, ChevronRight, HelpCircle, X, Trophy, Check, Code, Puzzle } from 'lucide-react';
-import GameView from '../molecules/GameView';
-import { CodeEditor } from '@/components/molecules/CodeEditor';
-import BlocklyReact from '@/components/molecules/BlocklyReact';
-import Button from '@/components/atoms/Button';
-import { Terminal } from '@/components/atoms/Terminal';
-import { colorVariants } from '@/components/atoms/Button';
-import { COMMAND_CATEGORIES, COMMANDS, GRID_WIDTH, INITIAL_CODE } from '@/lib/constants';
-import { useGucoLevels } from '@/hooks/useGucoLevels';
-import { useTranslation } from '@/providers/language-provider';
-import { compileCode, RobotState, TileType, commandsToMovementSequence, compileUserCode, flattenCommands, CommandWithMeta, robotStateToCommand } from '@/lib/utils';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Terminal as TerminalIcon,
+  Play,
+  GridIcon,
+  ChevronRight,
+  HelpCircle,
+  X,
+  Trophy,
+  Check,
+  Code,
+  Puzzle,
+} from "lucide-react";
+import GameView from "../molecules/GameView";
+import { CodeEditor } from "@/components/molecules/CodeEditor";
+import BlocklyReact from "@/components/molecules/BlocklyReact";
+import Button from "@/components/atoms/Button";
+import { Terminal } from "@/components/atoms/Terminal";
+import { colorVariants } from "@/components/atoms/Button";
+import {
+  COMMAND_CATEGORIES,
+  COMMANDS,
+  GRID_WIDTH,
+  INITIAL_CODE,
+} from "@/lib/constants";
+import { useGucoLevels } from "@/hooks/useGucoLevels";
+import { useTranslation } from "@/providers/language-provider";
+import {
+  compileCode,
+  RobotState,
+  TileType,
+  commandsToMovementSequence,
+  compileUserCode,
+  flattenCommands,
+  CommandWithMeta,
+  robotStateToCommand,
+} from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogFooter,
   DialogTitle,
-  DialogDescription
-} from '@/components/ui/dialog';
-import {
-  playMoveSound,
-  playGoalSound,
-  playErrorSound,
-} from '@/lib/sounds';
-import { toast } from '@/components/ui/use-toast';
-import { useAudioInit } from '@/hooks/useAudioInit';
-import { useRobotSounds } from '@/hooks/useRobotSounds';
-import { useCollectiblesInit } from '@/hooks/useCollectiblesInit';
-import { useLevelCompletion } from '@/hooks/useLevelCompletion';
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { playMoveSound, playGoalSound, playErrorSound } from "@/lib/sounds";
+import { toast } from "@/components/ui/use-toast";
+import { useAudioInit } from "@/hooks/useAudioInit";
+import { useRobotSounds } from "@/hooks/useRobotSounds";
+import { useCollectiblesInit } from "@/hooks/useCollectiblesInit";
+import { useLevelCompletion } from "@/hooks/useLevelCompletion";
 
 interface CommandSectionProps {
   onSelectCommand: (command: string) => void;
@@ -43,9 +64,9 @@ interface Command {
   description: string;
 }
 
-
 const CommandSection: React.FC<CommandSectionProps> = ({ onSelectCommand }) => {
-  const [selectedCategory, setSelectedCategory] = useState<keyof typeof COMMAND_CATEGORIES>('basico');
+  const [selectedCategory, setSelectedCategory] =
+    useState<keyof typeof COMMAND_CATEGORIES>("basico");
   const { t } = useTranslation();
 
   return (
@@ -56,8 +77,10 @@ const CommandSection: React.FC<CommandSectionProps> = ({ onSelectCommand }) => {
           <Button
             key={key}
             variant="command"
-            color={selectedCategory === key ? category.color : 'slate'}
-            onClick={() => setSelectedCategory(key as keyof typeof COMMAND_CATEGORIES)}
+            color={selectedCategory === key ? category.color : "slate"}
+            onClick={() =>
+              setSelectedCategory(key as keyof typeof COMMAND_CATEGORIES)
+            }
             className="text-xs md:text-sm px-2 py-1 md:px-3 md:py-1.5"
           >
             {t(`game.commands.categories.${category.label}`)}
@@ -94,7 +117,12 @@ interface SuccessDialogProps {
   isPending: boolean;
 }
 
-const SuccessDialog: React.FC<SuccessDialogProps> = ({ isOpen, onClose, onConfirm, isPending }) => {
+const SuccessDialog: React.FC<SuccessDialogProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isPending,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -103,7 +131,9 @@ const SuccessDialog: React.FC<SuccessDialogProps> = ({ isOpen, onClose, onConfir
         <DialogHeader>
           <div className="flex items-center gap-2">
             <Trophy className="w-5 h-5 text-yellow-400" />
-            <DialogTitle className="text-lg font-bold text-white">¡Nivel Completado!</DialogTitle>
+            <DialogTitle className="text-lg font-bold text-white">
+              ¡Nivel Completado!
+            </DialogTitle>
           </div>
         </DialogHeader>
 
@@ -151,7 +181,12 @@ interface FailureDialogProps {
   errorMessage: string;
 }
 
-const FailureDialog: React.FC<FailureDialogProps> = ({ isOpen, onClose, onRetry, errorMessage }) => {
+const FailureDialog: React.FC<FailureDialogProps> = ({
+  isOpen,
+  onClose,
+  onRetry,
+  errorMessage,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -160,7 +195,9 @@ const FailureDialog: React.FC<FailureDialogProps> = ({ isOpen, onClose, onRetry,
         <DialogHeader>
           <div className="flex items-center gap-2">
             <X className="w-5 h-5 text-red-400" />
-            <DialogTitle className="text-lg font-bold text-white">Error de ejecución</DialogTitle>
+            <DialogTitle className="text-lg font-bold text-white">
+              Error de ejecución
+            </DialogTitle>
           </div>
         </DialogHeader>
 
@@ -177,11 +214,7 @@ const FailureDialog: React.FC<FailureDialogProps> = ({ isOpen, onClose, onRetry,
         </div>
 
         <DialogFooter className="bg-slate-800/50 p-4 -mx-6 -mb-6 mt-2 rounded-b-lg">
-          <Button
-            onClick={onRetry}
-            className="w-full"
-            color="blue"
-          >
+          <Button onClick={onRetry} className="w-full" color="blue">
             <span className="flex items-center gap-2">
               <Play className="w-4 h-4" />
               Reintentar
@@ -207,7 +240,10 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   isCompleted = false,
 }) => {
   const [code, setCode] = useState(INITIAL_CODE);
-  const [robotState, setRobotState] = useState<RobotState>({ collected: 0, state: 'off' });
+  const [robotState, setRobotState] = useState<RobotState>({
+    collected: 0,
+    state: "off",
+  });
   const [showHelp, setShowHelp] = useState(false);
   const [commands, setCommands] = useState<CommandWithMeta[]>([]);
   const [flattenedCommands, setFlattenedCommands] = useState<string[]>([]);
@@ -216,19 +252,30 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [movementSequence, setMovementSequence] = useState<number[]>([]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
-  const [initialLevelData, setInitialLevelData] = useState<number[]>([...levelData]);
+  const [initialLevelData, setInitialLevelData] = useState<number[]>([
+    ...levelData,
+  ]);
   const [levelCompleted, setLevelCompleted] = useState(false);
   const [collectSteps, setCollectSteps] = useState<number[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [showFailureDialog, setShowFailureDialog] = useState(false);
-  const [editorType, setEditorType] = useState<'code' | 'blocks'>('code');
+  const [editorType, setEditorType] = useState<"code" | "blocks">("code");
 
-  const { updatePlayer, isPendingUpdate, isSuccessUpdate, isErrorUpdate, dataUpdate, getLevel } = useGucoLevels();
+  const {
+    updatePlayer,
+    isPendingUpdate,
+    isSuccessUpdate,
+    isErrorUpdate,
+    dataUpdate,
+    getLevel,
+  } = useGucoLevels();
 
   // Use custom hooks
   const { audioInitialized } = useAudioInit();
-  const { collectiblePositions, setCollectiblePositions, totalCollectibles } = useCollectiblesInit(initialLevelData);
-  const { showSuccessDialog, setShowSuccessDialog } = useLevelCompletion(levelCompleted);
+  const { collectiblePositions, setCollectiblePositions, totalCollectibles } =
+    useCollectiblesInit(initialLevelData);
+  const { showSuccessDialog, setShowSuccessDialog } =
+    useLevelCompletion(levelCompleted);
 
   // Apply robot sound effects
   useRobotSounds(robotState, audioInitialized);
@@ -236,12 +283,12 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   // Add a new state to track collision animation
   const [collisionState, setCollisionState] = useState({
     isColliding: false,
-    obstaclePosition: -1
+    obstaclePosition: -1,
   });
 
   // Handle command click
   const handleCommandClick = (command: string) => {
-    setCode(prevCode => prevCode + `\n${command};`);
+    setCode((prevCode) => prevCode + `\n${command};`);
   };
 
   // Ensure this handler updates the shared code state
@@ -262,15 +309,15 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     setMovementSequence([]);
     setLevelCompleted(false);
     setCollectSteps([]);
-    setRobotState({ collected: 0, state: 'off' });
+    setRobotState({ collected: 0, state: "off" });
 
     // Reset level data to initial state
     setLevelData([...initialLevelData]);
 
     // Reset collectible positions
     const collectibles = initialLevelData
-      .map((tile, index) => tile === TileType.COLLECTIBLE ? index : -1)
-      .filter(index => index !== -1);
+      .map((tile, index) => (tile === TileType.COLLECTIBLE ? index : -1))
+      .filter((index) => index !== -1);
     setCollectiblePositions(collectibles);
 
     try {
@@ -289,16 +336,23 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       setIsExecuting(true);
 
       // Convert commands to movement sequence
-      const { sequence, errorIndex, collectSteps } = commandsToMovementSequence(flattenedCommands, initialLevelData);
+      const { sequence, errorIndex, collectSteps } = commandsToMovementSequence(
+        flattenedCommands,
+        initialLevelData,
+      );
 
       setMovementSequence(sequence);
       setCollectSteps(collectSteps);
 
       // Check if robot has reached the goal
       const goalReached = checkGoalReached(sequence);
-      const allCollectiblesCollected = robotState.collected === totalCollectibles;
+      const allCollectiblesCollected =
+        robotState.collected === totalCollectibles;
 
-      if (goalReached && (allCollectiblesCollected || totalCollectibles === 0)) {
+      if (
+        goalReached &&
+        (allCollectiblesCollected || totalCollectibles === 0)
+      ) {
         setLevelCompleted(true);
 
         // Play goal reached sound
@@ -326,7 +380,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           ...level,
           playCount: level.playCount + 1n,
           completions: level.completions + 1n,
-          verified: true
+          verified: true,
         });
 
         if (isSuccessUpdate) {
@@ -345,7 +399,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           toast({
             title: "Error al guardar progreso",
             description: "Hubo un problema al registrar tu avance.",
-            variant: "destructive"
+            variant: "destructive",
           });
         }
 
@@ -357,12 +411,12 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         }
       }
     } catch (error) {
-      console.error('Error updating player progress:', error);
+      console.error("Error updating player progress:", error);
 
       toast({
         title: "Error al guardar progreso",
         description: "Hubo un problema al registrar tu avance.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
@@ -371,14 +425,15 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
   // Check if robot has reached the goal
   const checkGoalReached = (newLevelData: number[]) => {
+    const robotPos = newLevelData.findIndex((tile) => tile === TileType.ROBOT);
 
-    const robotPos = newLevelData.findIndex(tile => tile === TileType.ROBOT);
-
-    const hasGoal = initialLevelData.some(tile => tile === TileType.GOAL);
+    const hasGoal = initialLevelData.some((tile) => tile === TileType.GOAL);
 
     if (!hasGoal) return false;
 
-    const goalPos = initialLevelData.findIndex(tile => tile === TileType.GOAL);
+    const goalPos = initialLevelData.findIndex(
+      (tile) => tile === TileType.GOAL,
+    );
 
     console.log("goalPos", goalPos);
     console.log("robotPos", robotPos);
@@ -389,35 +444,41 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
-    if (isExecuting && movementSequence.length > 0 && currentMoveIndex < movementSequence.length) {
+    if (
+      isExecuting &&
+      movementSequence.length > 0 &&
+      currentMoveIndex < movementSequence.length
+    ) {
       timeoutId = setTimeout(() => {
         // Make sure we have flattened commands available
         if (flattenedCommands.length === 0) return;
 
         // Get the current command (for state checks)
-        const currentCommand = flattenedCommands[currentMoveIndex]?.replace('robot:', '').trim();
+        const currentCommand = flattenedCommands[currentMoveIndex]
+          ?.replace("robot:", "")
+          .trim();
 
         // Skip the robot = Robot.new() command as it's just initialization
-        if (currentCommand === 'robot = Robot.new()') {
-          setCurrentMoveIndex(prev => prev + 1);
+        if (currentCommand === "robot = Robot.new()") {
+          setCurrentMoveIndex((prev) => prev + 1);
           return;
         }
 
         // Process robot state commands
-        if (currentCommand === 'encender()') {
+        if (currentCommand === "encender()") {
           // Turn on the robot
-          setRobotState(prev => ({ ...prev, state: 'on' }));
-          setCurrentMoveIndex(prev => prev + 1);
+          setRobotState((prev) => ({ ...prev, state: "on" }));
+          setCurrentMoveIndex((prev) => prev + 1);
           return;
-        } else if (currentCommand === 'apagar()') {
+        } else if (currentCommand === "apagar()") {
           // Turn off the robot
-          setRobotState(prev => ({ ...prev, state: 'off' }));
-          setCurrentMoveIndex(prev => prev + 1);
+          setRobotState((prev) => ({ ...prev, state: "off" }));
+          setCurrentMoveIndex((prev) => prev + 1);
           return;
         }
 
         // Check if robot is turned on for all non-state commands
-        if (robotState.state !== 'on') {
+        if (robotState.state !== "on") {
           setError("El robot necesita ser encendido primero con 'encender()'");
           setIsExecuting(false);
           return;
@@ -427,7 +488,9 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         const newLevelData = [...levelData];
 
         // Find the current robot position
-        const currentPos = newLevelData.findIndex(tile => tile === TileType.ROBOT);
+        const currentPos = newLevelData.findIndex(
+          (tile) => tile === TileType.ROBOT,
+        );
 
         // Get the position where the robot will move
         const newPos = movementSequence[currentMoveIndex];
@@ -442,28 +505,28 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           const x = currentPos % GRID_WIDTH;
           const y = Math.floor(currentPos / GRID_WIDTH);
 
-          if (currentCommand.includes('moverDerecha')) {
+          if (currentCommand.includes("moverDerecha")) {
             intendedPos = x < GRID_WIDTH - 1 ? currentPos + 1 : currentPos;
-          } else if (currentCommand.includes('moverIzquierda')) {
+          } else if (currentCommand.includes("moverIzquierda")) {
             intendedPos = x > 0 ? currentPos - 1 : currentPos;
-          } else if (currentCommand.includes('moverArriba')) {
+          } else if (currentCommand.includes("moverArriba")) {
             intendedPos = y > 0 ? currentPos - GRID_WIDTH : currentPos;
-          } else if (currentCommand.includes('moverAbajo')) {
+          } else if (currentCommand.includes("moverAbajo")) {
             intendedPos = y < 3 ? currentPos + GRID_WIDTH : currentPos;
-          } else if (currentCommand.includes('saltarDerecha')) {
+          } else if (currentCommand.includes("saltarDerecha")) {
             intendedPos = x < GRID_WIDTH - 2 ? currentPos + 2 : currentPos;
-          } else if (currentCommand.includes('saltarIzquierda')) {
+          } else if (currentCommand.includes("saltarIzquierda")) {
             intendedPos = x > 1 ? currentPos - 2 : currentPos;
-          } else if (currentCommand.includes('saltarArriba')) {
-            intendedPos = y > 1 ? currentPos - (GRID_WIDTH * 2) : currentPos;
-          } else if (currentCommand.includes('saltarAbajo')) {
-            intendedPos = y < 2 ? currentPos + (GRID_WIDTH * 2) : currentPos;
+          } else if (currentCommand.includes("saltarArriba")) {
+            intendedPos = y > 1 ? currentPos - GRID_WIDTH * 2 : currentPos;
+          } else if (currentCommand.includes("saltarAbajo")) {
+            intendedPos = y < 2 ? currentPos + GRID_WIDTH * 2 : currentPos;
           }
 
           // If it's at grid boundary, we don't move
           if (intendedPos === currentPos) {
             // Handle boundary collision
-            setRobotState(prev => ({ ...prev, state: 'error' }));
+            setRobotState((prev) => ({ ...prev, state: "error" }));
             setError(`El robot no puede moverse fuera del mapa.`);
             setIsExecuting(false);
 
@@ -479,8 +542,10 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           }
 
           // Clear previous position
-          if (initialLevelData[currentPos] === TileType.COLLECTIBLE &&
-            collectiblePositions.includes(currentPos)) {
+          if (
+            initialLevelData[currentPos] === TileType.COLLECTIBLE &&
+            collectiblePositions.includes(currentPos)
+          ) {
             newLevelData[currentPos] = TileType.COLLECTIBLE;
           } else {
             newLevelData[currentPos] = TileType.EMPTY;
@@ -492,11 +557,11 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           // Start collision animation sequence
           setCollisionState({
             isColliding: true,
-            obstaclePosition: intendedPos
+            obstaclePosition: intendedPos,
           });
 
           // Set robot to error state
-          setRobotState(prev => ({ ...prev, state: 'error' }));
+          setRobotState((prev) => ({ ...prev, state: "error" }));
 
           // Play error sound
           if (audioInitialized) {
@@ -505,11 +570,14 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
           // Set error message
           const commandName = flattenedCommands[currentMoveIndex]
-            .replace('robot:', '')
-            .replace('()', '');
+            .replace("robot:", "")
+            .replace("()", "");
 
-          setError(`El robot no puede ${robotStateToCommand(commandName)
-            } porque hay un obstáculo.`);
+          setError(
+            `El robot no puede ${robotStateToCommand(
+              commandName,
+            )} porque hay un obstáculo.`,
+          );
 
           // Update the level data to show robot at obstacle position
           setLevelData(newLevelData);
@@ -532,20 +600,29 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         if (isCollectCommand) {
           // Check if the current position has a collectible in the initial level data
           // and it hasn't been collected yet
-          const robotIsOnCollectible = initialLevelData[currentPos] === TileType.COLLECTIBLE;
-          const isPositionNotCollectedYet = collectiblePositions.includes(currentPos);
+          const robotIsOnCollectible =
+            initialLevelData[currentPos] === TileType.COLLECTIBLE;
+          const isPositionNotCollectedYet =
+            collectiblePositions.includes(currentPos);
 
           if (robotIsOnCollectible && isPositionNotCollectedYet) {
             // Collect the item
-            setRobotState(prev => ({ ...prev, collected: prev.collected + 1 }));
+            setRobotState((prev) => ({
+              ...prev,
+              collected: prev.collected + 1,
+            }));
             // Remove this position from collectible positions
-            setCollectiblePositions(prev => prev.filter(pos => pos !== currentPos));
+            setCollectiblePositions((prev) =>
+              prev.filter((pos) => pos !== currentPos),
+            );
           }
         }
 
         // Clear previous position, restoring the original tile if needed
-        if (initialLevelData[currentPos] === TileType.COLLECTIBLE &&
-          collectiblePositions.includes(currentPos)) {
+        if (
+          initialLevelData[currentPos] === TileType.COLLECTIBLE &&
+          collectiblePositions.includes(currentPos)
+        ) {
           // If this was a collectible position and it hasn't been collected yet, restore it
           newLevelData[currentPos] = TileType.COLLECTIBLE;
         } else {
@@ -557,7 +634,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         newLevelData[newPos] = TileType.ROBOT;
 
         // Play movement sound
-        if (audioInitialized && robotState.state === 'on') {
+        if (audioInitialized && robotState.state === "on") {
           playMoveSound();
         }
 
@@ -566,9 +643,13 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
         // Check if robot has reached the goal and collected all collectibles
         const goalReached = checkGoalReached(newLevelData);
-        const allCollectiblesCollected = robotState.collected === totalCollectibles;
+        const allCollectiblesCollected =
+          robotState.collected === totalCollectibles;
 
-        if (goalReached && (allCollectiblesCollected || totalCollectibles === 0)) {
+        if (
+          goalReached &&
+          (allCollectiblesCollected || totalCollectibles === 0)
+        ) {
           setLevelCompleted(true);
 
           // Play goal reached sound
@@ -579,17 +660,30 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
         // Use original delay for animations
         setTimeout(() => {
-          setCurrentMoveIndex(prev => prev + 1);
+          setCurrentMoveIndex((prev) => prev + 1);
         }, 500);
-
       }, 500);
-    } else if (currentMoveIndex >= movementSequence.length && movementSequence.length > 0) {
+    } else if (
+      currentMoveIndex >= movementSequence.length &&
+      movementSequence.length > 0
+    ) {
       setIsExecuting(false);
     }
 
     return () => clearTimeout(timeoutId);
-  }, [isExecuting, currentMoveIndex, movementSequence, levelData, collectiblePositions,
-    collectSteps, totalCollectibles, initialLevelData, robotState, flattenedCommands, audioInitialized]);
+  }, [
+    isExecuting,
+    currentMoveIndex,
+    movementSequence,
+    levelData,
+    collectiblePositions,
+    collectSteps,
+    totalCollectibles,
+    initialLevelData,
+    robotState,
+    flattenedCommands,
+    audioInitialized,
+  ]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -608,29 +702,29 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       {/* Editor Header */}
       <div className="flex items-center justify-between p-3 bg-slate-800">
         <div className="flex items-center gap-2">
-
           <div className="flex items-center gap-2">
             <TerminalIcon className="w-3 h-3 md:w-4 md:h-4 text-slate-400" />
-            <span className="text-xs md:text-sm font-semibold text-slate-400">Panel de Control</span>
+            <span className="text-xs md:text-sm font-semibold text-slate-400">
+              Panel de Control
+            </span>
           </div>
           {/* Editor Type Toggle */}
           <div className="flex bg-slate-700 rounded-md overflow-hidden">
             <button
-              onClick={() => setEditorType('code')}
-              className={`flex items-center gap-1 px-2 py-1 text-xs ${editorType === 'code' ? 'bg-blue-600 text-white' : 'bg-transparent text-slate-300'}`}
+              onClick={() => setEditorType("code")}
+              className={`flex items-center gap-1 px-2 py-1 text-xs ${editorType === "code" ? "bg-blue-600 text-white" : "bg-transparent text-slate-300"}`}
             >
               <Code className="w-3 h-3" />
               Código
             </button>
             <button
-              onClick={() => setEditorType('blocks')}
-              className={`flex items-center gap-1 px-2 py-1 text-xs ${editorType === 'blocks' ? 'bg-purple-600 text-white' : 'bg-transparent text-slate-300'}`}
+              onClick={() => setEditorType("blocks")}
+              className={`flex items-center gap-1 px-2 py-1 text-xs ${editorType === "blocks" ? "bg-purple-600 text-white" : "bg-transparent text-slate-300"}`}
             >
               <Puzzle className="w-3 h-3" />
               Bloques
             </button>
           </div>
-
         </div>
         <div className="text-xs md:text-sm font-medium text-green-400 flex items-center">
           {isCompleted ? (
@@ -650,8 +744,6 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
             <span className="mr-2">🪴</span>
             {robotState.collected} / {totalCollectibles}
           </div>
-
-
 
           {/* Make sure this button uses the same handler regardless of editor mode */}
           <Button
@@ -677,10 +769,12 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         <div className="flex flex-col h-full order-2 md:order-1">
           {/* Editor - Toggle between Code and Blocks */}
           <div className="flex-1 h-full">
-            {editorType === 'code' ? (
+            {editorType === "code" ? (
               <CodeEditor
                 value={code}
-                onChange={(value: string | undefined) => handleCodeChange(value ?? '')}
+                onChange={(value: string | undefined) =>
+                  handleCodeChange(value ?? "")
+                }
               />
             ) : (
               <BlocklyReact
@@ -689,7 +783,6 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
               />
             )}
           </div>
-
         </div>
 
         {/* Right Column - Game View */}
@@ -707,7 +800,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
               isExecuting={isExecuting}
               isCompiling={isCompiling}
               error={error}
-              executeCommand={() => { }}
+              executeCommand={() => {}}
               currentCommandIndex={currentMoveIndex}
             />
           </div>
@@ -728,7 +821,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         onClose={() => setShowFailureDialog(false)}
         onRetry={() => {
           setShowFailureDialog(false);
-          setRobotState({ collected: 0, state: 'off' });
+          setRobotState({ collected: 0, state: "off" });
           setLevelData([...initialLevelData]);
         }}
         errorMessage={error || "El robot ha chocado con un obstáculo."}
@@ -758,12 +851,20 @@ const HelpDialog: React.FC<HelpDialogProps> = ({ isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {Object.entries(allCommands).map(([category, commands]) => (
             <div key={category}>
-              <h3 className="text-sm font-semibold text-slate-400 mb-3">{category}</h3>
+              <h3 className="text-sm font-semibold text-slate-400 mb-3">
+                {category}
+              </h3>
               <div className="space-y-2">
-                {COMMAND_CATEGORIES[category as keyof typeof COMMAND_CATEGORIES].commands.map((cmd, idx) => (
+                {COMMAND_CATEGORIES[
+                  category as keyof typeof COMMAND_CATEGORIES
+                ].commands.map((cmd, idx) => (
                   <div key={idx} className="p-3 bg-slate-800 rounded-lg">
-                    <code className="font-mono text-blue-400">{cmd.command}</code>
-                    <p className="mt-1 text-sm text-slate-300">{cmd.description}</p>
+                    <code className="font-mono text-blue-400">
+                      {cmd.command}
+                    </code>
+                    <p className="mt-1 text-sm text-slate-300">
+                      {cmd.description}
+                    </p>
 
                     {/* Add special description for variable assignment */}
                     {cmd.command === COMMANDS.variable_assign && (
@@ -776,7 +877,8 @@ const HelpDialog: React.FC<HelpDialogProps> = ({ isOpen, onClose }) => {
 repeticiones = 5`}
                         </pre>
                         <p className="mt-2 text-xs text-slate-400">
-                          Crea variables que pueden usarse en bucles for y otras partes del código.
+                          Crea variables que pueden usarse en bucles for y otras
+                          partes del código.
                         </p>
                       </div>
                     )}
@@ -800,7 +902,8 @@ for i=1,veces do
 end`}
                         </pre>
                         <p className="mt-2 text-xs text-slate-400">
-                          Repite comandos un número específico de veces. Puedes usar números o variables para definir el rango.
+                          Repite comandos un número específico de veces. Puedes
+                          usar números o variables para definir el rango.
                         </p>
                       </div>
                     )}
@@ -812,10 +915,14 @@ end`}
 
           {/* Add additional examples section */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-400 mb-3">Ejemplos Avanzados</h3>
+            <h3 className="text-sm font-semibold text-slate-400 mb-3">
+              Ejemplos Avanzados
+            </h3>
             <div className="space-y-4">
               <div className="p-3 bg-slate-800 rounded-lg">
-                <h4 className="font-medium text-blue-400">Variables y bucles</h4>
+                <h4 className="font-medium text-blue-400">
+                  Variables y bucles
+                </h4>
                 <pre className="mt-2 text-xs font-mono text-green-400 overflow-x-auto p-2 bg-slate-700/50 rounded">
                   {`-- Definir variables para movimientos
 movX = 2
@@ -832,7 +939,8 @@ for i=1,movY do
 end`}
                 </pre>
                 <p className="mt-2 text-sm text-slate-300">
-                  Este código usa variables para controlar el número de movimientos en cada dirección.
+                  Este código usa variables para controlar el número de
+                  movimientos en cada dirección.
                 </p>
               </div>
             </div>

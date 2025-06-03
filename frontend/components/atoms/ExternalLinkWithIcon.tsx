@@ -1,8 +1,8 @@
-'use client';
-import React from 'react';
-import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
+"use client";
+import React from "react";
+import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 
-import { cn, truncateEthAddress } from '@/lib/utils';
+import { cn, truncateEthAddress } from "@/lib/utils";
 
 type ExternalLinkWithIconProps = {
   address: string;
@@ -17,11 +17,11 @@ const ExternalLinkWithIcon: React.FC<ExternalLinkWithIconProps> = ({
 }) => {
   const handleClick = (e: React.MouseEvent<HTMLSpanElement>) => {
     e.stopPropagation();
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div className={cn('flex w-full items-center gap-2', className)}>
+    <div className={cn("flex w-full items-center gap-2", className)}>
       <span
         onClick={handleClick}
         className="cursor-pointer hover:underline"

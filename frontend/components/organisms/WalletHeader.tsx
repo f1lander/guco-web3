@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { Button } from "@/components/ui/button";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { User } from 'lucide-react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+} from "@/components/ui/dropdown-menu";
+import { User } from "lucide-react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export function WalletHeader() {
   const { address, isConnected } = useAccount();

@@ -1,0 +1,18 @@
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/.next/
+**/out/
+**/dist/
+**/build/
+
+# Generated files
+**/*.min.js
+**/*.min.css
+
+# Logs
+**/*.log
+
+# Other
+**/.DS_Store 

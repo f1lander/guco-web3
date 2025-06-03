@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { buildDataUrl } from '@/lib/utils';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Trophy, Users, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Level } from '@/lib/types';
+import { buildDataUrl } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+import { Trophy, Users, Star } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Level } from "@/lib/types";
 
 const colorVariants = {
   yellow: {
@@ -14,7 +14,7 @@ const colorVariants = {
     activeShadow: "active:shadow-[inset_0_-4px_0_0_#B45309]",
     header: "bg-purple-700 border-purple-900 shadow-[inset_0_-4px_0_0_#581C87]",
     headerText: "text-yellow-300",
-    progress: "bg-yellow-500"
+    progress: "bg-yellow-500",
   },
   purple: {
     card: "bg-purple-400 border-purple-600",
@@ -22,7 +22,7 @@ const colorVariants = {
     activeShadow: "active:shadow-[inset_0_-4px_0_0_#581C87]",
     header: "bg-yellow-500 border-yellow-600 shadow-[inset_0_-4px_0_0_#B45309]",
     headerText: "text-purple-900",
-    progress: "bg-purple-500"
+    progress: "bg-purple-500",
   },
   blue: {
     card: "bg-blue-400 border-blue-600",
@@ -30,8 +30,8 @@ const colorVariants = {
     activeShadow: "active:shadow-[inset_0_-4px_0_0_#1E40AF]",
     header: "bg-yellow-500 border-yellow-600 shadow-[inset_0_-4px_0_0_#B45309]",
     headerText: "text-blue-900",
-    progress: "bg-blue-500"
-  }
+    progress: "bg-blue-500",
+  },
 } as const;
 
 type ColorVariant = keyof typeof colorVariants;
@@ -42,16 +42,17 @@ interface LevelCardProps {
   color?: ColorVariant;
 }
 
-export function LevelCard({ level, index, color = 'yellow' }: LevelCardProps) {
+export function LevelCard({ level, index, color = "yellow" }: LevelCardProps) {
   const creatorImage = buildDataUrl(level.creator);
-  const completionRate = Number(level.completions) > 0 
-    ? (Number(level.completions) * 100 / Number(level.playCount)).toFixed(1) 
-    : 0;
+  const completionRate =
+    Number(level.completions) > 0
+      ? ((Number(level.completions) * 100) / Number(level.playCount)).toFixed(1)
+      : 0;
 
   const colors = colorVariants[color];
 
   return (
-    <Link 
+    <Link
       href={`/dashboard/level?levelData=${level.levelData}&levelId=${level.id}`}
       className={cn(
         "group relative p-6 transition-all duration-200",
@@ -60,16 +61,18 @@ export function LevelCard({ level, index, color = 'yellow' }: LevelCardProps) {
         colors.shadow,
         colors.activeShadow,
         "active:translate-y-2",
-        "hover:brightness-110"
+        "hover:brightness-110",
       )}
     >
       {/* Header plate */}
-      <div className={cn(
-        "absolute -top-3 left-1/2 -translate-x-1/2 w-4/5 h-8",
-        "rounded-md border-2",
-        "flex items-center justify-center",
-        colors.header
-      )}>
+      <div
+        className={cn(
+          "absolute -top-3 left-1/2 -translate-x-1/2 w-4/5 h-8",
+          "rounded-md border-2",
+          "flex items-center justify-center",
+          colors.header,
+        )}
+      >
         <div className={cn("font-bold", colors.headerText)}>
           Level {index + 1}
         </div>
@@ -90,7 +93,10 @@ export function LevelCard({ level, index, color = 'yellow' }: LevelCardProps) {
             by {level.creator.slice(0, 6)}...{level.creator.slice(-4)}
           </p>
           {level.verified && (
-            <Star className="h-5 w-5 text-yellow-600 ml-auto" fill="currentColor" />
+            <Star
+              className="h-5 w-5 text-yellow-600 ml-auto"
+              fill="currentColor"
+            />
           )}
         </div>
 
@@ -110,7 +116,7 @@ export function LevelCard({ level, index, color = 'yellow' }: LevelCardProps) {
 
         {/* Progress bar */}
         <div className={cn("h-3 rounded-full", colors.progress)}>
-          <div 
+          <div
             className="h-full bg-purple-700 rounded-full transition-all"
             style={{ width: `${completionRate}%` }}
           />
@@ -118,4 +124,4 @@ export function LevelCard({ level, index, color = 'yellow' }: LevelCardProps) {
       </div>
     </Link>
   );
-} 
+}

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import { config } from 'dotenv-flow';
-const APP_ENV = process.env.APP_ENV || 'devnet';
+import { config } from "dotenv-flow";
+const APP_ENV = process.env.APP_ENV || "devnet";
 
 config({
   node_env: APP_ENV,
@@ -11,15 +11,15 @@ config({
 const env = {};
 
 for (const [key, value] of Object.entries(process.env)) {
-  if (key.startsWith('NEXT_PUBLIC_')) {
+  if (key.startsWith("NEXT_PUBLIC_")) {
     env[key] = value;
   }
 }
 
 const nextConfig = {
   env,
-  output: 'export',
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
+  output: "export",
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || "",
   images: {
     unoptimized: true,
   },

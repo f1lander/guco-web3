@@ -15,4 +15,4 @@ export function LevelCardSkeleton() {
       </div>
     </div>
   );
-} 
+}

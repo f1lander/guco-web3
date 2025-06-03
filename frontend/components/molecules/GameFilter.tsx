@@ -1,34 +1,50 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { SlidersHorizontal, ArrowUpDown } from 'lucide-react';
-import { useState } from 'react';
-import { useTranslation } from '@/providers/language-provider';
+import { cn } from "@/lib/utils";
+import { SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "@/providers/language-provider";
 
-type Difficulty = 'all' | 'easy' | 'medium' | 'hard';
-type SortBy = 'newest' | 'completion';
+type Difficulty = "all" | "easy" | "medium" | "hard";
+type SortBy = "newest" | "completion";
 
 interface GameFilterProps {
   onDifficultyChange: (difficulty: Difficulty) => void;
   onSortChange: (sort: SortBy) => void;
 }
 
-export function GameFilter({ onDifficultyChange, onSortChange }: GameFilterProps) {
+export function GameFilter({
+  onDifficultyChange,
+  onSortChange,
+}: GameFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('all');
-  const [selectedSort, setSelectedSort] = useState<SortBy>('newest');
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<Difficulty>("all");
+  const [selectedSort, setSelectedSort] = useState<SortBy>("newest");
   const { t } = useTranslation();
 
   const difficulties: { value: Difficulty; label: string; color: string }[] = [
-    { value: 'all', label: t('filters.difficulty.all'), color: 'bg-gray-500' },
-    { value: 'easy', label: t('filters.difficulty.easy'), color: 'bg-green-500' },
-    { value: 'medium', label: t('filters.difficulty.medium'), color: 'bg-yellow-500' },
-    { value: 'hard', label: t('filters.difficulty.hard'), color: 'bg-red-500' }
+    { value: "all", label: t("filters.difficulty.all"), color: "bg-gray-500" },
+    {
+      value: "easy",
+      label: t("filters.difficulty.easy"),
+      color: "bg-green-500",
+    },
+    {
+      value: "medium",
+      label: t("filters.difficulty.medium"),
+      color: "bg-yellow-500",
+    },
+    { value: "hard", label: t("filters.difficulty.hard"), color: "bg-red-500" },
   ];
 
   const sorts = [
-    { value: 'newest', label: t('filters.sort.newest'), icon: ArrowUpDown },
-    { value: 'completion', label: t('filters.sort.completion'), icon: ArrowUpDown }
+    { value: "newest", label: t("filters.sort.newest"), icon: ArrowUpDown },
+    {
+      value: "completion",
+      label: t("filters.sort.completion"),
+      icon: ArrowUpDown,
+    },
   ];
 
   return (
@@ -45,13 +61,15 @@ export function GameFilter({ onDifficultyChange, onSortChange }: GameFilterProps
             "h-11 px-4 py-2 rounded-xl transition-all duration-200",
             "border-2 border-emerald-700/30",
             "flex items-center gap-2 whitespace-nowrap",
-            selectedSort === sort.value 
+            selectedSort === sort.value
               ? "bg-emerald-600/20 shadow-[inset_0_-4px_0_0_rgba(5,150,105,0.2)]"
-              : "bg-emerald-500/10 hover:bg-emerald-500/20"
+              : "bg-emerald-500/10 hover:bg-emerald-500/20",
           )}
         >
           <sort.icon className="w-4 h-4 text-gray-200/90" />
-          <span className="text-sm font-medium text-gray-100">{sort.label}</span>
+          <span className="text-sm font-medium text-gray-100">
+            {sort.label}
+          </span>
         </button>
       ))}
 
@@ -63,24 +81,27 @@ export function GameFilter({ onDifficultyChange, onSortChange }: GameFilterProps
             "h-11 px-4 py-2 rounded-xl transition-all duration-200",
             "border-2 border-emerald-700/30",
             "flex items-center gap-2 whitespace-nowrap",
-            isOpen 
+            isOpen
               ? "bg-emerald-600/20 shadow-[inset_0_-4px_0_0_rgba(5,150,105,0.2)]"
-              : "bg-emerald-500/10 hover:bg-emerald-500/20"
+              : "bg-emerald-500/10 hover:bg-emerald-500/20",
           )}
         >
           <SlidersHorizontal className="w-4 h-4 text-gray-200/90" />
-          <span className="text-sm font-medium text-gray-100">{t('filters.difficulty.title')}</span>
+          <span className="text-sm font-medium text-gray-100">
+            {t("filters.difficulty.title")}
+          </span>
         </button>
 
         {isOpen && (
           <>
             {/* Backdrop */}
-            <div 
+            <div
               className="fixed inset-0 z-40"
-              onClick={() => setIsOpen(false)} 
+              onClick={() => setIsOpen(false)}
             />
             {/* Dropdown */}
-            <div className="absolute top-full mt-2 right-0 w-48 p-2 rounded-xl 
+            <div
+              className="absolute top-full mt-2 right-0 w-48 p-2 rounded-xl 
               bg-gray-800/90 backdrop-blur-sm border-2 border-emerald-700/30 shadow-lg
               z-50 sm:right-0 right-[-50px]"
             >
@@ -95,9 +116,9 @@ export function GameFilter({ onDifficultyChange, onSortChange }: GameFilterProps
                   className={cn(
                     "w-full px-3 py-2 rounded-lg text-left text-sm font-medium",
                     "flex items-center gap-2",
-                    selectedDifficulty === diff.value 
-                      ? "bg-emerald-500/10" 
-                      : "hover:bg-emerald-500/5"
+                    selectedDifficulty === diff.value
+                      ? "bg-emerald-500/10"
+                      : "hover:bg-emerald-500/5",
                   )}
                 >
                   <span className={cn("w-2 h-2 rounded-full", diff.color)} />
@@ -110,4 +131,4 @@ export function GameFilter({ onDifficultyChange, onSortChange }: GameFilterProps
       </div>
     </div>
   );
-} 
+}

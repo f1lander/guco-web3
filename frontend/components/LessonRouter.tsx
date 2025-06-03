@@ -1,16 +1,20 @@
-import React from 'react';
-import { LessonTemplate } from './LessonTemplate';
-import { LESSONS, isLessonUnlocked } from '../lib/lessons';
+import React from "react";
+import { LessonTemplate } from "./LessonTemplate";
+import { LESSONS, isLessonUnlocked } from "../lib/lessons";
 
 type LessonRouterProps = {
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner" | "intermediate" | "advanced";
   lessonId: string;
   onBack: () => void;
 };
 
-export const LessonRouter: React.FC<LessonRouterProps> = ({ difficulty, lessonId, onBack }) => {
+export const LessonRouter: React.FC<LessonRouterProps> = ({
+  difficulty,
+  lessonId,
+  onBack,
+}) => {
   const [currentLesson, setCurrentLesson] = React.useState(
-    LESSONS[difficulty].find((lesson) => lesson.id === lessonId)
+    LESSONS[difficulty].find((lesson) => lesson.id === lessonId),
   );
 
   const handleStartLevel = () => {
@@ -77,8 +81,11 @@ export const LessonRouter: React.FC<LessonRouterProps> = ({ difficulty, lessonId
           Volver a las lecciones
         </button>
 
-        <LessonTemplate lesson={currentLesson} onStartLevel={handleStartLevel} />
+        <LessonTemplate
+          lesson={currentLesson}
+          onStartLevel={handleStartLevel}
+        />
       </div>
     </div>
   );
-}; 
+};
