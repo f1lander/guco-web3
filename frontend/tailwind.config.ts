@@ -174,6 +174,10 @@ const config = {
           "0%, 100%": { opacity: "1", transform: "scale(1)" },
           "50%": { opacity: "0.85", transform: "scale(1.2)" },
         },
+        "pulse-opacity": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -181,6 +185,7 @@ const config = {
         rainbow: "rainbow 10s ease-in-out infinite",
         buzz: "buzz 0.15s linear infinite",
         pulse: "pulse 1s ease-in-out infinite",
+        "pulse-opacity": "pulse-opacity 2s ease-in-out infinite",
       },
       boxShadow: {
         // light

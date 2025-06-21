@@ -1,5 +1,9 @@
 # GUCO - Plataforma Educativa de Programación para Niños
 
+> ⚡ **NUEVO**: Ahora disponible en dos versiones - Web3 (Blockchain) y REST API (Base de datos tradicional)
+> 
+> 📖 Ver [DUAL_VERSION_SETUP.md](./DUAL_VERSION_SETUP.md) para configuración detallada
+
 ## devlog #1
 Demo de como va, actualmente ya hacer collect de los items e implemente tone.js para sound effects
 
@@ -34,6 +38,40 @@ https://github.com/user-attachments/assets/68333b3b-0a59-4897-b9aa-942c34fb8c86
 
 ## Resumen Ejecutivo
 GUCO es una plataforma web educativa diseñada para introducir a los niños en el mundo de la programación a través de una experiencia gamificada e interactiva. El proyecto busca despertar el interés por la programación desde temprana edad mediante un sistema de comandos simple pero efectivo que permite controlar un robot virtual.
+
+## Sistema de Doble Versión
+
+GUCO ahora soporta dos implementaciones diferentes para adaptarse a distintas audiencias y necesidades:
+
+### 🔗 Versión Web3 (Blockchain)
+- **Autenticación**: Conexión de wallet (MetaMask, etc.)
+- **Almacenamiento**: Smart contracts en blockchain
+- **Creación de niveles**: Requiere gas fees
+- **Progreso**: Permanente en blockchain
+- **Ideal para**: Usuarios con experiencia en crypto, educación sobre blockchain
+
+### 🗄️ Versión REST API (Base de datos)
+- **Autenticación**: Usuario/contraseña tradicional
+- **Almacenamiento**: Base de datos Supabase
+- **Creación de niveles**: Gratuito con cuenta
+- **Progreso**: Almacenado en base de datos
+- **Ideal para**: Usuarios nuevos, niños, instituciones educativas
+
+### Características Comunes
+- ✅ Navegar y jugar niveles sin autenticación
+- ✅ Misma experiencia de juego
+- ✅ Sistema de comandos idéntico
+- ✅ Interfaz de usuario unificada
+
+### Control de Versión
+La versión se controla mediante variable de entorno:
+```bash
+# Web3 version
+NEXT_PUBLIC_WEB3_ENABLED=true
+
+# REST API version
+NEXT_PUBLIC_WEB3_ENABLED=false
+```
 
 ## Descripción del Proyecto
 

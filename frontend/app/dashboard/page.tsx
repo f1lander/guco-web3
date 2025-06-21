@@ -6,7 +6,6 @@ import { LevelCard } from "@/components/molecules/LevelCard";
 import { useTranslation } from "@/providers/language-provider";
 import { GameInput } from "@/components/molecules/GameInput";
 import { LevelCardSkeleton } from "@/components/molecules/LevelCardSkeleton";
-import { GameFilter } from "@/components/molecules/GameFilter";
 import { Level } from "@/lib/types";
 
 export default function LevelsExplorer() {
@@ -18,10 +17,6 @@ export default function LevelsExplorer() {
   const { getLevels, getLevelCount } = useGucoLevels();
   const [levels, setLevels] = useState<Level[]>([]);
   const [totalLevels, setTotalLevels] = useState(0);
-  const [difficulty, setDifficulty] = useState<
-    "all" | "easy" | "medium" | "hard"
-  >("all");
-  const [sortBy, setSortBy] = useState<"newest" | "completion">("newest");
 
   const loadLevels = async () => {
     try {
@@ -51,10 +46,9 @@ export default function LevelsExplorer() {
             <h2 className="text-2xl font-bold">
               {t("dashboard.exploreLevels")}
             </h2>
-            <div className="h-10 w-48 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
           </div>
           <div className="w-full max-w-md">
-            <div className="h-10 w-full animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+            <div className="h-10 w-full animate-pulse-opacity rounded-lg bg-gray-200 dark:bg-gray-700" />
           </div>
         </div>
 
@@ -72,10 +66,6 @@ export default function LevelsExplorer() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-2xl font-bold">{t("dashboard.exploreLevels")}</h2>
-          <GameFilter
-            onDifficultyChange={setDifficulty}
-            onSortChange={setSortBy}
-          />
         </div>
         <div className="w-full max-w-md">
           <GameInput
