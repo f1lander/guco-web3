@@ -1,14 +1,14 @@
 import { GameService, GameLevel, GamePlayer, CreateLevelParams, CompleteLevelParams, GetLevelsParams } from './types';
 import { getLevels as web3GetLevels, getLevelCount as web3GetLevelCount, getLevel as web3GetLevel, getPlayer as web3GetPlayer, isLevelCompleted as web3IsLevelCompleted, getPlayerCreatedLevels as web3GetPlayerCreatedLevels } from '../blockchain/contract-functions';
 import { levelToBytes32, bytes32ToLevel } from '../utils';
-import { getAccount, writeContract } from '@wagmi/core';
+import { writeContract } from '@wagmi/core';
 import { gucoAbi } from '../blockchain/abis/guco.abi';
 import { GUCO_CONTRACT_ADDRESSES } from '../constants';
 
 export class Web3GameService implements GameService {
   async getLevels(params: GetLevelsParams): Promise<GameLevel[]> {
     const levels = await web3GetLevels(params.offset, params.limit);
-    return levels.map(level => ({
+    return levels.map((level: any) => ({
       ...level,
       levelDataTransformed: level.levelData ? bytes32ToLevel(level.levelData as `0x${string}`) : undefined,
     }));
@@ -33,14 +33,14 @@ export class Web3GameService implements GameService {
   }
 
   async createLevel(params: CreateLevelParams): Promise<{ id: number; txHash?: string }> {
-    const account = getAccount();
+    const account = getAccount(config);
     if (!account.address) {
       throw new Error('Wallet not connected');
     }
 
     const bytes32Data = levelToBytes32(params.levelData);
     
-    const hash = await writeContract({
+    const hash = await writeContract(config, {
       address: GUCO_CONTRACT_ADDRESSES,
       abi: gucoAbi,
       functionName: 'createLevel',
@@ -75,7 +75,7 @@ export class Web3GameService implements GameService {
   }
 
   async completeLevel(params: CompleteLevelParams): Promise<{ success: boolean; txHash?: string }> {
-    const account = getAccount();
+    const account = await getAccount();
     if (!account.address) {
       throw new Error('Wallet not connected');
     }
@@ -100,6 +100,7 @@ export class Web3GameService implements GameService {
           createdAt: BigInt(Math.floor(params.levelData.createdAt.getTime() / 1000)),
         }
       ],
+      account: account,
     });
 
     return {
@@ -114,7 +115,7 @@ export class Web3GameService implements GameService {
 
   async getPlayerCreatedLevels(playerId: string): Promise<GameLevel[]> {
     const levels = await web3GetPlayerCreatedLevels(playerId as `0x${string}`);
-    return levels.map(level => ({
+    return levels.map((level: any) => ({
       ...level,
       levelDataTransformed: level.levelData ? bytes32ToLevel(level.levelData as `0x${string}`) : undefined,
     }));

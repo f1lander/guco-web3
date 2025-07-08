@@ -29,7 +29,7 @@ export class RestGameService implements GameService {
       return [];
     }
 
-    return data.map(level => ({
+    return data.map((level: any) => ({
       id: level.id,
       levelData: level.level_data,
       creator: level.creator_id,
@@ -128,7 +128,7 @@ export class RestGameService implements GameService {
       console.error('Error fetching completions:', completionsError);
     }
 
-    const completedLevels: GameLevel[] = completionsData?.map(completion => {
+    const completedLevels: GameLevel[] = completionsData?.map((completion: any) => {
       const level = (completion as any).levels;
       return {
         id: level.id,
@@ -229,7 +229,7 @@ export class RestGameService implements GameService {
       return [];
     }
 
-    return data.map(level => ({
+    return data.map((level: any) => ({
       id: level.id,
       levelData: level.level_data,
       creator: level.creator_id,

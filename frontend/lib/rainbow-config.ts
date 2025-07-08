@@ -25,7 +25,7 @@ const guco_devnet = defineChain({
 export const rainbowConfig = getDefaultConfig({
   appName: "Guco Web3",
   projectId: WALLET_CONNECTION_PROJECT_ID,
-  chains: [guco_devnet], // Only support devnet
+  chains: [guco_devnet, anvil], // Only support devnet
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
