@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Button from '@/components/atoms/Button';
+import { Button } from '@/components/ui/button';
 import { CustomConnectButton } from './CustomConnectButton';
 import { AuthModal } from './AuthModal';
 import { useGameService } from '@/hooks/useGameService';
@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from "@/lib/utils";
 
 export const UnifiedConnectButton: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -55,8 +56,13 @@ export const UnifiedConnectButton: React.FC = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              color="purple"
-              className="flex items-center gap-2"
+              className={cn(
+                "relative flex items-center justify-center gap-2 px-4 py-2 font-semibold rounded-lg",
+                "transition-all duration-[31ms] cubic-bezier(.5, .7, .4, 1)",
+                "bg-purple-500 text-white shadow-[0_7px_0_0_#581C87]",
+                "active:translate-y-[7px] active:shadow-none active:transition-[35ms]",
+                "hover:bg-purple-600"
+              )}
             >
               <Image
                 src={buildDataUrl(currentUser.id)}
@@ -94,9 +100,14 @@ export const UnifiedConnectButton: React.FC = () => {
   return (
     <>
       <Button
-        color="yellow"
         onClick={() => setShowAuthModal(true)}
-        className="flex items-center gap-2"
+        className={cn(
+          "relative flex items-center justify-center gap-2 px-4 py-2 font-semibold rounded-lg",
+          "transition-all duration-[31ms] cubic-bezier(.5, .7, .4, 1)",
+          "bg-yellow-500 text-white shadow-[0_7px_0_0_#B45309]",
+          "active:translate-y-[7px] active:shadow-none active:transition-[35ms]",
+          "hover:bg-yellow-600"
+        )}
       >
         <User className="w-4 h-4" />
         {t("nav.login")}
