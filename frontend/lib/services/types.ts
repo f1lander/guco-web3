@@ -3,6 +3,7 @@ export interface GameLevel {
   id: number;
   levelData: string; // hex string for web3, JSON string for REST
   creator: string; // wallet address for web3, user_id for REST
+  creatorUsername?: string; // username for REST version
   playCount: number;
   completions: number;
   verified: boolean;

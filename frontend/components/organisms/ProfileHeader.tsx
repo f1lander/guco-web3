@@ -4,7 +4,7 @@ import { StatsWidget } from "../molecules/StatsWidget";
 import { useTranslation } from "@/providers/language-provider";
 
 interface ProfileHeaderProps {
-  address: `0x${string}`;
+  creatorDisplay: string;
   stats: {
     levelsCreated: number;
     totalPlays: number;
@@ -13,7 +13,7 @@ interface ProfileHeaderProps {
   };
 }
 
-export function ProfileHeader({ address, stats }: ProfileHeaderProps) {
+export function ProfileHeader({ creatorDisplay, stats }: ProfileHeaderProps) {
   const { t } = useTranslation();
 
   return (
@@ -21,7 +21,7 @@ export function ProfileHeader({ address, stats }: ProfileHeaderProps) {
       {/* Greeting */}
       <div className="text-start">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-purple-400 to-blue-400 text-transparent bg-clip-text">
-          {t("profile.greeting")} {address.slice(0, 6)}...{address.slice(-4)}!
+          {t("profile.greeting")} {creatorDisplay}!
         </h1>
         <p className="text-gray-400 mt-2">{t("profile.welcome")}</p>
       </div>

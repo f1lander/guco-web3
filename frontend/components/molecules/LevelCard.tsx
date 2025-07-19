@@ -45,9 +45,12 @@ interface LevelCardProps {
 export function LevelCard({ level, index, color = "yellow" }: LevelCardProps) {
   const creatorImage = buildDataUrl(level.creator);
   const completionRate =
-    Number(level.completions) > 0
+    Number(level.completions) > 0 && Number(level.playCount) > 0
       ? ((Number(level.completions) * 100) / Number(level.playCount)).toFixed(1)
       : 0;
+
+  // Use creatorUsername if available, otherwise fall back to truncated creator ID
+  const creatorDisplay = level.creatorUsername || `${level.creator.slice(0, 6)}...${level.creator.slice(-4)}`;
 
   const colors = colorVariants[color];
 
@@ -84,13 +87,13 @@ export function LevelCard({ level, index, color = "yellow" }: LevelCardProps) {
           <div className="relative h-10 w-10 overflow-hidden rounded-full">
             <Image
               src={creatorImage}
-              alt={`Creator ${level.creator}`}
+              alt={`Creator ${creatorDisplay}`}
               fill
               className="object-cover"
             />
           </div>
           <p className="text-sm text-purple-900 font-semibold">
-            by {level.creator.slice(0, 6)}...{level.creator.slice(-4)}
+            by {creatorDisplay}
           </p>
           {level.verified && (
             <Star

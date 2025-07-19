@@ -28,6 +28,16 @@ export default function MyLevels() {
   const [sortBy, setSortBy] = useState<"newest" | "completion">("newest");
   const { t } = useTranslation();
 
+  const creatorDisplay = currentUser?.username || `${address?.slice(0, 6)}...${address?.slice(-4)}`;
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const user = await getCurrentUser();
+      setCurrentUser(user);
+    };
+    fetchCurrentUser();
+  }, []);
+
   useEffect(() => {
     const fetchLevels = async () => {
       try {
@@ -79,7 +89,7 @@ export default function MyLevels() {
             levels.reduce(
               (acc, level) =>
                 acc +
-                (Number(level.completions) * 100) / Number(level.playCount),
+              level.completions > 0 && level.playCount > 0 ? (Number(level.completions) * 100) / Number(level.playCount) : 0,
               0,
             ) / levels.length,
           )
@@ -102,7 +112,7 @@ export default function MyLevels() {
 
   return (
     <div className="flex flex-col gap-20 mt-8 mx-8">
-      {address && <ProfileHeader address={address} stats={stats} />}
+      <ProfileHeader creatorDisplay={creatorDisplay} stats={stats} />
 
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
