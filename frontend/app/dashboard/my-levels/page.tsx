@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 import { useGameService } from "@/hooks/useGameService";
 import { UnifiedConnectButton } from "@/components/molecules/UnifiedConnectButton";
 
-import type { GameLevel } from "@/lib/services/types";
+import type { GameLevel, GamePlayer } from "@/lib/services/types";
 import { LevelCard } from "@/components/molecules/LevelCard";
 import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import { GameInput } from "@/components/molecules/GameInput";
@@ -18,6 +18,7 @@ import { getDifficulty } from "@/lib/utils";
 export default function MyLevels() {
   const { address } = useAccount();
   const { getCurrentUser, getPlayerCreatedLevels, isLoading, isWeb3Mode } = useGameService();
+  const [currentUser, setCurrentUser] = useState<GamePlayer | null>(null);
   const [levels, setLevels] = useState<GameLevel[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -31,9 +32,9 @@ export default function MyLevels() {
     const fetchLevels = async () => {
       try {
         setLoading(true);
-        const currentUser = await getCurrentUser();
+        const user = await getCurrentUser();
         
-        if (!currentUser) {
+        if (!user) {
           setLevels([]);
           return;
         }
@@ -124,12 +125,18 @@ export default function MyLevels() {
       {levels.length === 0 ? (
         <div className="flex flex-col items-center gap-4">
           <h1 className="text-3xl font-bold">{t("myLevels.title")}</h1>
-          <p className="text-gray-500 text-center">
-            {isWeb3Mode 
-              ? t("myLevels.connectWallet") 
-              : t("myLevels.loginRequired")}
-          </p>
-          <UnifiedConnectButton />
+          {
+            !currentUser && (
+              <>
+                <p className="text-gray-500 text-center">
+                  {isWeb3Mode 
+                    ? t("myLevels.connectWallet") 
+                    : t("myLevels.loginRequired")}
+                </p>
+                <UnifiedConnectButton />
+              </>
+            ) 
+          }
         </div>
       ) : sortedAndFilteredLevels.length === 0 ? (
         <p className="text-center text-gray-500">
