@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import CodeEditorSection from "./CodeEditorSection";
-import { useGucoLevels } from "@/hooks/useGucoLevels";
+import { useGameService } from "@/hooks/useGameService";
 
 interface PlayGameSectionProps {
   levelData: number[]; // Decoded bytes32 data from chain
@@ -18,13 +18,18 @@ const PlayGameSection = ({
 
   console.log("levelId", levelId);
 
-  const { isLevelCompleted } = useGucoLevels();
+  const { isLevelCompleted, isLoading } = useGameService();
 
   useEffect(() => {
     const checkLevelCompletion = async () => {
-      const isCompleted = await isLevelCompleted(levelId);
-      console.log("isCompleted", isCompleted);
-      setIsCompleted(isCompleted);
+      try {
+        const isCompleted = await isLevelCompleted(levelId);
+        console.log("isCompleted", isCompleted);
+        setIsCompleted(isCompleted);
+      } catch (error) {
+        console.error("Error checking level completion:", error);
+        setIsCompleted(false);
+      }
     };
     checkLevelCompletion();
   }, [isLevelCompleted, levelId]);

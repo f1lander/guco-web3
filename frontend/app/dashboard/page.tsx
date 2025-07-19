@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useGucoLevels } from "@/hooks/useGucoLevels";
+import { useGameService } from "@/hooks/useGameService";
+import { UnifiedConnectButton } from "@/components/molecules/UnifiedConnectButton";
 import { LevelCard } from "@/components/molecules/LevelCard";
 import { useTranslation } from "@/providers/language-provider";
 import { GameInput } from "@/components/molecules/GameInput";
 import { LevelCardSkeleton } from "@/components/molecules/LevelCardSkeleton";
-import { Level } from "@/lib/types";
+import { GameLevel } from "@/lib/services/types";
 
 export default function LevelsExplorer() {
   const [search, setSearch] = useState("");
@@ -14,8 +15,8 @@ export default function LevelsExplorer() {
   const [loading, setLoading] = useState(true);
   const ITEMS_PER_PAGE = 20;
   const { t } = useTranslation();
-  const { getLevels, getLevelCount } = useGucoLevels();
-  const [levels, setLevels] = useState<Level[]>([]);
+  const { getLevels, getLevelCount, isWeb3Mode } = useGameService();
+  const [levels, setLevels] = useState<GameLevel[]>([]);
   const [totalLevels, setTotalLevels] = useState(0);
 
   const loadLevels = async () => {
@@ -44,8 +45,9 @@ export default function LevelsExplorer() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-2xl font-bold">
-              {t("dashboard.exploreLevels")}
+              {t("dashboard.exploreLevels")} {isWeb3Mode ? "(Web3)" : "(REST)"}
             </h2>
+            {/* <UnifiedConnectButton /> */}
           </div>
           <div className="w-full max-w-md">
             <div className="h-10 w-full animate-pulse-opacity rounded-lg bg-gray-200 dark:bg-gray-700" />
@@ -65,7 +67,10 @@ export default function LevelsExplorer() {
     <div className="flex flex-col gap-20 p-8">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-2xl font-bold">{t("dashboard.exploreLevels")}</h2>
+          <h2 className="text-2xl font-bold">
+            {t("dashboard.exploreLevels")} {isWeb3Mode ? "(Web3)" : "(REST)"}
+          </h2>
+          {/* <UnifiedConnectButton /> */}
         </div>
         <div className="w-full max-w-md">
           <GameInput

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { gameService, isWeb3Mode } from '@/lib/services/factory';
 import { GameLevel, GamePlayer, CreateLevelParams, CompleteLevelParams } from '@/lib/services/types';
 import { useAccount } from 'wagmi';
@@ -9,14 +9,14 @@ export const useGameService = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Get current user ID based on mode
-  const getCurrentUserId = async (): Promise<string | null> => {
+  const getCurrentUserId = useCallback(async (): Promise<string | null> => {
     if (isWeb3Mode()) {
       return address || null;
     } else {
       const user = await gameService.getCurrentUser?.();
       return user?.id || null;
     }
-  };
+  }, [address]);
 
   // Level operations
   const getLevels = async (offset: number, limit: number): Promise<GameLevel[]> => {
@@ -73,7 +73,7 @@ export const useGameService = () => {
   };
 
   // Player operations
-  const getPlayer = async (playerId?: string): Promise<GamePlayer | null> => {
+  const getPlayer = useCallback(async (playerId?: string): Promise<GamePlayer | null> => {
     try {
       const userId = playerId || await getCurrentUserId();
       if (!userId) return null;
@@ -83,7 +83,7 @@ export const useGameService = () => {
       console.error('Error getting player:', err);
       return null;
     }
-  };
+  }, [getCurrentUserId]);
 
   const completeLevel = async (levelId: number, levelData?: GameLevel): Promise<{ success: boolean; txHash?: string } | null> => {
     setIsLoading(true);
@@ -184,14 +184,14 @@ export const useGameService = () => {
     }
   };
 
-  const getCurrentUser = async (): Promise<GamePlayer | null> => {
+  const getCurrentUser = useCallback(async (): Promise<GamePlayer | null> => {
     if (isWeb3Mode()) {
       const userId = await getCurrentUserId();
       return userId ? await getPlayer(userId) : null;
     } else {
       return await gameService.getCurrentUser?.() || null;
     }
-  };
+  }, [getCurrentUserId, getPlayer]);
 
   return {
     // State

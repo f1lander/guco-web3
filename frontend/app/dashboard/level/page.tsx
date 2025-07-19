@@ -35,7 +35,11 @@ function LevelDetailContent() {
   }
 
   try {
-    level = bytes32ToLevel(levelData as `0x${string}`);
+    if (levelData.startsWith("[") && levelData.endsWith("]")) {
+      level = JSON.parse(levelData);
+    } else {
+      level = bytes32ToLevel(levelData as `0x${string}`);
+    }
   } catch (error) {
     return <div>Invalid level data</div>;
   }

@@ -7,7 +7,10 @@ export class RestGameService implements GameService {
   async getLevels(params: GetLevelsParams): Promise<GameLevel[]> {
     let query = supabase
       .from('levels')
-      .select('*')
+      .select(`
+        *,
+        creator:players(username)
+      `)
       .range(params.offset, params.offset + params.limit - 1);
 
     // Add filters
@@ -33,6 +36,7 @@ export class RestGameService implements GameService {
       id: level.id,
       levelData: level.level_data,
       creator: level.creator_id,
+      creatorUsername: level.creator?.username || 'Unknown',
       playCount: level.play_count,
       completions: level.completions,
       verified: level.verified,
@@ -57,7 +61,10 @@ export class RestGameService implements GameService {
   async getLevel(levelId: number): Promise<GameLevel> {
     const { data, error } = await supabase
       .from('levels')
-      .select('*')
+      .select(`
+        *,
+        creator:players(username)
+      `)
       .eq('id', levelId)
       .single();
 
@@ -69,6 +76,7 @@ export class RestGameService implements GameService {
       id: data.id,
       levelData: data.level_data,
       creator: data.creator_id,
+      creatorUsername: data.creator?.username || 'Unknown',
       playCount: data.play_count,
       completions: data.completions,
       verified: data.verified,
@@ -120,7 +128,10 @@ export class RestGameService implements GameService {
       .from('level_completions')
       .select(`
         level_id,
-        levels (*)
+        levels (
+          *,
+          creator:players(username)
+        )
       `)
       .eq('player_id', playerId);
 
@@ -134,6 +145,7 @@ export class RestGameService implements GameService {
         id: level.id,
         levelData: level.level_data,
         creator: level.creator_id,
+        creatorUsername: level.creator?.username || 'Unknown',
         playCount: level.play_count,
         completions: level.completions,
         verified: level.verified,
@@ -220,7 +232,10 @@ export class RestGameService implements GameService {
   async getPlayerCreatedLevels(playerId: string): Promise<GameLevel[]> {
     const { data, error } = await supabase
       .from('levels')
-      .select('*')
+      .select(`
+        *,
+        creator:players(username)
+      `)
       .eq('creator_id', playerId)
       .order('created_at', { ascending: false });
 
@@ -233,6 +248,7 @@ export class RestGameService implements GameService {
       id: level.id,
       levelData: level.level_data,
       creator: level.creator_id,
+      creatorUsername: level.creator?.username || 'Unknown',
       playCount: level.play_count,
       completions: level.completions,
       verified: level.verified,
