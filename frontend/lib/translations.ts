@@ -127,6 +127,7 @@ export const translations = {
     myLevels: {
       title: "Mis Niveles",
       connectWallet: "Por favor conecta tu wallet para ver tus niveles",
+      loginRequired: "Por favor inicia sesión para ver tus niveles",
       searchPlaceholder: "Buscar por hash del nivel...",
       noLevelsCreated: "Aún no has creado ningún nivel",
       noLevelsMatch: "Ningún nivel coincide con tu búsqueda",
@@ -319,6 +320,7 @@ export const translations = {
       title: "My Levels",
       connectWallet: "Please connect your wallet to view your levels",
       searchPlaceholder: "Search by level hash...",
+      loginRequired: "Please login to view your levels",
       noLevelsCreated: "You haven't created any levels yet",
       noLevelsMatch: "No levels match your search",
       stats: {
