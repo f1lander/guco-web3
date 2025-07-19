@@ -26,7 +26,7 @@ import {
   GRID_WIDTH,
   INITIAL_CODE,
 } from "@/lib/constants";
-import { useGucoLevels } from "@/hooks/useGucoLevels";
+import { useGameService } from "@/hooks/useGameService";
 import { useTranslation } from "@/providers/language-provider";
 import {
   compileCode,
@@ -52,8 +52,7 @@ import { useAudioInit } from "@/hooks/useAudioInit";
 import { useRobotSounds } from "@/hooks/useRobotSounds";
 import { useCollectiblesInit } from "@/hooks/useCollectiblesInit";
 import { useLevelCompletion } from "@/hooks/useLevelCompletion";
-import { useAccount } from "wagmi";
-import { CustomConnectButton } from "@/components/molecules/CustomConnectButton";
+import { UnifiedConnectButton } from "@/components/molecules/UnifiedConnectButton";
 
 interface HelpDialogProps {
   isOpen: boolean;
@@ -74,7 +73,7 @@ const SuccessDialog: React.FC<SuccessDialogProps> = ({
   isPending,
 }) => {
   const { t } = useTranslation();
-  const { isConnected } = useAccount();
+  const { isWeb3Mode } = useGameService();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -95,40 +94,33 @@ const SuccessDialog: React.FC<SuccessDialogProps> = ({
           <DialogDescription className="text-slate-300 text-center">
             ¡Felicidades! Has completado este nivel con éxito.
           </DialogDescription>
-          {isConnected ? (
-            <p className="text-slate-400 text-sm text-center">
-              Firma la transacción para guardar tu progreso en la blockchain.
-            </p>
-          ) : (
-            <p className="text-slate-400 text-sm text-center">
-              Conecta tu wallet para guardar tu progreso en la blockchain.
-            </p>
-          )}
+          <p className="text-slate-400 text-sm text-center">
+            {isWeb3Mode 
+              ? "Firma la transacción para guardar tu progreso en la blockchain."
+              : "Guarda tu progreso en la base de datos."
+            }
+          </p>
         </div>
 
         <DialogFooter className="bg-slate-800/50 p-4 -mx-6 -mb-6 mt-2 rounded-b-lg">
-          {isConnected ? (
-            <Button
-              onClick={onConfirm}
-              className="w-full"
-              color="green"
-              disabled={isPending}
-            >
-              {isPending ? (
-                <span className="flex items-center gap-2">
-                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-                  Firmando...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Check className="w-4 h-4" />
-                  Confirmar Progreso
-                </span>
-              )}
-            </Button>
-          ) : (
-            <CustomConnectButton />
-          )}
+          <Button
+            onClick={onConfirm}
+            className="w-full"
+            color="green"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                {isWeb3Mode ? "Firmando..." : "Guardando..."}
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Check className="w-4 h-4" />
+                Confirmar Progreso
+              </span>
+            )}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -222,14 +214,8 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   const [showFailureDialog, setShowFailureDialog] = useState(false);
   const [editorType, setEditorType] = useState<"code" | "blocks">("code");
 
-  const {
-    updatePlayer,
-    isPendingUpdate,
-    isSuccessUpdate,
-    isErrorUpdate,
-    dataUpdate,
-    getLevel,
-  } = useGucoLevels();
+  // ✅ NEW: Use unified game service
+  const { completeLevel, isLoading, getCurrentUser, isWeb3Mode } = useGameService();
 
   // Use custom hooks
   const { audioInitialized } = useAudioInit();
@@ -327,47 +313,50 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
     }
   };
 
-  // Handle confirm level completion
+  // ✅ NEW: Updated level completion handler for dual mode
   const handleConfirmLevelCompletion = async () => {
     try {
       setIsSaving(true);
 
-      if (Number.isInteger(levelId)) {
-        // Get the level data from the blockchain
-        const level = await getLevel(levelId);
+      // Get current user
+      const user = await getCurrentUser();
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: isWeb3Mode 
+            ? "Please connect your wallet to save progress" 
+            : "Please login to save progress",
+          variant: "destructive",
+        });
+        return;
+      }
 
-        // Update player progress - await the transaction here
-        await updatePlayer(levelId, {
-          ...level,
-          playCount: level.playCount + 1n,
-          completions: level.completions + 1n,
+      if (Number.isInteger(levelId)) {
+        // ✅ NEW: Use unified completeLevel function
+        const result = await completeLevel(levelId, {
+          id: levelId,
+          levelData: JSON.stringify(levelData),
+          creator: user.id,
+          playCount: 0,
+          completions: 0,
           verified: true,
+          createdAt: new Date(),
         });
 
-        if (isSuccessUpdate) {
-          // Only show toast after transaction is complete
+        if (result?.success) {
           toast({
             title: "¡Progreso guardado!",
-            description: "Tu avance ha sido registrado en la blockchain.",
+            description: isWeb3Mode 
+              ? "Tu avance ha sido registrado en la blockchain."
+              : "Tu avance ha sido guardado en la base de datos.",
           });
 
-          // Close the dialog after successful update
-
           setShowSuccessDialog(false);
-        }
-
-        if (isErrorUpdate) {
+        } else {
           toast({
             title: "Error al guardar progreso",
             description: "Hubo un problema al registrar tu avance.",
             variant: "destructive",
-          });
-        }
-
-        if (isPendingUpdate) {
-          toast({
-            title: "Guardando progreso...",
-            description: "Tu avance está siendo registrado en la blockchain.",
           });
         }
       }
@@ -376,7 +365,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
       toast({
         title: "Error al guardar progreso",
-        description: "Hubo un problema al registrar tu avance.",
+        description: error instanceof Error ? error.message : "Hubo un problema al registrar tu avance.",
         variant: "destructive",
       });
     } finally {
@@ -809,7 +798,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         isOpen={showSuccessDialog}
         onClose={() => setShowSuccessDialog(false)}
         onConfirm={handleConfirmLevelCompletion}
-        isPending={isPendingUpdate}
+        isPending={isLoading}
       />
 
       <FailureDialog

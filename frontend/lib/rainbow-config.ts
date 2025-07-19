@@ -1,31 +1,32 @@
-"use client";
+'use client';
 
-import { http, createStorage, cookieStorage } from "wagmi";
-import { defineChain } from "viem";
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { WALLET_CONNECTION_PROJECT_ID, RPC_URL } from "@/lib/constants";
+import { http, createStorage, cookieStorage } from 'wagmi';
+import { defineChain } from 'viem';
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { WALLET_CONNECTION_PROJECT_ID, RPC_URL } from '@/lib/constants';
+import { anvil } from 'viem/chains';
 
 // Define the GUCO devnet chain
 const guco_devnet = defineChain({
   id: 1337,
-  name: "GUCO Devnet",
+  name: 'GUCO Devnet',
   nativeCurrency: {
     decimals: 18,
-    name: "Ether",
-    symbol: "ETH",
+    name: 'Ether',
+    symbol: 'ETH',
   },
   rpcUrls: {
     default: {
-      http: [RPC_URL || "https://geth.devnet.drosera.io"],
+      http: [RPC_URL || 'https://geth.devnet.drosera.io'],
     },
   },
   testnet: true,
 });
 
 export const rainbowConfig = getDefaultConfig({
-  appName: "Guco Web3",
+  appName: 'Guco Web3',
   projectId: WALLET_CONNECTION_PROJECT_ID,
-  chains: [guco_devnet], // Only support devnet
+  chains: [guco_devnet, anvil], // Only support devnet
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,

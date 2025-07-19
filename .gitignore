@@ -22,4 +22,5 @@ docs/
 
 # Dotenv file
 .env
+frontend/.env.local
 .envrc

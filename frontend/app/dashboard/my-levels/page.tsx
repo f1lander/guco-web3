@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { getPlayerCreatedLevels } from "@/lib/blockchain/contract-functions";
+import { useGameService } from "@/hooks/useGameService";
+import { UnifiedConnectButton } from "@/components/molecules/UnifiedConnectButton";
 
-import type { Level } from "@/lib/types";
+import type { GameLevel } from "@/lib/services/types";
 import { LevelCard } from "@/components/molecules/LevelCard";
 import { ProfileHeader } from "@/components/organisms/ProfileHeader";
 import { GameInput } from "@/components/molecules/GameInput";
@@ -15,8 +16,9 @@ import { useTranslation } from "@/providers/language-provider";
 import { getDifficulty } from "@/lib/utils";
 
 export default function MyLevels() {
-  const { address, isConnecting } = useAccount();
-  const [levels, setLevels] = useState<Level[]>([]);
+  const { address } = useAccount();
+  const { getCurrentUser, getPlayerCreatedLevels, isLoading, isWeb3Mode } = useGameService();
+  const [levels, setLevels] = useState<GameLevel[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState<
@@ -27,21 +29,27 @@ export default function MyLevels() {
 
   useEffect(() => {
     const fetchLevels = async () => {
-      if (!address) return;
-
       try {
         setLoading(true);
-        const playerLevels = await getPlayerCreatedLevels(address);
+        const currentUser = await getCurrentUser();
+        
+        if (!currentUser) {
+          setLevels([]);
+          return;
+        }
+
+        const playerLevels = await getPlayerCreatedLevels();
         setLevels(playerLevels);
       } catch (error) {
         console.error("Error fetching levels:", error);
+        setLevels([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchLevels();
-  }, [address]);
+  }, []);
 
   const filteredLevels = levels.filter((level) =>
     level.levelData.toLowerCase().includes(search.toLowerCase()),
@@ -49,11 +57,14 @@ export default function MyLevels() {
 
   const sortedAndFilteredLevels = filteredLevels
     .filter((level) =>
-      difficulty === "all" ? true : getDifficulty(level) === difficulty,
+      difficulty === "all" ? true : getDifficulty({
+        playCount: BigInt(level.playCount),
+        completions: BigInt(level.completions)
+      }) === difficulty,
     )
     .sort((a, b) => {
       if (sortBy === "completion") {
-        return Number(b.completions) - Number(a.completions);
+        return b.completions - a.completions;
       }
       return 0; // For now, newest first is default
     });
@@ -75,29 +86,7 @@ export default function MyLevels() {
     badges: 0, // This will be implemented later
   };
 
-  if (isConnecting) {
-    return (
-      <div className="flex flex-col gap-20 mt-8">
-        <ProfileHeaderSkeleton />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <LevelCardSkeleton key={i} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (!address) {
-    return (
-      <div className="flex flex-col items-center gap-4">
-        <h1 className="text-3xl font-bold">{t("myLevels.title")}</h1>
-        <p className="text-gray-500">{t("myLevels.connectWallet")}</p>
-      </div>
-    );
-  }
-
-  if (loading) {
+  if (isLoading || loading) {
     return (
       <div className="flex flex-col gap-20 mt-8">
         <ProfileHeaderSkeleton />
@@ -132,7 +121,17 @@ export default function MyLevels() {
         </div>
       </div>
 
-      {sortedAndFilteredLevels.length === 0 ? (
+      {levels.length === 0 ? (
+        <div className="flex flex-col items-center gap-4">
+          <h1 className="text-3xl font-bold">{t("myLevels.title")}</h1>
+          <p className="text-gray-500 text-center">
+            {isWeb3Mode 
+              ? t("myLevels.connectWallet") 
+              : t("myLevels.loginRequired")}
+          </p>
+          <UnifiedConnectButton />
+        </div>
+      ) : sortedAndFilteredLevels.length === 0 ? (
         <p className="text-center text-gray-500">
           {levels.length === 0
             ? t("myLevels.noLevelsCreated")

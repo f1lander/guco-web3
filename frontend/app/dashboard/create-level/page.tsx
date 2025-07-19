@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useGucoLevels } from "@/hooks/useGucoLevels";
+import { useGameService } from "@/hooks/useGameService";
 import Button from "@/components/atoms/Button";
 import { useToast } from "@/components/ui/use-toast";
 import GameView from "@/components/molecules/GameView";
 import { useTranslation } from "@/providers/language-provider";
+import { UnifiedConnectButton } from "@/components/molecules/UnifiedConnectButton";
 import {
   Select,
   SelectContent,
@@ -17,73 +18,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DEFAULT_LEVEL } from "@/lib/constants";
 import { Difficulty, generateRandomLevel } from "@/lib/utils";
-import { useAccount } from "wagmi";
 import { Sparkles, Send, Eye, Zap } from "lucide-react";
+import { GamePlayer } from "@/lib/services/types";
 
 export default function CreateLevel() {
-  const { address } = useAccount();
+  // ✅ NEW: Use unified service and user management
+  const { createLevel, isLoading, error, getCurrentUser, isWeb3Mode } = useGameService();
+  const [user, setUser] = useState<GamePlayer | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.BEGINNER);
   const [generatedLevel, setGeneratedLevel] = useState<number[] | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
-  const {
-    createGucoLevel,
-    isPendingCreate,
-    isSuccessCreate,
-    isErrorCreate,
-    dataCreate,
-  } = useGucoLevels();
   const { toast } = useToast();
   const { t } = useTranslation();
 
-  // Handle success state changes
+  // ✅ NEW: Load current user
   useEffect(() => {
-    if (isSuccessCreate && dataCreate) {
-      toast({
-        title: "¡Nivel Creado Exitosamente! 🎉",
-        description: (
-          <div className="mt-2 flex flex-col gap-2">
-            <p>Tu nivel ha sido publicado en la blockchain correctamente.</p>
-            <p className="text-sm text-slate-400 break-all">
-              Transacción:{" "}
-              <a
-                href={`https://sepolia.etherscan.io/tx/${dataCreate}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-slate-300 text-blue-400"
-              >
-                {dataCreate}
-              </a>
-            </p>
-          </div>
-        ),
-        duration: 8000,
-      });
-
-      // Log transaction data
-      console.log("Transaction successful:", {
-        hash: dataCreate,
-        timestamp: new Date().toISOString(),
-      });
-
-      // Reset form after successful submission
-      setGeneratedLevel(null);
-      setTxHash(null);
-    }
-  }, [isSuccessCreate, dataCreate, toast]);
-
-  // Handle error state changes
-  useEffect(() => {
-    if (isErrorCreate) {
-      toast({
-        title: "Error al Crear Nivel ❌",
-        description: "Hubo un problema al publicar tu nivel. Inténtalo de nuevo.",
-        variant: "destructive",
-        duration: 6000,
-      });
-      setTxHash(null);
-    }
-  }, [isErrorCreate, toast]);
+    const loadUser = async () => {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+    };
+    loadUser();
+  }, [getCurrentUser]);
 
   const handleGenerateLevel = () => {
     setIsGenerating(true);
@@ -106,33 +62,67 @@ export default function CreateLevel() {
   const handleSubmitLevel = async () => {
     if (!generatedLevel) return;
 
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: isWeb3Mode 
+          ? "Please connect your wallet to create levels" 
+          : "Please login to create levels",
+        variant: "destructive",
+        duration: 5000,
+      });
+      return;
+    }
+
     try {
       setTxHash(null);
 
       // Show initial toast
       toast({
-        title: "Iniciando Transacción 🚀",
-        description: "Por favor, confirma la transacción en tu wallet.",
+        title: isWeb3Mode ? "Iniciando Transacción 🚀" : "Creando Nivel 🚀",
+        description: isWeb3Mode 
+          ? "Por favor, confirma la transacción en tu wallet."
+          : "Tu nivel está siendo creado...",
         duration: 4000,
       });
 
-      // Submit transaction
-      await createGucoLevel(generatedLevel);
+      // ✅ NEW: Use unified createLevel
+      const result = await createLevel(generatedLevel);
       
-      // Show transaction submitted toast
-      toast({
-        title: "Transacción Enviada ⏳",
-        description: "Tu nivel está siendo procesado en la blockchain...",
-        duration: 5000,
-      });
+      if (result) {
+        toast({
+          title: "¡Nivel Creado Exitosamente! 🎉",
+          description: isWeb3Mode ? (
+            <div className="mt-2 flex flex-col gap-2">
+              <p>Tu nivel ha sido publicado en la blockchain correctamente.</p>
+              <p className="text-sm text-slate-400 break-all">
+                Transacción:{" "}
+                <a
+                  href={`https://sepolia.etherscan.io/tx/${result.txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-slate-300 text-blue-400"
+                >
+                  {result.txHash}
+                </a>
+              </p>
+            </div>
+          ) : (
+            "Tu nivel ha sido creado exitosamente en la base de datos."
+          ),
+          duration: 8000,
+        });
+
+        setGeneratedLevel(null);
+        setTxHash(null);
+      }
 
     } catch (error) {
       console.error("Error submitting level:", error);
       
-      // Show error toast for transaction failures
       toast({
-        title: "Error en la Transacción ❌",
-        description: error instanceof Error ? error.message : "Error desconocido al enviar la transacción.",
+        title: "Error al Crear Nivel ❌",
+        description: error instanceof Error ? error.message : "Error desconocido al crear el nivel.",
         variant: "destructive",
         duration: 6000,
       });
@@ -160,10 +150,10 @@ export default function CreateLevel() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
-            Crear Nivel
+            Crear Nivel {isWeb3Mode ? "(Web3)" : "(REST)"}
           </h1>
           <p className="text-gray-300 max-w-2xl mx-auto">
-            Diseña y publica tus propios niveles en la blockchain
+            Diseña y publica tus propios niveles {isWeb3Mode ? "en la blockchain" : ""}
           </p>
         </div>
 
@@ -229,57 +219,45 @@ export default function CreateLevel() {
                     : "Generar Nivel"}
                 </Button>
 
-                {/* Submit to Blockchain Button */}
-                {generatedLevel && address && (
+                {/* Submit Button */}
+                {generatedLevel && user && (
                   <Button
                     onClick={handleSubmitLevel}
-                    disabled={isPendingCreate}
+                    disabled={isLoading}
                     color="blue"
                     icon={Send}
                     className="w-full"
                   >
-                    {isPendingCreate
+                    {isLoading
                       ? "Creando..."
                       : "Crear Nivel"}
                   </Button>
+                )}
+
+                {/* Authentication Required */}
+                {!user && (
+                  <div className="p-4 bg-yellow-900/50 rounded-lg border border-yellow-600">
+                    <p className="text-sm font-medium text-yellow-300 mb-2">
+                      Authentication Required
+                    </p>
+                    <UnifiedConnectButton />
+                  </div>
                 )}
 
                 {/* Transaction Status */}
                 {txHash && (
                   <div className="p-4 bg-blue-900/50 rounded-lg border border-blue-600">
                     <p className="text-sm font-medium text-blue-300 mb-2">
-                      Transacción pendiente
+                      Transaction Hash:
                     </p>
-                    <a
-                      href={`https://sepolia.etherscan.io/tx/${txHash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-400 hover:text-blue-300 underline break-all"
-                    >
-                      Ver en explorador
-                    </a>
-                  </div>
-                )}
-
-                {/* Level Info */}
-                {generatedLevel && (
-                  <div className="p-4 bg-green-900/50 rounded-lg border border-green-600">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Eye className="w-4 h-4 text-green-400" />
-                      <span className="text-sm font-medium text-green-300">
-                        Nivel Generado
-                      </span>
-                    </div>
-                    <p className="text-xs text-green-400">
-                      Listo para crear en blockchain
-                    </p>
+                    <p className="text-xs text-blue-400 break-all">{txHash}</p>
                   </div>
                 )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Game Preview - Main Area */}
+          {/* Game Preview Area */}
           <div className="lg:col-span-3">
             <Card className="shadow-lg border border-gray-700 bg-gray-800/90 backdrop-blur-sm">
               <CardHeader>

@@ -7,6 +7,7 @@ import { DEFAULT_NETWORK_NAME } from "@/lib/constants";
 import Button from "../atoms/Button";
 import { useTranslation } from "@/providers/language-provider";
 import { CustomConnectButton } from "@/components/molecules/CustomConnectButton";
+import { UnifiedConnectButton } from "./UnifiedConnectButton";
 
 export function TopNavbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -72,7 +73,8 @@ export function TopNavbar() {
           <div
             className={`transition-transform duration-100 ${scrolled ? "scale-95" : "scale-100"}`}
           >
-            <CustomConnectButton />
+            <UnifiedConnectButton />
+            {/* <CustomConnectButton /> */}
           </div>
         </div>
       </header>

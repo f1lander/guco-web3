@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Trophy, Users, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Level } from "@/lib/types";
+import { GameLevel } from "@/lib/services/types";
 
 const colorVariants = {
   yellow: {
@@ -37,7 +37,7 @@ const colorVariants = {
 type ColorVariant = keyof typeof colorVariants;
 
 interface LevelCardProps {
-  level: Level;
+  level: GameLevel;
   index: number;
   color?: ColorVariant;
 }
