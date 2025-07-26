@@ -11,7 +11,7 @@ export const translations = {
     },
     dashboard: {
       exploreLevels: "Explorar Niveles",
-      searchPlaceholder: "Buscar por nombre, hash o creador...",
+      searchPlaceholder: "Buscar por hash o creador...",
     },
     hero: {
       welcome: "Bienvenido a",
@@ -203,7 +203,7 @@ export const translations = {
     },
     dashboard: {
       exploreLevels: "Explore Levels",
-      searchPlaceholder: "Search by name, hash or creator...",
+      searchPlaceholder: "Search by hash or creator...",
     },
     hero: {
       welcome: "Welcome to",

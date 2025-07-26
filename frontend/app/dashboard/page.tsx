@@ -16,6 +16,7 @@ export default function LevelsExplorer() {
   const { t } = useTranslation();
   const { getLevels, getLevelCount } = useGucoLevels();
   const [levels, setLevels] = useState<Level[]>([]);
+  const [allLevels, setAllLevels] = useState<Level[]>([]);
   const [totalLevels, setTotalLevels] = useState(0);
 
   const loadLevels = async () => {
@@ -24,6 +25,7 @@ export default function LevelsExplorer() {
       const count = await getLevelCount();
       setTotalLevels(count);
       const data = await getLevels(page * ITEMS_PER_PAGE, ITEMS_PER_PAGE);
+      setAllLevels(data);
       setLevels(data);
     } catch (error) {
       console.error("Error loading levels:", error);
@@ -32,11 +34,32 @@ export default function LevelsExplorer() {
     }
   };
 
+  const filterLevels = (searchTerm: string) => {
+    if (!searchTerm.trim()) {
+      setLevels(allLevels);
+      return;
+    }
+
+    const filtered = allLevels.filter((level) => {
+      const searchLower = searchTerm.toLowerCase();
+      const creatorLower = level.creator?.toLowerCase() || "";
+      const idString = level.id.toString();
+      
+      return creatorLower.includes(searchLower) || idString.includes(searchLower);
+    });
+
+    setLevels(filtered);
+  };
+
   console.log("Total levels:", totalLevels);
 
   useEffect(() => {
     loadLevels();
   }, [page]);
+
+  useEffect(() => {
+    filterLevels(search);
+  }, [search, allLevels]);
 
   if (loading) {
     return (

@@ -43,9 +43,15 @@ export default function MyLevels() {
     fetchLevels();
   }, [address]);
 
-  const filteredLevels = levels.filter((level) =>
-    level.levelData.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredLevels = levels.filter((level) => {
+    if (!search.trim()) return true;
+    
+    const searchLower = search.toLowerCase();
+    const creatorLower = level.creator?.toLowerCase() || "";
+    const idString = level.id.toString();
+    
+    return creatorLower.includes(searchLower) || idString.includes(searchLower);
+  });
 
   const sortedAndFilteredLevels = filteredLevels
     .filter((level) =>
